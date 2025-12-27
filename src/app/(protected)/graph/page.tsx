@@ -1,0 +1,136 @@
+'use client'
+
+import { useState, useMemo } from 'react'
+import Link from 'next/link'
+import { useKnowledgeGraph } from '@/hooks/useKnowledgeGraph'
+import { KnowledgeGraph } from '@/components/graph/KnowledgeGraph'
+import { GraphControls } from '@/components/graph/GraphControls'
+import { NotePanel } from '@/components/graph/NotePanel'
+import { Loading } from '@/components/ui/Loading'
+
+export default function GraphPage() {
+  const { data, loading, error, selectedNode, setSelectedNode, refresh } = useKnowledgeGraph()
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
+
+  // Get unique tags from all nodes
+  const allTags = useMemo(() => {
+    const tags = new Set<string>()
+    data.nodes.forEach(node => node.tags.forEach(tag => tags.add(tag)))
+    return Array.from(tags).sort()
+  }, [data.nodes])
+
+  // Filter nodes based on search and tags
+  const filteredData = useMemo(() => {
+    let nodes = data.nodes
+
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase()
+      nodes = nodes.filter(node =>
+        node.title.toLowerCase().includes(query) ||
+        node.content.toLowerCase().includes(query)
+      )
+    }
+
+    if (selectedTags.length > 0) {
+      nodes = nodes.filter(node =>
+        selectedTags.some(tag => node.tags.includes(tag))
+      )
+    }
+
+    const nodeIds = new Set(nodes.map(n => n.id))
+    const links = data.links.filter(link => {
+      const sourceId = typeof link.source === 'string' ? link.source : link.source.id
+      const targetId = typeof link.target === 'string' ? link.target : link.target.id
+      return nodeIds.has(sourceId) && nodeIds.has(targetId)
+    })
+
+    return { nodes, links }
+  }, [data, searchQuery, selectedTags])
+
+  const handleTagToggle = (tag: string) => {
+    setSelectedTags(prev =>
+      prev.includes(tag)
+        ? prev.filter(t => t !== tag)
+        : [...prev, tag]
+    )
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loading size="lg" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">{error}</p>
+          <button onClick={refresh} className="text-muted hover:text-foreground">
+            Try again
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-background relative">
+      {/* Header */}
+      <div className="fixed top-0 left-0 right-0 h-14 flex items-center justify-between px-4 bg-background/80 backdrop-blur-sm border-b border-border z-30">
+        <div className="flex items-center gap-4">
+          <Link
+            href="/dashboard"
+            className="text-muted hover:text-foreground transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+          </Link>
+          <h1 className="text-lg font-medium">Knowledge Graph</h1>
+        </div>
+        <div className="text-sm text-muted">
+          {filteredData.nodes.length} notes, {filteredData.links.length} connections
+        </div>
+      </div>
+
+      {/* Graph container */}
+      <div className="pt-14 h-screen relative">
+        <GraphControls
+          tags={allTags}
+          selectedTags={selectedTags}
+          onTagToggle={handleTagToggle}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onRefresh={refresh}
+        />
+
+        <KnowledgeGraph
+          data={filteredData}
+          onNodeClick={setSelectedNode}
+          selectedNodeId={selectedNode?.id}
+        />
+
+        {selectedNode && (
+          <NotePanel
+            node={selectedNode}
+            onClose={() => setSelectedNode(null)}
+          />
+        )}
+      </div>
+    </div>
+  )
+}
