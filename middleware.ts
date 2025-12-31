@@ -1,7 +1,12 @@
-import { type NextRequest } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
 export async function middleware(request: NextRequest) {
+  // Skip auth entirely when SKIP_AUTH is enabled (for testing/development)
+  if (process.env.SKIP_AUTH === 'true') {
+    return NextResponse.next()
+  }
+
   return await updateSession(request)
 }
 

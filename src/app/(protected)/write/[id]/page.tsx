@@ -1,7 +1,9 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { FadingEditor } from '@/components/editor/FadingEditor'
+import { DreamEditor } from '@/components/editor/DreamEditor'
 import type { Document } from '@/types/document'
+
+const TEST_USER_ID = 'test-user-00000000-0000-0000-0000-000000000000'
 
 interface WritePageProps {
   params: Promise<{ id: string }>
@@ -9,6 +11,12 @@ interface WritePageProps {
 
 export default async function WritePage({ params }: WritePageProps) {
   const { id } = await params
+
+  // Handle test mode - skip auth and use test user
+  if (process.env.SKIP_AUTH === 'true') {
+    return <DreamEditor userId={TEST_USER_ID} initialDocument={null} />
+  }
+
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
@@ -31,5 +39,5 @@ export default async function WritePage({ params }: WritePageProps) {
     }
   }
 
-  return <FadingEditor userId={user.id} initialDocument={document} />
+  return <DreamEditor userId={user.id} initialDocument={document} />
 }

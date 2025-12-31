@@ -18,6 +18,7 @@
   --color-primary-foreground: var(--primary-foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-serif);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -78,4 +79,145 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--muted);
+}
+
+/* Dream Editor Styles */
+
+/* Gradient background - dawn-like atmosphere */
+.dream-gradient {
+  background: linear-gradient(to bottom, #dbeafe, #fce7f3);
+  min-height: 100vh;
+}
+
+/* Dream editor text styling */
+.dream-text {
+  font-family: var(--font-serif), Georgia, 'Times New Roman', serif;
+  font-size: 24px;
+  line-height: 1.6;
+  color: #1e293b;
+}
+
+/* Character entrance animation - fade in and rise */
+@keyframes char-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.char-entering {
+  animation: char-enter 150ms ease-out forwards;
+}
+
+/* Character exit animation - fade out */
+@keyframes char-exit {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.char-exiting {
+  animation: char-exit 150ms ease-out forwards;
+}
+
+/* Word fade-out animation - float upward */
+@keyframes word-fade-float {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+}
+
+.word-fading {
+  animation: word-fade-float 1000ms ease-in forwards;
+}
+
+/* Word space collapse animation - slow shrink after word floats away */
+.word-collapsing {
+  animation: word-collapse 2500ms ease-in-out forwards;
+}
+
+@keyframes word-collapse {
+  from {
+    width: inherit;
+  }
+  to {
+    width: 0;
+    height: 0;
+  }
+}
+
+/* Line scroll animation */
+.line-scrolling {
+  transition: transform 300ms ease-out;
+}
+
+/* Prompt entrance animation */
+@keyframes prompt-fade-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.prompt-entering {
+  animation: prompt-fade-in 500ms ease-out forwards;
+}
+
+/* Prompt fade out */
+@keyframes prompt-fade-out {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+.prompt-exiting {
+  animation: prompt-fade-out 300ms ease-out forwards;
+}
+
+/* History view styles - plain readable format */
+.history-text {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
+  color: #374151;
+}
+
+/* Smooth scroll behavior for history transitions */
+.dream-scroll-container {
+  scroll-behavior: smooth;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Editor area that fades when scrolling to history */
+.editor-fade-on-scroll {
+  transition: opacity 300ms ease-out;
+}
+
+/* History area styling */
+.history-container {
+  opacity: 0.9;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(30, 41, 59, 0.1);
 }
