@@ -95,6 +95,8 @@ body {
   font-size: 24px;
   line-height: 1.6;
   color: #1e293b;
+  /* Smooth recentering as words collapse */
+  transition: all 800ms ease-in-out;
 }
 
 /* Character entrance animation - fade in and rise */
@@ -127,7 +129,7 @@ body {
   animation: char-exit 150ms ease-out forwards;
 }
 
-/* Word fade-out animation - float upward */
+/* Word fade-out animation - fade and float up slowly */
 @keyframes word-fade-float {
   0% {
     opacity: 1;
@@ -135,27 +137,38 @@ body {
   }
   100% {
     opacity: 0;
-    transform: translateY(-30px);
+    transform: translateY(-20px);
   }
 }
 
 .word-fading {
-  animation: word-fade-float 1000ms ease-in forwards;
+  animation: word-fade-float 2000ms ease-in-out forwards;
 }
 
-/* Word space collapse animation - slow shrink after word floats away */
+/* Word space collapse - use transition for smooth recentering */
 .word-collapsing {
-  animation: word-collapse 2500ms ease-in-out forwards;
+  transition: width 2000ms ease-in-out, opacity 400ms ease-out;
+  width: 0 !important;
+  opacity: 0;
 }
 
-@keyframes word-collapse {
-  from {
-    width: inherit;
-  }
-  to {
-    width: 0;
-    height: 0;
-  }
+/* Animated word wrapper - enables smooth width transitions */
+.animated-word {
+  display: inline-block;
+  transition: width 2000ms ease-in-out;
+  vertical-align: baseline;
+}
+
+/* Visual row - smooth height and position transitions */
+.visual-row {
+  transition: min-height 800ms ease-in-out, opacity 600ms ease-in-out;
+  overflow: hidden;
+}
+
+/* Visual row collapsing to nothing */
+.visual-row-empty {
+  min-height: 0 !important;
+  opacity: 0;
 }
 
 /* Line scroll animation */
@@ -220,4 +233,17 @@ body {
   opacity: 0.9;
   padding-bottom: 2rem;
   border-bottom: 1px solid rgba(30, 41, 59, 0.1);
+}
+
+/* Word shake animation - subtle feedback when backspace limit is hit */
+@keyframes word-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-3px); }
+  40% { transform: translateX(3px); }
+  60% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+}
+
+.word-protected-shake {
+  animation: word-shake 300ms ease-out;
 }

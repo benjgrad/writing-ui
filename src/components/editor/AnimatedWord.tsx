@@ -9,6 +9,7 @@ interface AnimatedWordProps {
   isFading: boolean
   isFaded: boolean
   recentCharIds?: Set<string>
+  shouldShake?: boolean
 }
 
 export function AnimatedWord({
@@ -16,11 +17,13 @@ export function AnimatedWord({
   isFading,
   isFaded,
   recentCharIds = new Set(),
+  shouldShake = false,
 }: AnimatedWordProps) {
   const wordRef = useRef<HTMLSpanElement>(null)
   const [dimensions, setDimensions] = useState<{ width: number; height: number } | null>(null)
   const [isExiting, setIsExiting] = useState(false)
-  const [isCollapsing, setIsCollapsing] = useState(false)
+  // Collapse happens in two phases: first set explicit width, then trigger transition to 0
+  const [collapsePhase, setCollapsePhase] = useState<'none' | 'preparing' | 'collapsing'>('none')
 
   // Capture dimensions when fading starts so we can preserve space
   useEffect(() => {
@@ -31,59 +34,64 @@ export function AnimatedWord({
     }
   }, [isFading, dimensions])
 
-  // Only return null after both exit and collapse animations complete
-  if (isFaded && !isExiting && !isCollapsing) {
+  // When entering collapse preparation phase, wait one frame then start actual collapse
+  useEffect(() => {
+    if (collapsePhase === 'preparing') {
+      // Use requestAnimationFrame to ensure the browser has rendered with explicit width
+      // before we trigger the transition to width: 0
+      const frameId = requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setCollapsePhase('collapsing')
+        })
+      })
+      return () => cancelAnimationFrame(frameId)
+    }
+  }, [collapsePhase])
+
+  // Only return null after collapse animation completes
+  if (isFaded && !isExiting && collapsePhase === 'none') {
     return null
   }
 
-  // Collapsing state: empty span that slowly shrinks to zero width
-  if (isCollapsing && dimensions) {
+  // Collapsing state: two phases for smooth transition
+  // Phase 1 (preparing): render with explicit width so browser knows starting point
+  // Phase 2 (collapsing): apply width: 0 to trigger the CSS transition
+  if (collapsePhase !== 'none' && dimensions) {
     return (
       <span
-        className="word-collapsing"
+        className={`animated-word ${collapsePhase === 'collapsing' ? 'word-collapsing' : ''}`}
         style={{
-          display: 'inline-block',
-          width: dimensions.width,
+          width: collapsePhase === 'preparing' ? dimensions.width : undefined,
           height: dimensions.height,
         }}
-        onAnimationEnd={() => setIsCollapsing(false)}
+        onTransitionEnd={() => {
+          if (collapsePhase === 'collapsing') {
+            setCollapsePhase('none')
+          }
+        }}
       />
     )
   }
 
-  // During exit animation: word floats up while placeholder maintains space
-  if (isExiting && dimensions) {
+  // During exit animation: apply fade class but keep natural flow (no dimension changes)
+  // This prevents the "jump" that happens when switching to absolute positioning
+  if (isExiting) {
     return (
       <span
-        style={{
-          display: 'inline-block',
-          width: dimensions.width,
-          height: dimensions.height,
-          position: 'relative',
+        ref={wordRef}
+        className="animated-word word-fading"
+        onAnimationEnd={() => {
+          setIsExiting(false)
+          setCollapsePhase('preparing')
         }}
       >
-        {/* Floating word */}
-        <span
-          className="word-fading"
-          style={{
-            position: 'absolute',
-            left: 0,
-            top: 0,
-            whiteSpace: 'nowrap',
-          }}
-          onAnimationEnd={() => {
-            setIsExiting(false)
-            setIsCollapsing(true)
-          }}
-        >
-          {word.characters.map((char) => (
-            <AnimatedCharacter
-              key={char.id}
-              character={char}
-              isNew={false}
-            />
-          ))}
-        </span>
+        {word.characters.map((char) => (
+          <AnimatedCharacter
+            key={char.id}
+            character={char}
+            isNew={false}
+          />
+        ))}
       </span>
     )
   }
@@ -92,9 +100,7 @@ export function AnimatedWord({
   return (
     <span
       ref={wordRef}
-      style={{
-        display: 'inline',
-      }}
+      className={`animated-word ${shouldShake ? 'word-protected-shake' : ''}`}
     >
       {word.characters.map((char) => (
         <AnimatedCharacter

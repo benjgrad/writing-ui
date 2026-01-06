@@ -14,6 +14,7 @@ export interface Word {
   characters: Character[]
   startedAt: number
   completedAt: number | null
+  visualRowId: string // Permanent row assignment - words never change rows
 }
 
 export interface Line {
@@ -25,30 +26,34 @@ interface CharacterBufferState {
   lines: Line[]
   currentLineIndex: number
   currentWordIndex: number
+  currentVisualRowId: string // Tracks current visual row for new input
 }
 
-function createEmptyWord(): Word {
+function createEmptyWord(visualRowId: string): Word {
   return {
     id: uuidv4(),
     characters: [],
     startedAt: Date.now(),
     completedAt: null,
+    visualRowId,
   }
 }
 
-function createEmptyLine(): Line {
+function createEmptyLine(visualRowId: string): Line {
   return {
     id: uuidv4(),
-    words: [createEmptyWord()],
+    words: [createEmptyWord(visualRowId)],
   }
 }
 
 export function useCharacterBuffer() {
   const [state, setState] = useState<CharacterBufferState>(() => {
+    const initialVisualRowId = uuidv4()
     return {
-      lines: [createEmptyLine()],
+      lines: [createEmptyLine(initialVisualRowId)],
       currentLineIndex: 0,
       currentWordIndex: 0,
+      currentVisualRowId: initialVisualRowId,
     }
   })
 
@@ -59,6 +64,10 @@ export function useCharacterBuffer() {
 
   // Track newly added character IDs for animation
   const [recentCharIds, setRecentCharIds] = useState<Set<string>>(new Set())
+
+  // Track when deletion is blocked (for shake feedback)
+  const [deletionBlocked, setDeletionBlocked] = useState(false)
+  const deletionBlockedTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const addCharacter = useCallback((char: string) => {
     setState((prev) => {
@@ -84,8 +93,8 @@ export function useCharacterBuffer() {
           deletedCharCountRef.current = 0
           lastCompletedWordIdRef.current = currentWord.id
 
-          // Start new word
-          currentLine.words.push(createEmptyWord())
+          // Start new word (use current visual row)
+          currentLine.words.push(createEmptyWord(prev.currentVisualRowId))
           currentWordIndex = currentLine.words.length - 1
 
           // Track for animation
@@ -122,6 +131,7 @@ export function useCharacterBuffer() {
         lines: newLines,
         currentLineIndex,
         currentWordIndex,
+        currentVisualRowId: prev.currentVisualRowId,
       }
     })
   }, [])
@@ -139,38 +149,44 @@ export function useCharacterBuffer() {
         lastCompletedWordIdRef.current = currentWord.id
       }
 
-      // Add new line
-      newLines.push(createEmptyLine())
+      // Add new line with a new visual row
+      const newVisualRowId = uuidv4()
+      newLines.push(createEmptyLine(newVisualRowId))
 
       return {
         lines: newLines,
         currentLineIndex: newLines.length - 1,
         currentWordIndex: 0,
+        currentVisualRowId: newVisualRowId,
       }
     })
   }, [])
 
-  // Calculate max deletable characters (last 2 complete words + current word)
+  // Calculate max deletable characters (current word + last 2 complete words)
   const getMaxDeletableChars = useCallback((lines: Line[], currentLineIndex: number, currentWordIndex: number): number => {
     let charCount = 0
     let completeWordsFound = 0
-    const MAX_WORDS = 2
+    const MAX_COMPLETE_WORDS = 2
 
     // Start from current position and walk backwards
-    for (let li = currentLineIndex; li >= 0 && completeWordsFound <= MAX_WORDS; li--) {
+    for (let li = currentLineIndex; li >= 0; li--) {
       const line = lines[li]
       const startWi = li === currentLineIndex ? currentWordIndex : line.words.length - 1
 
-      for (let wi = startWi; wi >= 0 && completeWordsFound <= MAX_WORDS; wi--) {
+      for (let wi = startWi; wi >= 0; wi--) {
         const word = line.words[wi]
-        charCount += word.characters.length
 
-        if (word.completedAt !== null) {
-          completeWordsFound++
-          if (completeWordsFound > MAX_WORDS) {
-            // Subtract this word's chars - we've gone too far
-            charCount -= word.characters.length
-            break
+        // Always include current incomplete word
+        if (word.completedAt === null) {
+          charCount += word.characters.length
+        } else {
+          // This is a complete word
+          if (completeWordsFound < MAX_COMPLETE_WORDS) {
+            charCount += word.characters.length
+            completeWordsFound++
+          } else {
+            // We've reached the limit - stop here
+            return charCount
           }
         }
       }
@@ -183,23 +199,35 @@ export function useCharacterBuffer() {
     setState((prev) => {
       const maxDeletable = getMaxDeletableChars(prev.lines, prev.currentLineIndex, prev.currentWordIndex)
 
-      // Count total characters from current position backwards
-      let totalChars = 0
+      // If nothing is deletable, return early
+      if (maxDeletable <= 0) return prev
+
+      // Count total characters that exist in the deletable window
+      let charsInWindow = 0
+      let completeWordsInWindow = 0
       for (let li = prev.currentLineIndex; li >= 0; li--) {
         const line = prev.lines[li]
         const startWi = li === prev.currentLineIndex ? prev.currentWordIndex : line.words.length - 1
         for (let wi = startWi; wi >= 0; wi--) {
-          totalChars += line.words[wi].characters.length
+          const word = line.words[wi]
+          if (word.completedAt === null) {
+            charsInWindow += word.characters.length
+          } else if (completeWordsInWindow < 2) {
+            charsInWindow += word.characters.length
+            completeWordsInWindow++
+          }
         }
       }
 
-      // Check if we've already deleted up to the limit
-      if (totalChars <= 0) return prev
-
-      // Check the deletion limit - if we'd be deleting beyond 2 words back, stop
-      const charsAfterDelete = totalChars - 1
-      if (maxDeletable <= 0 || (totalChars - maxDeletable) >= charsAfterDelete) {
-        // We're at the limit
+      // If there are no characters in the deletable window, trigger shake and return
+      if (charsInWindow <= 0) {
+        setDeletionBlocked(true)
+        if (deletionBlockedTimeoutRef.current) {
+          clearTimeout(deletionBlockedTimeoutRef.current)
+        }
+        deletionBlockedTimeoutRef.current = setTimeout(() => {
+          setDeletionBlocked(false)
+        }, 300)
         return prev
       }
 
@@ -252,6 +280,7 @@ export function useCharacterBuffer() {
         lines: newLines,
         currentLineIndex,
         currentWordIndex,
+        currentVisualRowId: prev.currentVisualRowId,
       }
     })
   }, [getMaxDeletableChars])
@@ -277,15 +306,49 @@ export function useCharacterBuffer() {
     )
   }, [state.lines])
 
+  // Start a new visual row (called when fading starts on current line)
+  const startNewVisualRow = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      currentVisualRowId: uuidv4(),
+    }))
+  }, [])
+
+  // Calculate protected word IDs (those beyond 2-word limit that can't be deleted)
+  const protectedWordIds = useMemo(() => {
+    const protectedIds = new Set<string>()
+    let completeWordsFound = 0
+
+    for (let li = state.currentLineIndex; li >= 0; li--) {
+      const line = state.lines[li]
+      const startWi = li === state.currentLineIndex ? state.currentWordIndex : line.words.length - 1
+
+      for (let wi = startWi; wi >= 0; wi--) {
+        const word = line.words[wi]
+        if (word.completedAt !== null) {
+          if (completeWordsFound >= 2) {
+            protectedIds.add(word.id)
+          }
+          completeWordsFound++
+        }
+      }
+    }
+    return protectedIds
+  }, [state.lines, state.currentLineIndex, state.currentWordIndex])
+
   return {
     lines: state.lines,
     currentLineIndex: state.currentLineIndex,
     currentWordIndex: state.currentWordIndex,
+    currentVisualRowId: state.currentVisualRowId,
     addCharacter,
     addNewLine,
     deleteCharacter,
+    startNewVisualRow,
     fullContent,
     allWords,
     recentCharIds,
+    deletionBlocked,
+    protectedWordIds,
   }
 }

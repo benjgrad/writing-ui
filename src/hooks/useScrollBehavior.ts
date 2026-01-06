@@ -23,9 +23,10 @@ export function useScrollBehavior({
   const [currentZone, setCurrentZone] = useState<ScrollZone>('editor')
 
   // Opacity values for transitions
+  // History starts visible if there's content to show
   const [promptOpacity, setPromptOpacity] = useState(1)
   const [editorOpacity, setEditorOpacity] = useState(1)
-  const [historyOpacity, setHistoryOpacity] = useState(0)
+  const [historyOpacity, setHistoryOpacity] = useState(hasHistory ? 0.9 : 0)
 
   // Track if we're programmatically scrolling (to avoid triggering zone changes)
   const isAutoScrolling = useRef(false)
@@ -33,10 +34,13 @@ export function useScrollBehavior({
   // Reference to the history zone height
   const historyHeightRef = useRef(0)
 
+  // Track if we've done initial scroll setup
+  const initialScrollDone = useRef(false)
+
   // Initialize scroll position to show editor (scroll past history)
   useEffect(() => {
     const container = containerRef.current
-    if (!container || !hasHistory) return
+    if (!container || !hasHistory || initialScrollDone.current) return
 
     // Get the history section height and scroll past it
     const historySection = container.querySelector('[data-history-zone]') as HTMLElement
@@ -44,7 +48,27 @@ export function useScrollBehavior({
       historyHeightRef.current = historySection.offsetHeight
       // Scroll to just past the history, so editor is visible
       container.scrollTop = historyHeightRef.current
+      initialScrollDone.current = true
     }
+  }, [containerRef, hasHistory])
+
+  // Allow scrolling up to history even before typing starts
+  // Set initial history height when content is available
+  useEffect(() => {
+    if (!hasHistory) return
+
+    // Use a small delay to ensure the DOM has rendered
+    const timer = setTimeout(() => {
+      const container = containerRef.current
+      if (!container) return
+
+      const historySection = container.querySelector('[data-history-zone]') as HTMLElement
+      if (historySection && historyHeightRef.current === 0) {
+        historyHeightRef.current = historySection.offsetHeight
+      }
+    }, 100)
+
+    return () => clearTimeout(timer)
   }, [containerRef, hasHistory])
 
   // Calculate scroll progress (0 = at editor, 1 = fully in history)

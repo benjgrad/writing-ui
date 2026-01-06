@@ -23,6 +23,7 @@ export function DreamEditor({ userId, initialDocument }: DreamEditorProps) {
   const [showPrompt, setShowPrompt] = useState(true) // Show prompt on load
   const [aiPrompt, setAiPrompt] = useState<string | null>(null)
   const [isLoadingPrompt, setIsLoadingPrompt] = useState(false)
+  const [lastTypedAt, setLastTypedAt] = useState(0) // Track last input for idle detection
 
   const containerRef = useRef<HTMLDivElement>(null)
   const promptFetchedRef = useRef(false)
@@ -32,21 +33,39 @@ export function DreamEditor({ userId, initialDocument }: DreamEditorProps) {
   const {
     lines,
     currentLineIndex,
+    currentVisualRowId,
     addCharacter,
     addNewLine,
     deleteCharacter,
+    startNewVisualRow,
     fullContent,
     allWords,
     recentCharIds,
+    deletionBlocked,
+    protectedWordIds,
   } = useCharacterBuffer()
+
+  // Handle first word fading on current line - switch to new visual row
+  const handleFirstWordFading = useCallback(
+    (lineId: string) => {
+      if (lineId === lines[currentLineIndex]?.id) {
+        startNewVisualRow()
+      }
+    },
+    [lines, currentLineIndex, startNewVisualRow]
+  )
 
   // Word fading (30-second timers)
   const {
     isWordFading,
     isWordFaded,
     allFaded,
-    fadedWords,
-  } = useWordFading({ words: allWords, enabled: true })
+  } = useWordFading({
+    words: allWords,
+    enabled: true,
+    lastTypedAt,
+    onFirstWordFadingOnLine: handleFirstWordFading,
+  })
 
   // Line positioning
   const { containerStyle, registerLineHeight } = useLineManager({
@@ -66,17 +85,21 @@ export function DreamEditor({ userId, initialDocument }: DreamEditorProps) {
     userId,
   })
 
-  // Get history content from faded words
+  // Get history content - combines initial document content with ALL content from current session
+  // (both faded and non-faded words, so scrolling up shows everything)
   const historyContent = useMemo(() => {
-    // For initial load, use the stored content
+    // Build content from all words (not just faded ones)
+    const allContent = fullContent
+
+    // Combine initial document content with current session content
+    if (initialDocument?.content && allContent) {
+      return initialDocument.content + allContent
+    }
     if (initialDocument?.content) {
       return initialDocument.content
     }
-    // Otherwise build from faded words
-    return fadedWords
-      .map((w) => w.characters.map((c) => c.char).join(''))
-      .join('')
-  }, [fadedWords, initialDocument?.content])
+    return allContent
+  }, [fullContent, initialDocument?.content])
 
   // Track if we have history content
   const hasHistory = Boolean(historyContent || initialDocument?.content)
@@ -108,6 +131,7 @@ export function DreamEditor({ userId, initialDocument }: DreamEditorProps) {
       }
       handleKeyboardInput()
       addCharacter(char)
+      setLastTypedAt(Date.now()) // Track for idle detection
     },
     [showPrompt, handleKeyboardInput, addCharacter]
   )
@@ -119,6 +143,7 @@ export function DreamEditor({ userId, initialDocument }: DreamEditorProps) {
     }
     handleKeyboardInput()
     deleteCharacter()
+    setLastTypedAt(Date.now()) // Track for idle detection
   }, [showPrompt, handleKeyboardInput, deleteCharacter])
 
   // Handle enter
@@ -130,6 +155,7 @@ export function DreamEditor({ userId, initialDocument }: DreamEditorProps) {
     }
     handleKeyboardInput()
     addNewLine()
+    setLastTypedAt(Date.now()) // Track for idle detection
   }, [showPrompt, handleKeyboardInput, addNewLine])
 
   // Keyboard capture
@@ -140,7 +166,18 @@ export function DreamEditor({ userId, initialDocument }: DreamEditorProps) {
     enabled: true,
   })
 
-  // Fetch AI prompt on load or when all text fades
+  // Re-show prompt when all text has faded
+  useEffect(() => {
+    const allWordsHaveFaded = allFaded && allWords.length > 0
+    const isEmptyStart = allWords.length === 0 && lines.length === 1
+
+    if ((allWordsHaveFaded || isEmptyStart) && !showPrompt) {
+      setShowPrompt(true)
+      promptFetchedRef.current = false // Allow fetching a new prompt
+    }
+  }, [allFaded, allWords.length, lines.length, showPrompt])
+
+  // Fetch AI prompt when needed
   useEffect(() => {
     const shouldFetchPrompt =
       (allFaded && allWords.length > 0) || // All text faded
@@ -173,14 +210,26 @@ export function DreamEditor({ userId, initialDocument }: DreamEditorProps) {
   // Auto-save when content changes
   useEffect(() => {
     if (fullContent.trim()) {
+      // Prepend initial document content to preserve existing text
+      const contentToSave = initialDocument?.content
+        ? initialDocument.content + fullContent
+        : fullContent
+
       const words: WordWithTimestamp[] = allWords.map((w) => ({
         id: w.id,
         word: w.characters.map((c) => c.char).join(''),
         typedAt: w.startedAt,
       }))
-      debouncedSave(fullContent, words, title)
+
+      console.log('[DreamEditor] Auto-save triggered:', {
+        initialContentLength: initialDocument?.content?.length || 0,
+        newContentLength: fullContent.length,
+        totalContentLength: contentToSave.length,
+      })
+
+      debouncedSave(contentToSave, words, title)
     }
-  }, [fullContent, allWords, title, debouncedSave])
+  }, [fullContent, allWords, title, debouncedSave, initialDocument?.content])
 
   // Handle title changes
   const handleTitleChange = useCallback(
@@ -228,16 +277,21 @@ export function DreamEditor({ userId, initialDocument }: DreamEditorProps) {
         <div
           className="editor-fade-on-scroll"
           style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
             paddingTop: historyContent ? '2rem' : '30vh',
+            paddingBottom: '30vh',
             paddingLeft: '1rem',
             paddingRight: '1rem',
             opacity: editorOpacity,
-            minHeight: '70vh',
+            minHeight: '100vh',
           }}
         >
           {/* Lines container with scroll offset */}
           <div
-            className="max-w-[700px] mx-auto line-scrolling"
+            className="w-full max-w-[700px] line-scrolling"
             style={containerStyle}
           >
             {lines.map((line, lineIndex) => (
@@ -245,9 +299,12 @@ export function DreamEditor({ userId, initialDocument }: DreamEditorProps) {
                 key={line.id}
                 line={line}
                 isCurrentLine={lineIndex === currentLineIndex}
+                currentVisualRowId={currentVisualRowId}
                 isWordFading={isWordFading}
                 isWordFaded={isWordFaded}
                 recentCharIds={recentCharIds}
+                deletionBlocked={deletionBlocked}
+                protectedWordIds={protectedWordIds}
                 onHeightChange={registerLineHeight}
               />
             ))}

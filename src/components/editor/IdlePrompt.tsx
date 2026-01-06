@@ -47,15 +47,16 @@ export function IdlePrompt({
       className={`absolute inset-0 flex items-center justify-center p-8 ${animationClass}`}
       style={{
         opacity: opacity * (isVisible ? 1 : 0),
-        pointerEvents: opacity > 0.5 ? 'auto' : 'none',
+        pointerEvents: 'none', // Allow all events to pass through
       }}
-      onClick={onDismiss}
     >
       <div
-        className="max-w-2xl text-center"
+        className="max-w-2xl text-center cursor-pointer"
         style={{
           fontFamily: 'var(--font-serif), Georgia, serif',
+          pointerEvents: 'none', // Don't capture any events - let scroll pass through
         }}
+        onClick={onDismiss}
       >
         {isLoading ? (
           <div className="flex items-center justify-center gap-2">
