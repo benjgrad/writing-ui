@@ -1,6 +1,6 @@
 import OpenAI from 'openai'
 import type { AIProvider, ExtractedNote } from '../index'
-import { CONTINUATION_PROMPT } from '../prompts/continuation'
+import { CONTINUATION_PROMPT, type GoalContext } from '../prompts/continuation'
 import { EXTRACTION_PROMPT } from '../prompts/extraction'
 
 export class OpenAIProvider implements AIProvider {
@@ -12,8 +12,12 @@ export class OpenAIProvider implements AIProvider {
     })
   }
 
-  async generatePrompt(context: string, learningGoals?: string[]): Promise<string> {
-    const systemPrompt = CONTINUATION_PROMPT(learningGoals)
+  async generatePrompt(
+    context: string,
+    learningGoals?: string[],
+    activeGoals?: GoalContext[]
+  ): Promise<string> {
+    const systemPrompt = CONTINUATION_PROMPT(learningGoals, activeGoals)
 
     const response = await this.client.chat.completions.create({
       model: 'gpt-4o',

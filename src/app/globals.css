@@ -247,3 +247,188 @@ body {
 .word-protected-shake {
   animation: word-shake 300ms ease-out;
 }
+
+/* ============================================
+   Momentum Engine Goal Styles
+   Design: "Zen-Modern" - minimalist, calming
+   Per Goals.md specification
+   ============================================ */
+
+/* Goal card base - large border radius, subtle shadows */
+.goal-card {
+  background: white;
+  border-radius: 24px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.03);
+  transition: all 300ms ease-out;
+}
+
+.goal-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* Momentum glow effect - intensity based on momentum level */
+.goal-card[data-momentum="5"] {
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2), 0 4px 20px rgba(16, 185, 129, 0.15);
+}
+
+.goal-card[data-momentum="4"] {
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.15), 0 4px 16px rgba(16, 185, 129, 0.1);
+}
+
+.goal-card[data-momentum="3"] {
+  /* Default - neutral */
+}
+
+.goal-card[data-momentum="2"] {
+  box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.15), 0 4px 16px rgba(251, 191, 36, 0.1);
+}
+
+.goal-card[data-momentum="1"] {
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15), 0 4px 20px rgba(239, 68, 68, 0.1);
+}
+
+/* Why badge - pill-shaped emotional motivation tag */
+.why-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  color: #065f46;
+  font-style: italic;
+}
+
+/* Micro-win checkbox styling */
+.micro-win-checkbox {
+  appearance: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid #d1d5db;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 200ms ease-out;
+  flex-shrink: 0;
+}
+
+.micro-win-checkbox:hover {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.micro-win-checkbox:checked {
+  background: #10b981;
+  border-color: #10b981;
+}
+
+/* Celebration animation - confetti burst */
+@keyframes confetti-burst {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.micro-win-celebration {
+  animation: confetti-burst 600ms ease-out forwards;
+}
+
+/* Progress ring for goal completion */
+.progress-ring {
+  transform: rotate(-90deg);
+}
+
+.progress-ring__circle {
+  transition: stroke-dashoffset 500ms ease-out;
+}
+
+/* Parking lot - dormant goals styling */
+.parked-goal {
+  opacity: 0.6;
+  filter: grayscale(30%);
+  transition: all 300ms ease-out;
+}
+
+.parked-goal:hover {
+  opacity: 0.9;
+  filter: grayscale(0%);
+}
+
+/* Momentum slider track */
+.momentum-slider {
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(
+    to right,
+    #ef4444 0%,
+    #fbbf24 25%,
+    #a3a3a3 50%,
+    #34d399 75%,
+    #10b981 100%
+  );
+  outline: none;
+}
+
+.momentum-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid #1e293b;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 150ms ease-out;
+}
+
+.momentum-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+/* Gatekeeper modal - trade-off overlay */
+.gatekeeper-overlay {
+  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* Why drilling chat bubble */
+.drilling-bubble {
+  background: #e2e8f0;
+  color: #1e293b;
+  border-radius: 16px 16px 16px 4px;
+  padding: 1rem 1.25rem;
+  max-width: 80%;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.drilling-bubble-user {
+  background: #4f46e5;
+  color: white;
+  border-radius: 16px 16px 4px 16px;
+  margin-left: auto;
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);
+}
+
+/* Goal colors - Momentum Engine palette */
+:root {
+  --goal-bg: #f8fafc;
+  --goal-text: #1e293b;
+  --goal-success: #10b981;
+  --goal-primary: #6366f1;
+  --goal-warning: #fbbf24;
+  --goal-danger: #ef4444;
+}

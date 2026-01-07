@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getAIProvider } from '@/lib/ai'
+import type { GoalContext } from '@/lib/ai/prompts/continuation'
 
 export async function POST(request: Request) {
   try {
@@ -17,7 +18,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Context is required' }, { status: 400 })
     }
 
-    // Get user's learning goals if available
+    // Get user's learning goals if available (legacy)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: profile } = await (supabase as any)
       .from('profiles')
@@ -25,10 +26,41 @@ export async function POST(request: Request) {
       .eq('id', user.id)
       .single()
 
+    // Get user's active goals from Momentum Engine (new system)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: goals } = await (supabase as any)
+      .from('goals')
+      .select(`
+        title,
+        why_root,
+        momentum,
+        micro_wins!inner (
+          description,
+          is_current
+        )
+      `)
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .order('position', { ascending: true })
+
+    // Transform goals to GoalContext format
+    const activeGoals: GoalContext[] = (goals || []).map((g: {
+      title: string
+      why_root: string | null
+      momentum: number
+      micro_wins: Array<{ description: string; is_current: boolean }>
+    }) => ({
+      title: g.title,
+      why_root: g.why_root,
+      momentum: g.momentum,
+      current_micro_win: g.micro_wins?.find((mw: { is_current: boolean }) => mw.is_current)?.description || null
+    }))
+
     const provider = getAIProvider()
     const prompt = await provider.generatePrompt(
       context,
-      profile?.learning_goals || undefined
+      profile?.learning_goals || undefined,
+      activeGoals.length > 0 ? activeGoals : undefined
     )
 
     // Optionally log prompt history

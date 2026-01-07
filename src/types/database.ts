@@ -238,6 +238,70 @@ export type Database = {
           created_at?: string
         }
       }
+      goals: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          why_root: string | null
+          status: 'active' | 'parked' | 'completed' | 'archived'
+          momentum: number
+          position: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          why_root?: string | null
+          status?: 'active' | 'parked' | 'completed' | 'archived'
+          momentum?: number
+          position?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          why_root?: string | null
+          status?: 'active' | 'parked' | 'completed' | 'archived'
+          momentum?: number
+          position?: number
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      micro_wins: {
+        Row: {
+          id: string
+          goal_id: string
+          description: string
+          is_current: boolean
+          completed_at: string | null
+          position: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          goal_id: string
+          description: string
+          is_current?: boolean
+          completed_at?: string | null
+          position?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          goal_id?: string
+          description?: string
+          is_current?: boolean
+          completed_at?: string | null
+          position?: number
+          created_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
