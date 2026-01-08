@@ -1,26 +1,30 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useGoalCoaching, type ChatMessage, type GoalData } from '@/hooks/useGoalCoaching'
 import type { CoachingStage } from '@/lib/ai/prompts/goal-coaching'
+import type { CoachingSession } from '@/types/goal'
 
 interface GoalCoachProps {
   isOpen: boolean
   onClose: () => void
-  onGoalCreated: (goalData: GoalData) => void
+  onGoalCreated: (goalData: GoalData, sessionId: string | null) => void
+  existingSession?: CoachingSession
+  viewOnly?: boolean
+  onGoalUpdated?: () => void // Called when an existing goal is updated via coaching
 }
 
 const stageLabels: Record<CoachingStage, string> = {
   welcome: 'Getting started',
   goal_discovery: 'Discovering your goal',
-  goal_refinement: 'Refining your goal',
   why_drilling: 'Finding your why',
   micro_win: 'Planning first step',
   confirmation: 'Ready to commit',
-  complete: 'Goal created!'
+  complete: 'Goal created!',
+  continuation: 'Updating your goal'
 }
 
-export function GoalCoach({ isOpen, onClose, onGoalCreated }: GoalCoachProps) {
+export function GoalCoach({ isOpen, onClose, onGoalCreated, existingSession, viewOnly = false, onGoalUpdated }: GoalCoachProps) {
   const {
     messages,
     stage,
@@ -28,23 +32,40 @@ export function GoalCoach({ isOpen, onClose, onGoalCreated }: GoalCoachProps) {
     isLoading,
     error,
     isComplete,
+    sessionId,
     sendMessage,
     startConversation,
     reset
-  } = useGoalCoaching()
+  } = useGoalCoaching({ existingSession })
 
   const [input, setInput] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const hasStartedRef = useRef(false)
 
-  // Start conversation when opened (only once)
+  // Auto-resize textarea
+  const adjustTextareaHeight = useCallback(() => {
+    const textarea = textareaRef.current
+    if (textarea) {
+      textarea.style.height = 'auto'
+      textarea.style.height = `${Math.min(textarea.scrollHeight, 150)}px`
+    }
+  }, [])
+
+  // Start conversation when opened (only once, and not for existing sessions)
   useEffect(() => {
-    if (isOpen && !hasStartedRef.current) {
+    if (isOpen && !hasStartedRef.current && !existingSession) {
       hasStartedRef.current = true
       startConversation()
     }
-  }, [isOpen, startConversation])
+  }, [isOpen, startConversation, existingSession])
+
+  // Mark as started if we have an existing session
+  useEffect(() => {
+    if (existingSession) {
+      hasStartedRef.current = true
+    }
+  }, [existingSession])
 
   // Scroll to bottom on new messages
   useEffect(() => {
@@ -53,29 +74,48 @@ export function GoalCoach({ isOpen, onClose, onGoalCreated }: GoalCoachProps) {
 
   // Focus input after loading
   useEffect(() => {
-    if (!isLoading && isOpen) {
-      inputRef.current?.focus()
+    if (!isLoading && isOpen && !viewOnly) {
+      textareaRef.current?.focus()
     }
-  }, [isLoading, isOpen])
+  }, [isLoading, isOpen, viewOnly])
 
   // Handle completion
   useEffect(() => {
-    if (isComplete && goalData.title) {
+    if (isComplete && goalData.title && !viewOnly) {
       // Wait a moment for user to see the final message
       const timer = setTimeout(() => {
-        onGoalCreated(goalData as GoalData)
+        onGoalCreated(goalData as GoalData, sessionId)
       }, 2500)
       return () => clearTimeout(timer)
     }
-  }, [isComplete, goalData, onGoalCreated])
+  }, [isComplete, goalData, onGoalCreated, sessionId, viewOnly])
+
+  // Notify parent when goal is updated via continuation
+  useEffect(() => {
+    const lastMessage = messages[messages.length - 1]
+    if (lastMessage?.updateInfo && onGoalUpdated) {
+      onGoalUpdated()
+    }
+  }, [messages, onGoalUpdated])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!input.trim() || isLoading) return
+    if (!input.trim() || isLoading || viewOnly) return
 
     const message = input.trim()
     setInput('')
+    // Reset textarea height
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'
+    }
     await sendMessage(message)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSubmit(e)
+    }
   }
 
   const handleClose = () => {
@@ -101,7 +141,7 @@ export function GoalCoach({ isOpen, onClose, onGoalCreated }: GoalCoachProps) {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-bold text-white">
-                Goal Coach
+                {existingSession ? 'Continue Coaching' : 'Goal Coach'}
               </h2>
               <p className="text-sm text-white/80">
                 {stageLabels[stage]}
@@ -212,7 +252,7 @@ export function GoalCoach({ isOpen, onClose, onGoalCreated }: GoalCoachProps) {
           )}
 
           {/* Completion celebration */}
-          {isComplete && (
+          {isComplete && !viewOnly && (
             <div className="text-center py-4">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#dcfce7] text-[#15803d] text-sm font-semibold border border-[#86efac]">
                 <svg
@@ -237,23 +277,39 @@ export function GoalCoach({ isOpen, onClose, onGoalCreated }: GoalCoachProps) {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input */}
-        {!isComplete && (
-          <form onSubmit={handleSubmit} className="flex-shrink-0 p-4 border-t border-[#e2e8f0] bg-[#f8fafc]">
-            <div className="flex gap-2">
-              <input
-                ref={inputRef}
-                type="text"
+        {/* Input - auto-growing textarea */}
+        {/* Show input: 1) when not complete, OR 2) when continuing an existing session */}
+        {(!isComplete || existingSession) && !viewOnly && (
+          <form onSubmit={handleSubmit} className="flex-shrink-0 border-t border-[#e2e8f0] bg-[#f8fafc]">
+            {/* Hint for continuing existing sessions */}
+            {existingSession && isComplete && (
+              <div className="px-4 py-2 bg-[#f0fdf4] border-b border-[#86efac]">
+                <p className="text-xs text-[#15803d] text-center">
+                  Update your goal: change steps, motivation, or ask for coaching advice
+                </p>
+              </div>
+            )}
+            <div className="flex gap-2 items-end p-4">
+              <textarea
+                ref={textareaRef}
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Type your response..."
+                onChange={(e) => {
+                  setInput(e.target.value)
+                  adjustTextareaHeight()
+                }}
+                onKeyDown={handleKeyDown}
+                placeholder={existingSession && isComplete
+                  ? "Update your motivation, add a new step, or ask for advice..."
+                  : "Type your response..."}
                 disabled={isLoading}
-                className="flex-1 px-4 py-3 rounded-xl border-2 border-[#e2e8f0] focus:border-[#6366f1] focus:outline-none transition-colors disabled:opacity-50 text-[#1e293b] placeholder:text-[#94a3b8]"
+                rows={1}
+                className="flex-1 px-4 py-3 rounded-xl border-2 border-[#e2e8f0] focus:border-[#6366f1] focus:outline-none transition-colors disabled:opacity-50 text-[#1e293b] placeholder:text-[#94a3b8] resize-none overflow-hidden min-h-[48px] max-h-[150px]"
+                style={{ height: 'auto' }}
               />
               <button
                 type="submit"
                 disabled={!input.trim() || isLoading}
-                className="px-4 py-3 rounded-xl bg-[#6366f1] text-white hover:bg-[#4f46e5] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-3 rounded-xl bg-[#6366f1] text-white hover:bg-[#4f46e5] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0 h-[48px]"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -271,7 +327,20 @@ export function GoalCoach({ isOpen, onClose, onGoalCreated }: GoalCoachProps) {
                 </svg>
               </button>
             </div>
+            <p className="text-xs text-[#94a3b8] px-4 pb-2">
+              Press Enter to send, Shift+Enter for new line
+            </p>
           </form>
+        )}
+
+
+        {/* View-only footer */}
+        {viewOnly && (
+          <div className="flex-shrink-0 p-4 border-t border-[#e2e8f0] bg-[#f8fafc]">
+            <p className="text-sm text-[#64748b] text-center">
+              This is a past coaching session
+            </p>
+          </div>
         )}
       </div>
 
@@ -296,18 +365,48 @@ export function GoalCoach({ isOpen, onClose, onGoalCreated }: GoalCoachProps) {
 function MessageBubble({ message }: { message: ChatMessage }) {
   const isUser = message.role === 'user'
 
+  // Labels for update types
+  const updateLabels: Record<string, string> = {
+    goal: 'Goal updated',
+    why: 'Motivation updated',
+    step: 'Next step updated',
+    notes: 'Notes updated'
+  }
+
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-      <div
-        className={`max-w-[80%] px-4 py-3 ${
-          isUser
-            ? 'bg-[#6366f1] text-white rounded-2xl rounded-br-md'
-            : 'bg-[#f1f5f9] text-[#1e293b] rounded-2xl rounded-bl-md'
-        }`}
-      >
-        <p className="text-sm leading-relaxed whitespace-pre-wrap">
-          {message.content}
-        </p>
+      <div className="max-w-[80%]">
+        {/* Update indicator */}
+        {message.updateInfo && (
+          <div className="mb-1.5 flex items-center gap-1.5 text-xs text-[#10b981]">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+            <span className="font-medium">{updateLabels[message.updateInfo.type]}</span>
+          </div>
+        )}
+        <div
+          className={`px-4 py-3 ${
+            isUser
+              ? 'bg-[#6366f1] text-white rounded-2xl rounded-br-md'
+              : 'bg-[#f1f5f9] text-[#1e293b] rounded-2xl rounded-bl-md'
+          }`}
+        >
+          <p className="text-sm leading-relaxed whitespace-pre-wrap">
+            {message.content}
+          </p>
+        </div>
       </div>
     </div>
   )

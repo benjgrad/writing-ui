@@ -1,0 +1,1194 @@
+{
+  "collectedAt": "2026-01-08T02:09:29.555Z",
+  "totalLogs": 149,
+  "errorCount": 4,
+  "warnCount": 0,
+  "logs": [
+    {
+      "level": "log",
+      "message": "[DOM] Input elements should have autocomplete attributes (suggested: \"current-password\"): (More info: https://goo.gl/9p2vKq) %o",
+      "source": "http://localhost:3000/login",
+      "url": "http://localhost:3000/login",
+      "timestamp": "2026-01-08T02:08:51.821Z"
+    },
+    {
+      "level": "info",
+      "message": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:08:51.874Z"
+    },
+    {
+      "level": "log",
+      "message": "[HMR] connected",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:08:51.973Z"
+    },
+    {
+      "level": "log",
+      "message": "[Fast Refresh] rebuilding",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:08:55.911Z"
+    },
+    {
+      "level": "log",
+      "message": "[Fast Refresh] done in 194ms",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:08:56.005Z"
+    },
+    {
+      "level": "error",
+      "message": "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+      "source": "http://localhost:3000/api/ai/prompt",
+      "url": "http://localhost:3000/api/ai/prompt",
+      "timestamp": "2026-01-08T02:08:56.117Z"
+    },
+    {
+      "level": "info",
+      "message": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:08:57.092Z"
+    },
+    {
+      "level": "log",
+      "message": "[HMR] connected",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:08:57.105Z"
+    },
+    {
+      "level": "info",
+      "message": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:00.739Z"
+    },
+    {
+      "level": "log",
+      "message": "[HMR] connected",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:00.751Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalCoach] Completion check: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:01.071Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalCoach] Completion check: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:01.072Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] startConversation called, isStarted: false",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:03.829Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] Sending initial welcome request...",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:03.829Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] sendMessage called: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:03.830Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalCoach] Completion check: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:03.834Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalCoach] Completion check: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:03.847Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalCoach] Completion check: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:05.478Z"
+    },
+    {
+      "level": "error",
+      "message": "Request Failed: http://localhost:3000/api/ai/coach-goal - net::ERR_ABORTED",
+      "source": "network",
+      "timestamp": "2026-01-08T02:09:06.116Z"
+    },
+    {
+      "level": "info",
+      "message": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:06.195Z"
+    },
+    {
+      "level": "log",
+      "message": "[HMR] connected",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:06.212Z"
+    },
+    {
+      "level": "error",
+      "message": "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+      "source": "http://localhost:3000/api/ai/prompt",
+      "url": "http://localhost:3000/api/ai/prompt",
+      "timestamp": "2026-01-08T02:09:06.394Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.027Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.062Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.099Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.135Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.172Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.208Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.244Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.281Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.317Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.354Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.391Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.429Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.464Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.500Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.537Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.574Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.610Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.647Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.683Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.722Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.759Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.796Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.833Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.871Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.907Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.942Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:09.976Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.011Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.048Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.085Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.122Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.161Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.199Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.236Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.274Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.311Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.349Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.388Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.426Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.466Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.505Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.544Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.583Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.622Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.661Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.699Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.734Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.769Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.805Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.840Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.875Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.910Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.945Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:10.980Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.014Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.053Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.091Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.131Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.170Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.209Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.248Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.288Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.327Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.367Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.407Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.447Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.487Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.527Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.565Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.600Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.636Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.671Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.707Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.742Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.776Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.810Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.845Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.878Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.912Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.948Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:11.982Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:12.017Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:12.064Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:12.108Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:12.150Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:12.197Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:12.236Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:12.276Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:12.320Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:12.363Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:13.528Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:13.590Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:13.653Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:13.718Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:13.784Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:13.850Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:13.918Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:13.984Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:14.051Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:14.120Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:14.188Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:14.266Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:14.329Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:14.391Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:14.455Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:14.518Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:14.582Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:14.647Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:14.711Z"
+    },
+    {
+      "level": "log",
+      "message": "[DreamEditor] Auto-save triggered: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:14.772Z"
+    },
+    {
+      "level": "info",
+      "message": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:15.640Z"
+    },
+    {
+      "level": "log",
+      "message": "[HMR] connected",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:15.652Z"
+    },
+    {
+      "level": "info",
+      "message": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:18.813Z"
+    },
+    {
+      "level": "log",
+      "message": "[HMR] connected",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:18.825Z"
+    },
+    {
+      "level": "info",
+      "message": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:20.654Z"
+    },
+    {
+      "level": "log",
+      "message": "[HMR] connected",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:20.668Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalCoach] Completion check: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:20.845Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalCoach] Completion check: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:20.845Z"
+    },
+    {
+      "level": "info",
+      "message": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:22.800Z"
+    },
+    {
+      "level": "log",
+      "message": "[HMR] connected",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:22.814Z"
+    },
+    {
+      "level": "error",
+      "message": "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+      "source": "http://localhost:3000/api/ai/prompt",
+      "url": "http://localhost:3000/api/ai/prompt",
+      "timestamp": "2026-01-08T02:09:22.897Z"
+    },
+    {
+      "level": "info",
+      "message": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:24.598Z"
+    },
+    {
+      "level": "log",
+      "message": "[HMR] connected",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:24.613Z"
+    },
+    {
+      "level": "info",
+      "message": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:26.712Z"
+    },
+    {
+      "level": "log",
+      "message": "[HMR] connected",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:26.724Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalCoach] Completion check: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:26.848Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalCoach] Completion check: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T02:09:26.848Z"
+    }
+  ]
+}

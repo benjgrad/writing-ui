@@ -12,6 +12,7 @@ interface ActiveTrioProps {
   onMoveToParking: (goalId: string) => Promise<void>
   onArchive: (goalId: string) => Promise<void>
   onAddGoal: () => void
+  onViewCoaching?: (goalId: string) => void
 }
 
 export function ActiveTrio({
@@ -22,7 +23,8 @@ export function ActiveTrio({
   onUpdateGoal,
   onMoveToParking,
   onArchive,
-  onAddGoal
+  onAddGoal,
+  onViewCoaching
 }: ActiveTrioProps) {
   // Ensure we only show max 3 active goals
   const activeGoals = goals.slice(0, 3)
@@ -50,6 +52,7 @@ export function ActiveTrio({
             onUpdateGoal={(updates) => onUpdateGoal(goal.id, updates)}
             onMoveToParking={() => onMoveToParking(goal.id)}
             onArchive={() => onArchive(goal.id)}
+            onViewCoaching={onViewCoaching ? () => onViewCoaching(goal.id) : undefined}
           />
         ))}
 

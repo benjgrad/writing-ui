@@ -9,7 +9,12 @@
     "lint": "eslint",
     "test:e2e": "SKIP_AUTH=true playwright test",
     "test:e2e:ui": "SKIP_AUTH=true playwright test --ui",
-    "test:e2e:headed": "SKIP_AUTH=true playwright test --headed"
+    "test:e2e:headed": "SKIP_AUTH=true playwright test --headed",
+    "test:ai": "SKIP_AUTH=true npx ts-node tests/ai-agent/run-tests.ts",
+    "test:ai:headed": "SKIP_AUTH=true HEADLESS=false npx ts-node tests/ai-agent/run-tests.ts --headed",
+    "test:ai:headless": "SKIP_AUTH=true HEADLESS=true npx ts-node tests/ai-agent/run-tests.ts --headless",
+    "test:ux-review": "npx tsx tests/ai-agent/ux-review-test.ts",
+    "chrome:debug": "bash scripts/start-chrome-debug.sh"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
@@ -27,12 +32,17 @@
     "@tailwindcss/postcss": "^4",
     "@types/d3": "^7.4.3",
     "@types/node": "^20",
+    "@types/puppeteer": "^5.4.7",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/uuid": "^10.0.0",
+    "dotenv": "^17.2.3",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
+    "puppeteer": "^24.34.0",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

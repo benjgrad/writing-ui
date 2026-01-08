@@ -43,15 +43,19 @@ export async function GET() {
 
 // POST /api/goals - Create a new goal
 export async function POST(request: Request) {
+  console.log('[/api/goals POST] Creating goal...')
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
+      console.log('[/api/goals POST] No user, returning 401')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { title, why_root, status = 'active' } = await request.json()
+    const body = await request.json()
+    const { title, why_root, status = 'active' } = body
+    console.log('[/api/goals POST] Request body:', { title, why_root, status })
 
     if (!title || typeof title !== 'string') {
       return NextResponse.json({ error: 'Title is required' }, { status: 400 })
@@ -79,6 +83,7 @@ export async function POST(request: Request) {
       .single()
 
     if (error) {
+      console.error('[/api/goals POST] Supabase error:', error)
       // Check for Rule of Three violation
       if (error.message?.includes('more than 3 active goals')) {
         return NextResponse.json(
@@ -89,6 +94,7 @@ export async function POST(request: Request) {
       throw error
     }
 
+    console.log('[/api/goals POST] Goal created successfully:', goal)
     return NextResponse.json({ goal })
   } catch (error) {
     console.error('Error creating goal:', error)

@@ -1,0 +1,128 @@
+{
+  "testRun": "2026-01-08T01-28-05",
+  "duration": 44610,
+  "success": true,
+  "goalCreated": true,
+  "goalData": {
+    "title": "<goal title: Improve focus and concentration at work>",
+    "why": "“To feel capable and present instead of scattered and overwhelmed”",
+    "microWin": "Do one 10-minute focus session with no distractions tomorrow morning"
+  },
+  "stagesCompleted": [
+    "welcome",
+    "goal_discovery",
+    "why_drilling",
+    "micro_win",
+    "confirmation",
+    "complete"
+  ],
+  "conversation": [
+    {
+      "turn": 1,
+      "stage": "welcome",
+      "role": "coach",
+      "message": "Hi there! I'm excited to help you work on a new goal. What would you like to focus on achieving?",
+      "timestamp": "2026-01-08T01:28:13.543Z"
+    },
+    {
+      "turn": 1,
+      "stage": "welcome",
+      "role": "user",
+      "message": "I want to improve my focus and concentration at work",
+      "timestamp": "2026-01-08T01:28:16.641Z"
+    },
+    {
+      "turn": 2,
+      "stage": "welcome",
+      "role": "coach",
+      "message": "Great! I've captured your goal to improve your focus and concentration at work - this is such an important skill for productivity and job satisfaction.",
+      "timestamp": "2026-01-08T01:28:19.732Z"
+    },
+    {
+      "turn": 2,
+      "stage": "goal_discovery",
+      "role": "user",
+      "message": "I'd like to be able to focus deeply for at least 2 hours each day without distractions",
+      "timestamp": "2026-01-08T01:28:24.513Z"
+    },
+    {
+      "turn": 3,
+      "stage": "goal_discovery",
+      "role": "coach",
+      "message": "That sounds like a concrete and achievable target! I can imagine how satisfying those focused work sessions would be.\n\nLet me ask you this - why does having that deep focus matter to you? What would be different about how you feel if you could consistently focus for those 2-hour stretches?",
+      "timestamp": "2026-01-08T01:28:28.812Z"
+    },
+    {
+      "turn": 3,
+      "stage": "why_drilling",
+      "role": "user",
+      "message": "Because I want to feel capable and present instead of scattered and overwhelmed",
+      "timestamp": "2026-01-08T01:28:33.230Z"
+    },
+    {
+      "turn": 4,
+      "stage": "why_drilling",
+      "role": "coach",
+      "message": "I can see how important it is for you to shift from that overwhelming, scattered feeling to one of calm capability and presence.",
+      "timestamp": "2026-01-08T01:28:37.036Z"
+    },
+    {
+      "turn": 4,
+      "stage": "micro_win",
+      "role": "user",
+      "message": "I'll do a 10-minute focus session with no distractions tomorrow morning",
+      "timestamp": "2026-01-08T01:28:41.367Z"
+    },
+    {
+      "turn": 5,
+      "stage": "micro_win",
+      "role": "coach",
+      "message": "That's a perfect first step - starting small with focused time will help you build the concentration muscle you need!",
+      "timestamp": "2026-01-08T01:28:44.496Z"
+    },
+    {
+      "turn": 5,
+      "stage": "confirmation",
+      "role": "user",
+      "message": "Yes, let's do it!",
+      "timestamp": "2026-01-08T01:28:45.920Z"
+    },
+    {
+      "turn": 6,
+      "stage": "confirmation",
+      "role": "coach",
+      "message": "Perfect! Starting with just 10 minutes tomorrow morning is a smart way to build momentum toward those longer focus sessions. You've got this!",
+      "timestamp": "2026-01-08T01:28:48.746Z"
+    }
+  ],
+  "screenshots": [
+    "/Users/bengrady/code/in-progress/writing-ui/tests/ux-review/session-2026-01-08T01-28-05/screenshots/01-goals-page-initial.png",
+    "/Users/bengrady/code/in-progress/writing-ui/tests/ux-review/session-2026-01-08T01-28-05/screenshots/02-before-click-add.png",
+    "/Users/bengrady/code/in-progress/writing-ui/tests/ux-review/session-2026-01-08T01-28-05/screenshots/03-modal-opened.png",
+    "/Users/bengrady/code/in-progress/writing-ui/tests/ux-review/session-2026-01-08T01-28-05/screenshots/04-initial-coach-message.png",
+    "/Users/bengrady/code/in-progress/writing-ui/tests/ux-review/session-2026-01-08T01-28-05/screenshots/05-before-response-welcome.png",
+    "/Users/bengrady/code/in-progress/writing-ui/tests/ux-review/session-2026-01-08T01-28-05/screenshots/06-after-response-welcome.png",
+    "/Users/bengrady/code/in-progress/writing-ui/tests/ux-review/session-2026-01-08T01-28-05/screenshots/06-before-response-goal_discovery.png",
+    "/Users/bengrady/code/in-progress/writing-ui/tests/ux-review/session-2026-01-08T01-28-05/screenshots/07-after-response-goal_discovery.png",
+    "/Users/bengrady/code/in-progress/writing-ui/tests/ux-review/session-2026-01-08T01-28-05/screenshots/07-before-response-why_drilling.png",
+    "/Users/bengrady/code/in-progress/writing-ui/tests/ux-review/session-2026-01-08T01-28-05/screenshots/08-after-response-why_drilling.png",
+    "/Users/bengrady/code/in-progress/writing-ui/tests/ux-review/session-2026-01-08T01-28-05/screenshots/08-before-response-micro_win.png",
+    "/Users/bengrady/code/in-progress/writing-ui/tests/ux-review/session-2026-01-08T01-28-05/screenshots/09-after-response-micro_win.png",
+    "/Users/bengrady/code/in-progress/writing-ui/tests/ux-review/session-2026-01-08T01-28-05/screenshots/09-before-response-confirmation.png",
+    "/Users/bengrady/code/in-progress/writing-ui/tests/ux-review/session-2026-01-08T01-28-05/screenshots/10-after-response-confirmation.png",
+    "/Users/bengrady/code/in-progress/writing-ui/tests/ux-review/session-2026-01-08T01-28-05/screenshots/10-completion.png",
+    "/Users/bengrady/code/in-progress/writing-ui/tests/ux-review/session-2026-01-08T01-28-05/screenshots/99-final-state.png"
+  ],
+  "consoleLog": "/Users/bengrady/code/in-progress/writing-ui/tests/ux-review/session-2026-01-08T01-28-05/console-logs.json",
+  "errors": [],
+  "observations": [
+    "Goals page loaded successfully",
+    "Goal Coach modal slides in from right with smooth animation",
+    "Goal summary card appeared showing captured goal data",
+    "Entered goal_discovery stage",
+    "Entered why_drilling stage",
+    "Entered micro_win stage",
+    "Entered confirmation stage",
+    "Goal creation completed with celebration animation"
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "collectedAt": "2026-01-08T01:45:57.181Z",
+  "totalLogs": 11,
+  "errorCount": 1,
+  "warnCount": 0,
+  "logs": [
+    {
+      "level": "log",
+      "message": "[DOM] Input elements should have autocomplete attributes (suggested: \"current-password\"): (More info: https://goo.gl/9p2vKq) %o",
+      "source": "http://localhost:3000/login",
+      "url": "http://localhost:3000/login",
+      "timestamp": "2026-01-08T01:45:48.616Z"
+    },
+    {
+      "level": "info",
+      "message": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:45:48.674Z"
+    },
+    {
+      "level": "log",
+      "message": "[HMR] connected",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:45:48.728Z"
+    },
+    {
+      "level": "error",
+      "message": "Failed to load resource: the server responded with a status of 400 ()",
+      "source": "https://eirikdrclttmtuyrqxep.supabase.co/auth/v1/token?grant_type=password",
+      "url": "https://eirikdrclttmtuyrqxep.supabase.co/auth/v1/token?grant_type=password",
+      "timestamp": "2026-01-08T01:45:51.669Z"
+    },
+    {
+      "level": "log",
+      "message": "[DOM] Input elements should have autocomplete attributes (suggested: \"current-password\"): (More info: https://goo.gl/9p2vKq) %o",
+      "source": "http://localhost:3000/login",
+      "url": "http://localhost:3000/login",
+      "timestamp": "2026-01-08T01:45:53.595Z"
+    },
+    {
+      "level": "info",
+      "message": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:45:53.635Z"
+    },
+    {
+      "level": "log",
+      "message": "[HMR] connected",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:45:53.649Z"
+    },
+    {
+      "level": "log",
+      "message": "[DOM] Input elements should have autocomplete attributes (suggested: \"new-password\"): (More info: https://goo.gl/9p2vKq) %o",
+      "source": "http://localhost:3000/signup",
+      "url": "http://localhost:3000/signup",
+      "timestamp": "2026-01-08T01:45:55.394Z"
+    },
+    {
+      "level": "log",
+      "message": "[DOM] Input elements should have autocomplete attributes (suggested: \"new-password\"): (More info: https://goo.gl/9p2vKq) %o",
+      "source": "http://localhost:3000/signup",
+      "url": "http://localhost:3000/signup",
+      "timestamp": "2026-01-08T01:45:55.394Z"
+    },
+    {
+      "level": "info",
+      "message": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:45:55.436Z"
+    },
+    {
+      "level": "log",
+      "message": "[HMR] connected",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:45:55.450Z"
+    }
+  ]
+}

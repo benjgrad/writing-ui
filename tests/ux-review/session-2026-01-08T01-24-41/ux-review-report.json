@@ -1,0 +1,20 @@
+{
+  "testRun": "2026-01-08T01-24-41",
+  "duration": 3201,
+  "success": false,
+  "goalCreated": false,
+  "goalData": {},
+  "stagesCompleted": [],
+  "conversation": [],
+  "screenshots": [
+    "/Users/bengrady/code/in-progress/writing-ui/tests/ux-review/session-2026-01-08T01-24-41/screenshots/01-goals-page-initial.png",
+    "/Users/bengrady/code/in-progress/writing-ui/tests/ux-review/session-2026-01-08T01-24-41/screenshots/error-state.png"
+  ],
+  "consoleLog": "/Users/bengrady/code/in-progress/writing-ui/tests/ux-review/session-2026-01-08T01-24-41/console-logs.json",
+  "errors": [
+    "Error: Add goal button not found on page"
+  ],
+  "observations": [
+    "Goals page loaded successfully"
+  ]
+}

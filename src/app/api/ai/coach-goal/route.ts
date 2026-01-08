@@ -65,15 +65,32 @@ export async function POST(request: Request) {
     const textBlock = response.content.find(block => block.type === 'text')
     const rawMessage = textBlock?.type === 'text' ? textBlock.text : ''
 
+    console.log('[coach-goal] Stage:', context.stage)
+    console.log('[coach-goal] Raw AI response:', rawMessage)
+
     // Parse the response for stage transitions and captured data
     const parsed = parseCoachingResponse(rawMessage)
+
+    console.log('[coach-goal] Parsed result:', {
+      message: parsed.message?.substring(0, 50) + '...',
+      goalTitle: parsed.goalTitle,
+      whyRoot: parsed.whyRoot,
+      microWin: parsed.microWin,
+      notes: parsed.notes,
+      isComplete: parsed.isComplete,
+      isUpdate: parsed.isUpdate,
+      updateType: parsed.updateType
+    })
 
     return NextResponse.json({
       message: parsed.message,
       goalTitle: parsed.goalTitle,
       whyRoot: parsed.whyRoot,
       microWin: parsed.microWin,
-      isComplete: parsed.isComplete
+      notes: parsed.notes,
+      isComplete: parsed.isComplete,
+      isUpdate: parsed.isUpdate,
+      updateType: parsed.updateType
     })
   } catch (error) {
     console.error('Goal coaching error:', error)

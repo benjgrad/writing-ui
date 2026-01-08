@@ -1,0 +1,31 @@
+{
+  "collectedAt": "2026-01-08T01:24:48.064Z",
+  "totalLogs": 3,
+  "errorCount": 0,
+  "warnCount": 0,
+  "logs": [
+    {
+      "level": "log",
+      "message": "[DOM] Input elements should have autocomplete attributes (suggested: \"current-password\"): (More info: https://goo.gl/9p2vKq) %o",
+      "source": "http://localhost:3000/login",
+      "url": "http://localhost:3000/login",
+      "timestamp": "2026-01-08T01:24:45.145Z"
+    },
+    {
+      "level": "info",
+      "message": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:24:45.211Z"
+    },
+    {
+      "level": "log",
+      "message": "[HMR] connected",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:24:45.273Z"
+    }
+  ]
+}

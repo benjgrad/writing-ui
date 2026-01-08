@@ -40,6 +40,7 @@ export function useGoals() {
     whyRoot?: string,
     status: GoalStatus = 'active'
   ): Promise<{ goal?: Goal; error?: string }> => {
+    console.log('[useGoals] createGoal called:', { title, whyRoot, status })
     try {
       const response = await fetch('/api/goals', {
         method: 'POST',
@@ -48,6 +49,7 @@ export function useGoals() {
       })
 
       const data = await response.json()
+      console.log('[useGoals] createGoal response:', { ok: response.ok, data })
 
       if (!response.ok) {
         return { error: data.error || 'Failed to create goal' }
@@ -57,6 +59,7 @@ export function useGoals() {
       setGoals(prev => [...prev, { ...data.goal, micro_wins: [], current_micro_win: null }])
       return { goal: data.goal }
     } catch (err) {
+      console.error('[useGoals] createGoal error:', err)
       return { error: err instanceof Error ? err.message : 'Failed to create goal' }
     }
   }

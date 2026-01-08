@@ -12,7 +12,7 @@ import {
 } from '@/components/goals'
 import type { GoalData } from '@/hooks/useGoalCoaching'
 import { Loading } from '@/components/ui/Loading'
-import type { GoalWithMicroWins } from '@/types/goal'
+import type { GoalWithMicroWins, CoachingSession } from '@/types/goal'
 
 export default function GoalsPage() {
   const { user, signOut } = useAuth()
@@ -34,22 +34,69 @@ export default function GoalsPage() {
   const [showGoalCoach, setShowGoalCoach] = useState(false)
   const [showGatekeeper, setShowGatekeeper] = useState(false)
   const [gatekeeperGoal, setGatekeeperGoal] = useState<GoalWithMicroWins | null>(null)
+  const [viewingSession, setViewingSession] = useState<CoachingSession | null>(null)
+  const [loadingSession, setLoadingSession] = useState(false)
+
+  // Fetch coaching session for a goal
+  const handleViewCoaching = async (goalId: string) => {
+    setLoadingSession(true)
+    try {
+      const response = await fetch(`/api/coaching-sessions?goal_id=${goalId}`)
+      if (response.ok) {
+        const data = await response.json()
+        if (data.sessions && data.sessions.length > 0) {
+          // Get the most recent session with messages
+          const sessionWithMessages = data.sessions[0]
+          // Fetch full session with messages
+          const fullResponse = await fetch(`/api/coaching-sessions/${sessionWithMessages.id}`)
+          if (fullResponse.ok) {
+            const fullData = await fullResponse.json()
+            setViewingSession(fullData.session)
+          }
+        }
+      }
+    } catch (err) {
+      console.error('[GoalsPage] Failed to fetch coaching session:', err)
+    } finally {
+      setLoadingSession(false)
+    }
+  }
 
   // Handle goal created from coach
-  const handleGoalCreated = async (goalData: GoalData) => {
+  const handleGoalCreated = async (goalData: GoalData, sessionId: string | null) => {
+    console.log('[GoalsPage] handleGoalCreated called with:', goalData, 'sessionId:', sessionId)
+
     // Determine status based on active goals count
     const status = activeGoals.length >= 3 ? 'parked' : 'active'
+    console.log('[GoalsPage] Creating goal with status:', status)
 
     // Create the goal
     const result = await createGoal(goalData.title, goalData.whyRoot, status)
+    console.log('[GoalsPage] createGoal result:', result)
 
     // If we have a micro-win, add it
     if (result.goal && goalData.microWin) {
+      console.log('[GoalsPage] Adding micro-win:', goalData.microWin)
       await addMicroWin(result.goal.id, goalData.microWin, true)
+    }
+
+    // Link the coaching session to the goal
+    if (result.goal && sessionId) {
+      console.log('[GoalsPage] Linking session to goal:', sessionId, '->', result.goal.id)
+      try {
+        await fetch(`/api/coaching-sessions/${sessionId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ goal_id: result.goal.id, is_active: false })
+        })
+      } catch (err) {
+        console.error('[GoalsPage] Failed to link session to goal:', err)
+      }
     }
 
     setShowGoalCoach(false)
     await refresh()
+    console.log('[GoalsPage] Goal creation complete')
   }
 
   // Handle momentum update
@@ -181,6 +228,7 @@ export default function GoalsPage() {
             onMoveToParking={handleMoveToParking}
             onArchive={handleArchive}
             onAddGoal={() => setShowGoalCoach(true)}
+            onViewCoaching={handleViewCoaching}
           />
         </section>
 
@@ -245,12 +293,31 @@ export default function GoalsPage() {
         )}
       </main>
 
-      {/* Goal Coach */}
+      {/* Goal Coach - New Goal */}
       <GoalCoach
         isOpen={showGoalCoach}
         onClose={() => setShowGoalCoach(false)}
         onGoalCreated={handleGoalCreated}
       />
+
+      {/* Goal Coach - Continue Session (no longer view-only) */}
+      <GoalCoach
+        isOpen={viewingSession !== null}
+        onClose={() => setViewingSession(null)}
+        onGoalCreated={handleGoalCreated}
+        existingSession={viewingSession || undefined}
+        onGoalUpdated={refresh}
+      />
+
+      {/* Loading indicator for session fetch */}
+      {loadingSession && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
+          <div className="bg-white rounded-xl p-6 shadow-xl">
+            <Loading />
+            <p className="mt-2 text-sm text-[#64748b]">Loading coaching history...</p>
+          </div>
+        </div>
+      )}
 
       <GatekeeperModal
         isOpen={showGatekeeper}

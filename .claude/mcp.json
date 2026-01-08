@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "puppeteer": {
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/puppeteer-mcp-server"],
+      "env": {
+        "PUPPETEER_HEADLESS": "false"
+      }
+    }
+  }
+}

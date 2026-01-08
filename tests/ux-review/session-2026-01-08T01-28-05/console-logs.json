@@ -1,0 +1,389 @@
+{
+  "collectedAt": "2026-01-08T01:28:50.925Z",
+  "totalLogs": 48,
+  "errorCount": 3,
+  "warnCount": 0,
+  "logs": [
+    {
+      "level": "info",
+      "message": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:06.494Z"
+    },
+    {
+      "level": "log",
+      "message": "[HMR] connected",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:06.563Z"
+    },
+    {
+      "level": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "source": "http://localhost:3000/api/goals",
+      "url": "http://localhost:3000/api/goals",
+      "timestamp": "2026-01-08T01:28:06.639Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalCoach] Completion check: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:06.640Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalCoach] Completion check: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:06.640Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalCoach] Completion check: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:06.654Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] startConversation called, isStarted: false",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:09.770Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] Sending initial welcome request...",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:09.770Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] sendMessage called: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:09.770Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalCoach] Completion check: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:09.779Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalCoach] Completion check: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:09.822Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] API response: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:12.925Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] Stage transition: welcome -> goal_discovery",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:12.925Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] Welcome complete, current stageRef: goal_discovery",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:12.926Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] sendMessage called: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:16.132Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] API response: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:19.097Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] Goal data updated: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:19.097Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] Stage transition: goal_discovery -> why_drilling",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:19.098Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalCoach] Completion check: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:19.107Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] sendMessage called: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:24.004Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] API response: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:28.155Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] sendMessage called: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:32.716Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] API response: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:36.400Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] Goal data updated: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:36.400Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] Stage transition: why_drilling -> micro_win",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:36.400Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalCoach] Completion check: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:36.408Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] sendMessage called: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:40.855Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] API response: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:43.851Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] Goal data updated: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:43.851Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] Stage transition: micro_win -> confirmation",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:43.851Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalCoach] Completion check: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:43.865Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] sendMessage called: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:45.408Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] API response: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:47.943Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] Stage transition: confirmation -> complete",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:47.943Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoalCoaching] Goal COMPLETE! Final data: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:47.943Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalCoach] Completion check: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:47.955Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalCoach] Goal is complete! Creating goal with data: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:47.955Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalCoach] Calling onGoalCreated with: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:50.457Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalsPage] handleGoalCreated called with: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:50.457Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalsPage] Creating goal with status: active",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:50.458Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoals] createGoal called: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:50.458Z"
+    },
+    {
+      "level": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "source": "http://localhost:3000/api/goals",
+      "url": "http://localhost:3000/api/goals",
+      "timestamp": "2026-01-08T01:28:50.469Z"
+    },
+    {
+      "level": "log",
+      "message": "[useGoals] createGoal response: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:50.470Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalsPage] createGoal result: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:50.470Z"
+    },
+    {
+      "level": "error",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "source": "http://localhost:3000/api/goals",
+      "url": "http://localhost:3000/api/goals",
+      "timestamp": "2026-01-08T01:28:50.481Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalsPage] Goal creation complete",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:50.481Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalCoach] Completion check: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:50.485Z"
+    },
+    {
+      "level": "log",
+      "message": "[GoalCoach] Completion check: JSHandle@object",
+      "source": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "url": "http://localhost:3000/_next/static/chunks/58fe7_next_dist_ece17efb._.js",
+      "lineNumber": 2297,
+      "timestamp": "2026-01-08T01:28:50.485Z"
+    }
+  ]
+}
