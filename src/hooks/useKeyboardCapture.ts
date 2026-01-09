@@ -19,6 +19,12 @@ export function useKeyboardCapture({
     (e: KeyboardEvent) => {
       if (!enabled) return
 
+      // If event came from our hidden textarea, let it through
+      // (the textarea's onChange will handle it for mobile)
+      if ((e.target as HTMLElement)?.tagName === 'TEXTAREA') {
+        return
+      }
+
       // Block all navigation keys
       if (
         [

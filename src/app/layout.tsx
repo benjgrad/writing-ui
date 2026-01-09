@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, EB_Garamond } from "next/font/google";
 import "./globals.css";
 
@@ -21,6 +21,13 @@ const ebGaramond = EB_Garamond({
 export const metadata: Metadata = {
   title: "Writing",
   description: "A beautiful, distraction-free writing app with fading text and AI-powered knowledge graphs",
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  interactiveWidget: 'resizes-content',
 };
 
 export default function RootLayout({

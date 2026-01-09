@@ -26,7 +26,9 @@ export function DreamEditor({ userId, initialDocument }: DreamEditorProps) {
   const [lastTypedAt, setLastTypedAt] = useState(0) // Track last input for idle detection
 
   const containerRef = useRef<HTMLDivElement>(null)
+  const hiddenInputRef = useRef<HTMLTextAreaElement>(null)
   const promptFetchedRef = useRef(false)
+  const [virtualInputValue, setVirtualInputValue] = useState('')
   const editorZoneTop = typeof window !== 'undefined' ? window.innerHeight * 0.3 : 300
 
   // Character/word/line state management
@@ -158,6 +160,52 @@ export function DreamEditor({ userId, initialDocument }: DreamEditorProps) {
     setLastTypedAt(Date.now()) // Track for idle detection
   }, [showPrompt, handleKeyboardInput, addNewLine])
 
+  // Handle textarea input (for mobile keyboard support)
+  const handleTextareaInput = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value
+    const oldValue = virtualInputValue
+
+    if (showPrompt) {
+      setShowPrompt(false)
+      promptFetchedRef.current = false
+      setAiPrompt(null)
+    }
+    handleKeyboardInput()
+
+    // Detect added or deleted characters
+    if (newValue.length > oldValue.length) {
+      const addedChars = newValue.slice(oldValue.length)
+      for (const char of addedChars) {
+        if (char === '\n') {
+          addNewLine()
+        } else {
+          addCharacter(char)
+        }
+      }
+    } else if (newValue.length < oldValue.length) {
+      const deletedCount = oldValue.length - newValue.length
+      for (let i = 0; i < deletedCount; i++) {
+        deleteCharacter()
+      }
+    }
+
+    setVirtualInputValue(newValue)
+    setLastTypedAt(Date.now())
+  }, [virtualInputValue, showPrompt, handleKeyboardInput, addCharacter, addNewLine, deleteCharacter])
+
+  // Focus hidden input when editor is tapped (for mobile)
+  const handleEditorTap = useCallback(() => {
+    hiddenInputRef.current?.focus()
+  }, [])
+
+  // Auto-focus hidden input on mount for mobile
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      hiddenInputRef.current?.focus()
+    }, 100)
+    return () => clearTimeout(timer)
+  }, [])
+
   // Keyboard capture
   useKeyboardCapture({
     onCharacter: handleCharacter,
@@ -276,6 +324,7 @@ export function DreamEditor({ userId, initialDocument }: DreamEditorProps) {
         {/* Editor zone */}
         <div
           className="editor-fade-on-scroll"
+          onClick={handleEditorTap}
           style={{
             display: 'flex',
             flexDirection: 'column',
@@ -309,6 +358,25 @@ export function DreamEditor({ userId, initialDocument }: DreamEditorProps) {
               />
             ))}
           </div>
+
+          {/* Hidden textarea for mobile keyboard support */}
+          <textarea
+            ref={hiddenInputRef}
+            value={virtualInputValue}
+            onChange={handleTextareaInput}
+            className="absolute opacity-0 w-0 h-0 overflow-hidden"
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              pointerEvents: 'none',
+              fontSize: '16px', // Prevents iOS zoom on focus
+            }}
+            autoCapitalize="off"
+            autoCorrect="off"
+            autoComplete="off"
+            spellCheck={false}
+          />
         </div>
 
         {/* Spacer to allow scrolling past the last line */}

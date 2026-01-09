@@ -135,7 +135,7 @@ export function GoalCoach({ isOpen, onClose, onGoalCreated, existingSession, vie
       />
 
       {/* Chat panel - slides in from right */}
-      <div className="relative ml-auto w-full max-w-lg h-full bg-white shadow-2xl flex flex-col animate-slide-in-right">
+      <div className="relative ml-auto w-full max-w-lg h-dvh bg-white shadow-2xl flex flex-col animate-slide-in-right">
         {/* Header */}
         <div className="flex-shrink-0 p-4 border-b border-[#e2e8f0] bg-gradient-to-r from-[#6366f1] to-[#8b5cf6]">
           <div className="flex items-center justify-between">

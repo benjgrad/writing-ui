@@ -11,6 +11,11 @@ This document tracks platform feedback, UX issues, and planned features.
 - **Backspace limitations broken**: Should be possible to backspace past the last two words. Currently blocked incorrectly.
 - **Titles of the documents cannot be set**: Users cannot set or edit document titles in the editor. Also the AI is not generating titles.
 
+### Mobile Experience
+
+- **Editor keyboard doesn't appear**: On mobile, the editor doesn't bring up the keyboard at all, making it unusable for writing.
+- **Coaching chat keyboard pushes content offscreen**: When the mobile keyboard appears in the Goal Coach chat, it pushes the chat content off the screen instead of adjusting the viewport properly.
+
 ### API Errors
 
 - **400 error on /api/ai/prompt**: Editor throws 400 Bad Request when loading AI prompts.
@@ -36,6 +41,12 @@ This document tracks platform feedback, UX issues, and planned features.
 - ~~**Can't continue coaching conversation**: Sessions were view-only, couldn't update goals/motivations through coaching.~~ **FIXED** - Removed viewOnly mode, renamed to "Continue Coaching"
 - ~~**Why badge truncation**: "Why" motivation text was cut off too short at 50 chars.~~ **FIXED** - Expanded to 80 chars + click to expand full text.
 - ~~**No notes/planning section**: Goals needed a place for medium-long term plans.~~ **FIXED** - Added expandable notes section with auto-save.
+
+### Goal Steps (Micro-Wins)
+
+- **Can't view existing steps**: No way to see all the micro-wins/steps for a goal. Only the current step is visible.
+- **Can't edit existing steps**: Users cannot edit or delete existing micro-wins from the UI.
+- **Can't manage steps via AI coaching**: The coaching continuation should allow viewing, editing, and reorganizing all steps, not just adding new ones.
 
 ---
 

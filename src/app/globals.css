@@ -432,3 +432,11 @@ body {
   --goal-warning: #fbbf24;
   --goal-danger: #ef4444;
 }
+
+/* Mobile keyboard-aware layouts - fallback for browsers without dvh support */
+@supports not (height: 100dvh) {
+  .h-dvh {
+    height: 100vh;
+    height: -webkit-fill-available;
+  }
+}
