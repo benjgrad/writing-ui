@@ -303,6 +303,24 @@ export function DreamEditor({ userId, initialDocument }: DreamEditorProps) {
         error={saveError}
       />
 
+      {/* Hidden textarea for mobile keyboard - positioned off-screen */}
+      <textarea
+        ref={hiddenInputRef}
+        value={virtualInputValue}
+        onChange={handleTextareaInput}
+        style={{
+          position: 'fixed',
+          top: '-9999px',
+          left: '-9999px',
+          opacity: 0,
+          fontSize: '16px',
+        }}
+        autoCapitalize="off"
+        autoCorrect="off"
+        autoComplete="off"
+        spellCheck={false}
+      />
+
       {/* Main scroll container */}
       <div
         ref={containerRef}
@@ -358,25 +376,6 @@ export function DreamEditor({ userId, initialDocument }: DreamEditorProps) {
               />
             ))}
           </div>
-
-          {/* Hidden textarea for mobile keyboard support */}
-          <textarea
-            ref={hiddenInputRef}
-            value={virtualInputValue}
-            onChange={handleTextareaInput}
-            className="absolute opacity-0 w-0 h-0 overflow-hidden"
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              pointerEvents: 'none',
-              fontSize: '16px', // Prevents iOS zoom on focus
-            }}
-            autoCapitalize="off"
-            autoCorrect="off"
-            autoComplete="off"
-            spellCheck={false}
-          />
         </div>
 
         {/* Spacer to allow scrolling past the last line */}
