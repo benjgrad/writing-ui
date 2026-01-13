@@ -13,8 +13,10 @@ This document tracks platform feedback, UX issues, and planned features.
 
 ### Mobile Experience
 
-- **Editor keyboard doesn't appear**: On mobile, the editor doesn't bring up the keyboard at all, making it unusable for writing.
+- ~~**Editor keyboard doesn't appear**: On mobile, the editor doesn't bring up the keyboard at all, making it unusable for writing.~~ **FIXED** - Added hidden textarea for mobile keyboard capture.
 - **Coaching chat keyboard pushes content offscreen**: When the mobile keyboard appears in the Goal Coach chat, it pushes the chat content off the screen instead of adjusting the viewport properly.
+- **Editor has no visible writing area**: On mobile, the editor shows only a gradient background with no cursor, placeholder, or visual affordance indicating where to type. Users have no idea they can write.
+- **Raw API errors shown to users**: Goal Coach displays raw JSON error messages (e.g., `{"type":"error"...}`) instead of user-friendly error messages.
 
 ### API Errors
 
@@ -27,6 +29,13 @@ This document tracks platform feedback, UX issues, and planned features.
 ### Design System
 
 - **Inconsistent dark mode**: Dashboard uses dark theme, Goals page uses light theme, Editor has gradient. Need unified color system across all pages.
+- **Inconsistent navigation**: Dashboard has horizontal nav, Goals page has different header layout, Editor/Graph have back arrows. Need unified nav pattern.
+
+### Mobile UX
+
+- **Unexplained "1 Issue" badge**: Editor shows a red "1 Issue ×" badge at bottom left with no explanation of what the issue is.
+- **Goal card touch targets too small**: Action buttons (Coaching, Notes, Add step, Park, Archive) appear under 44px and are hard to tap on mobile.
+- **Goal card edit icon too small**: Pencil icon for editing goal is very small and hard to tap.
 
 ### Goals / Momentum Engine
 
@@ -192,3 +201,51 @@ The coaching prompts are now conversational and ask clear questions that guide u
 ### Next Priority: Goals on Dashboard
 
 Display user goals prominently on the dashboard page instead of hiding them in the separate Goals page.
+
+---
+
+## Mobile Design Review (Jan 10, 2026)
+
+### Screenshots Captured
+
+Mobile screenshots at 375px viewport (iPhone SE) in `tests/screenshots/mobile/`:
+
+1. `01-editor-empty.png` - Editor initial state
+2. `02-editor-with-prompt.png` - Editor waiting for AI prompt
+3. `03-editor-tapped.png` - Editor after tap
+4. `04-editor-with-text.png` - Editor with typed text
+5. `05-dashboard.png` - Dashboard page
+6. `06-goals-page.png` - Goals page with goal card
+7. `07-coach-modal-open.png` - Goal Coach modal
+8. `08-coach-with-response.png` - Coach waiting for AI
+9. `09-coach-input-focused.png` - Coach input focused
+10. `10-coach-with-typed-response.png` - Coach with user input
+11. `11-graph-page.png` - Knowledge Graph empty state
+
+### Critical Issues Found
+
+1. **Editor shows nothing** - No cursor, placeholder, or visual affordance. Users don't know they can type.
+2. **Raw JSON errors** - Goal Coach shows `{"type":"error"...}` instead of friendly messages.
+3. **"1 Issue" badge unexplained** - Red badge appears with no context.
+
+### High Priority Issues
+
+1. **Theme inconsistency** - Dashboard (light), Goals (light+gradient card), Editor (gradient), Coach (purple header)
+2. **Navigation inconsistency** - Different header patterns on each page
+3. **Small touch targets** - Goal card action buttons under 44px
+
+### What's Working
+
+1. Goal Coach modal fills screen properly on mobile
+2. Chat input is at bottom, positioned well for thumb typing
+3. Back navigation arrows are adequate size
+4. New Document button is full-width and easy to tap
+5. Goal card content is readable
+
+### Recommendations
+
+1. Add placeholder text or cursor to editor ("Tap to start writing...")
+2. Implement proper error handling - never show raw JSON
+3. Unify navigation across all pages
+4. Increase touch targets on goal cards (use menu or larger buttons)
+5. Establish consistent color system
