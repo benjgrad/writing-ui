@@ -26,6 +26,9 @@ export default function GoalsPage() {
     updateMomentum,
     completeMicroWin,
     addMicroWin,
+    updateMicroWin,
+    deleteMicroWin,
+    reorderMicroWins,
     moveGoal,
     archiveGoal,
     refresh
@@ -112,6 +115,21 @@ export default function GoalsPage() {
   // Handle adding micro-win
   const handleAddMicroWin = async (goalId: string, description: string) => {
     await addMicroWin(goalId, description, true) // Set as current
+  }
+
+  // Handle updating micro-win
+  const handleUpdateMicroWin = async (goalId: string, microWinId: string, description: string) => {
+    await updateMicroWin(goalId, microWinId, description)
+  }
+
+  // Handle deleting micro-win
+  const handleDeleteMicroWin = async (goalId: string, microWinId: string) => {
+    await deleteMicroWin(goalId, microWinId)
+  }
+
+  // Handle reordering micro-wins
+  const handleReorderMicroWins = async (goalId: string, orderedIds: string[]) => {
+    await reorderMicroWins(goalId, orderedIds)
   }
 
   // Handle updating goal
@@ -224,6 +242,9 @@ export default function GoalsPage() {
             onUpdateMomentum={handleUpdateMomentum}
             onCompleteMicroWin={handleCompleteMicroWin}
             onAddMicroWin={handleAddMicroWin}
+            onUpdateMicroWin={handleUpdateMicroWin}
+            onDeleteMicroWin={handleDeleteMicroWin}
+            onReorderMicroWins={handleReorderMicroWins}
             onUpdateGoal={handleUpdateGoal}
             onMoveToParking={handleMoveToParking}
             onArchive={handleArchive}

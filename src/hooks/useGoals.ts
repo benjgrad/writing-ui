@@ -184,6 +184,85 @@ export function useGoals() {
     }
   }
 
+  // Update a micro-win's description
+  const updateMicroWin = async (
+    goalId: string,
+    microWinId: string,
+    description: string
+  ): Promise<{ error?: string }> => {
+    try {
+      const response = await fetch(`/api/goals/${goalId}/micro-wins`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          micro_win_id: microWinId,
+          description
+        })
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        return { error: data.error || 'Failed to update micro-win' }
+      }
+
+      // Refresh goals to get updated micro-wins
+      await fetchGoals()
+      return {}
+    } catch (err) {
+      return { error: err instanceof Error ? err.message : 'Failed to update micro-win' }
+    }
+  }
+
+  // Delete a micro-win
+  const deleteMicroWin = async (
+    goalId: string,
+    microWinId: string
+  ): Promise<{ error?: string }> => {
+    try {
+      const response = await fetch(`/api/goals/${goalId}/micro-wins`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ micro_win_id: microWinId })
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        return { error: data.error || 'Failed to delete micro-win' }
+      }
+
+      // Refresh goals to get updated micro-wins
+      await fetchGoals()
+      return {}
+    } catch (err) {
+      return { error: err instanceof Error ? err.message : 'Failed to delete micro-win' }
+    }
+  }
+
+  // Reorder micro-wins
+  const reorderMicroWins = async (
+    goalId: string,
+    orderedIds: string[]
+  ): Promise<{ error?: string }> => {
+    try {
+      const response = await fetch(`/api/goals/${goalId}/micro-wins`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ordered_ids: orderedIds })
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        return { error: data.error || 'Failed to reorder micro-wins' }
+      }
+
+      // Refresh goals to get updated micro-wins
+      await fetchGoals()
+      return {}
+    } catch (err) {
+      return { error: err instanceof Error ? err.message : 'Failed to reorder micro-wins' }
+    }
+  }
+
   return {
     goals,
     activeGoals,
@@ -197,7 +276,10 @@ export function useGoals() {
     moveGoal,
     updateMomentum,
     completeMicroWin,
-    addMicroWin
+    addMicroWin,
+    updateMicroWin,
+    deleteMicroWin,
+    reorderMicroWins
   }
 }
 

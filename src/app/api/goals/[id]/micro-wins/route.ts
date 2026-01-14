@@ -182,3 +182,139 @@ export async function PUT(
     return NextResponse.json({ error: 'Failed to update micro-win' }, { status: 500 })
   }
 }
+
+// DELETE /api/goals/[id]/micro-wins - Delete a micro-win
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id: goalId } = await params
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { micro_win_id } = await request.json()
+
+    if (!micro_win_id) {
+      return NextResponse.json({ error: 'micro_win_id is required' }, { status: 400 })
+    }
+
+    // Verify goal belongs to user
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: goal } = await (supabase as any)
+      .from('goals')
+      .select('id')
+      .eq('id', goalId)
+      .eq('user_id', user.id)
+      .single()
+
+    if (!goal) {
+      return NextResponse.json({ error: 'Goal not found' }, { status: 404 })
+    }
+
+    // Get the micro-win to check if it's current
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: microWin } = await (supabase as any)
+      .from('micro_wins')
+      .select('*')
+      .eq('id', micro_win_id)
+      .eq('goal_id', goalId)
+      .single()
+
+    if (!microWin) {
+      return NextResponse.json({ error: 'Micro-win not found' }, { status: 404 })
+    }
+
+    const wasCurrent = microWin.is_current
+
+    // Delete the micro-win
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabase as any)
+      .from('micro_wins')
+      .delete()
+      .eq('id', micro_win_id)
+      .eq('goal_id', goalId)
+
+    if (error) throw error
+
+    // If the deleted micro-win was current, make the next incomplete one current
+    if (wasCurrent) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: nextWin } = await (supabase as any)
+        .from('micro_wins')
+        .select('*')
+        .eq('goal_id', goalId)
+        .is('completed_at', null)
+        .order('position', { ascending: true })
+        .limit(1)
+        .single()
+
+      if (nextWin) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (supabase as any)
+          .from('micro_wins')
+          .update({ is_current: true })
+          .eq('id', nextWin.id)
+      }
+    }
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting micro-win:', error)
+    return NextResponse.json({ error: 'Failed to delete micro-win' }, { status: 500 })
+  }
+}
+
+// PATCH /api/goals/[id]/micro-wins - Reorder micro-wins
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id: goalId } = await params
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { ordered_ids } = await request.json()
+
+    if (!ordered_ids || !Array.isArray(ordered_ids)) {
+      return NextResponse.json({ error: 'ordered_ids array is required' }, { status: 400 })
+    }
+
+    // Verify goal belongs to user
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: goal } = await (supabase as any)
+      .from('goals')
+      .select('id')
+      .eq('id', goalId)
+      .eq('user_id', user.id)
+      .single()
+
+    if (!goal) {
+      return NextResponse.json({ error: 'Goal not found' }, { status: 404 })
+    }
+
+    // Update positions for each micro-win
+    for (let i = 0; i < ordered_ids.length; i++) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase as any)
+        .from('micro_wins')
+        .update({ position: i })
+        .eq('id', ordered_ids[i])
+        .eq('goal_id', goalId)
+    }
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Error reordering micro-wins:', error)
+    return NextResponse.json({ error: 'Failed to reorder micro-wins' }, { status: 500 })
+  }
+}

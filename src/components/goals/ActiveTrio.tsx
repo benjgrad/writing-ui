@@ -8,6 +8,9 @@ interface ActiveTrioProps {
   onUpdateMomentum: (goalId: string, momentum: number) => Promise<void>
   onCompleteMicroWin: (goalId: string, microWinId: string) => Promise<void>
   onAddMicroWin: (goalId: string, description: string) => Promise<void>
+  onUpdateMicroWin?: (goalId: string, microWinId: string, description: string) => Promise<void>
+  onDeleteMicroWin?: (goalId: string, microWinId: string) => Promise<void>
+  onReorderMicroWins?: (goalId: string, orderedIds: string[]) => Promise<void>
   onUpdateGoal: (goalId: string, updates: { title?: string; why_root?: string }) => Promise<void>
   onMoveToParking: (goalId: string) => Promise<void>
   onArchive: (goalId: string) => Promise<void>
@@ -20,6 +23,9 @@ export function ActiveTrio({
   onUpdateMomentum,
   onCompleteMicroWin,
   onAddMicroWin,
+  onUpdateMicroWin,
+  onDeleteMicroWin,
+  onReorderMicroWins,
   onUpdateGoal,
   onMoveToParking,
   onArchive,
@@ -49,6 +55,9 @@ export function ActiveTrio({
             onUpdateMomentum={(momentum) => onUpdateMomentum(goal.id, momentum)}
             onCompleteMicroWin={(microWinId) => onCompleteMicroWin(goal.id, microWinId)}
             onAddMicroWin={(description) => onAddMicroWin(goal.id, description)}
+            onUpdateMicroWin={onUpdateMicroWin ? (microWinId, description) => onUpdateMicroWin(goal.id, microWinId, description) : undefined}
+            onDeleteMicroWin={onDeleteMicroWin ? (microWinId) => onDeleteMicroWin(goal.id, microWinId) : undefined}
+            onReorderMicroWins={onReorderMicroWins ? (orderedIds) => onReorderMicroWins(goal.id, orderedIds) : undefined}
             onUpdateGoal={(updates) => onUpdateGoal(goal.id, updates)}
             onMoveToParking={() => onMoveToParking(goal.id)}
             onArchive={() => onArchive(goal.id)}

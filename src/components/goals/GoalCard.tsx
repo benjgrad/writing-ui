@@ -10,6 +10,9 @@ interface GoalCardProps {
   onUpdateMomentum: (momentum: number) => Promise<void>
   onCompleteMicroWin: (microWinId: string) => Promise<void>
   onAddMicroWin?: (description: string) => Promise<void>
+  onUpdateMicroWin?: (microWinId: string, description: string) => Promise<void>
+  onDeleteMicroWin?: (microWinId: string) => Promise<void>
+  onReorderMicroWins?: (orderedIds: string[]) => Promise<void>
   onUpdateGoal?: (updates: { title?: string; why_root?: string; notes?: string }) => Promise<void>
   onMoveToParking?: () => Promise<void>
   onArchive?: () => Promise<void>
@@ -22,6 +25,9 @@ export function GoalCard({
   onUpdateMomentum,
   onCompleteMicroWin,
   onAddMicroWin,
+  onUpdateMicroWin,
+  onDeleteMicroWin,
+  onReorderMicroWins,
   onUpdateGoal,
   onMoveToParking,
   onArchive,
@@ -39,6 +45,10 @@ export function GoalCard({
   const [isSaving, setIsSaving] = useState(false)
   const [showFullWhy, setShowFullWhy] = useState(false)
   const [showNotes, setShowNotes] = useState(false)
+  const [showAllSteps, setShowAllSteps] = useState(false)
+  const [editingStepId, setEditingStepId] = useState<string | null>(null)
+  const [editStepText, setEditStepText] = useState('')
+  const [draggedStepId, setDraggedStepId] = useState<string | null>(null)
   const notesRef = useRef<HTMLTextAreaElement>(null)
 
   // Auto-resize notes textarea
@@ -112,6 +122,77 @@ export function GoalCard({
     await onAddMicroWin(newMicroWin.trim())
     setNewMicroWin('')
     setShowMicroWinInput(false)
+    setIsSaving(false)
+  }
+
+  const handleStartEditStep = (stepId: string, currentText: string) => {
+    setEditingStepId(stepId)
+    setEditStepText(currentText)
+  }
+
+  const handleSaveStepEdit = async () => {
+    if (!onUpdateMicroWin || !editingStepId || !editStepText.trim() || isSaving) return
+
+    setIsSaving(true)
+    await onUpdateMicroWin(editingStepId, editStepText.trim())
+    setEditingStepId(null)
+    setEditStepText('')
+    setIsSaving(false)
+  }
+
+  const handleCancelStepEdit = () => {
+    setEditingStepId(null)
+    setEditStepText('')
+  }
+
+  const handleDeleteStep = async (stepId: string) => {
+    if (!onDeleteMicroWin || isSaving) return
+    if (!confirm('Delete this step?')) return
+
+    setIsSaving(true)
+    await onDeleteMicroWin(stepId)
+    setIsSaving(false)
+  }
+
+  const handleDragStart = (stepId: string) => {
+    setDraggedStepId(stepId)
+  }
+
+  const handleDragOver = (e: React.DragEvent, targetStepId: string) => {
+    e.preventDefault()
+    if (!draggedStepId || draggedStepId === targetStepId) return
+
+    const allSteps = [...(goal.micro_wins || [])]
+    const draggedIndex = allSteps.findIndex(s => s.id === draggedStepId)
+    const targetIndex = allSteps.findIndex(s => s.id === targetStepId)
+
+    if (draggedIndex === -1 || targetIndex === -1) return
+
+    // Reorder locally for visual feedback
+    const [removed] = allSteps.splice(draggedIndex, 1)
+    allSteps.splice(targetIndex, 0, removed)
+  }
+
+  const handleDragEnd = async () => {
+    if (!draggedStepId || !onReorderMicroWins) {
+      setDraggedStepId(null)
+      return
+    }
+
+    const allSteps = [...(goal.micro_wins || [])]
+    const draggedIndex = allSteps.findIndex(s => s.id === draggedStepId)
+
+    if (draggedIndex === -1) {
+      setDraggedStepId(null)
+      return
+    }
+
+    // Get ordered IDs
+    const orderedIds = allSteps.map(s => s.id)
+
+    setIsSaving(true)
+    await onReorderMicroWins(orderedIds)
+    setDraggedStepId(null)
     setIsSaving(false)
   }
 
@@ -342,6 +423,192 @@ export function GoalCard({
               Cancel
             </button>
           </div>
+        </div>
+      )}
+
+      {/* All Steps List - Expandable */}
+      {totalMicroWins > 0 && (
+        <div className="mb-4">
+          <button
+            onClick={() => setShowAllSteps(!showAllSteps)}
+            className="flex items-center gap-2 text-xs text-[#6366f1] hover:text-[#4f46e5] font-medium transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className={`transition-transform ${showAllSteps ? 'rotate-90' : ''}`}
+            >
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+            {showAllSteps ? 'Hide' : 'View'} all {totalMicroWins} step{totalMicroWins !== 1 ? 's' : ''}
+          </button>
+
+          {showAllSteps && (
+            <div className="mt-3 space-y-2">
+              {goal.micro_wins?.map((step) => (
+                <div
+                  key={step.id}
+                  draggable={onReorderMicroWins && editingStepId !== step.id}
+                  onDragStart={() => handleDragStart(step.id)}
+                  onDragOver={(e) => handleDragOver(e, step.id)}
+                  onDragEnd={handleDragEnd}
+                  className={`flex items-start gap-2 p-2 rounded-lg border ${
+                    step.is_current
+                      ? 'border-[#6366f1] bg-[#eef2ff]'
+                      : 'border-[#e2e8f0] bg-white'
+                  } ${draggedStepId === step.id ? 'opacity-50' : ''}`}
+                >
+                  {/* Drag Handle */}
+                  {onReorderMicroWins && editingStepId !== step.id && (
+                    <div className="cursor-move text-[#94a3b8] mt-1">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <circle cx="9" cy="5" r="1" />
+                        <circle cx="9" cy="12" r="1" />
+                        <circle cx="9" cy="19" r="1" />
+                        <circle cx="15" cy="5" r="1" />
+                        <circle cx="15" cy="12" r="1" />
+                        <circle cx="15" cy="19" r="1" />
+                      </svg>
+                    </div>
+                  )}
+
+                  {/* Checkbox */}
+                  <button
+                    onClick={() => !step.completed_at && onCompleteMicroWin(step.id)}
+                    disabled={!!step.completed_at}
+                    className="mt-1"
+                  >
+                    <input
+                      type="checkbox"
+                      className="micro-win-checkbox"
+                      checked={!!step.completed_at}
+                      readOnly
+                    />
+                  </button>
+
+                  {/* Description or Edit Input */}
+                  <div className="flex-1 min-w-0">
+                    {editingStepId === step.id ? (
+                      <div className="space-y-2">
+                        <input
+                          type="text"
+                          value={editStepText}
+                          onChange={(e) => setEditStepText(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && editStepText.trim()) {
+                              handleSaveStepEdit()
+                            } else if (e.key === 'Escape') {
+                              handleCancelStepEdit()
+                            }
+                          }}
+                          className="w-full px-2 py-1 rounded border-2 border-[#6366f1] focus:outline-none text-sm"
+                          autoFocus
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={handleSaveStepEdit}
+                            disabled={isSaving || !editStepText.trim()}
+                            className="px-2 py-1 rounded bg-[#6366f1] text-white text-xs hover:bg-[#4f46e5] disabled:opacity-50 transition-colors"
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={handleCancelStepEdit}
+                            className="px-2 py-1 rounded border border-[#cbd5e1] text-[#64748b] text-xs hover:bg-[#f1f5f9] transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <p
+                        className={`text-sm ${
+                          step.completed_at
+                            ? 'line-through text-[#94a3b8]'
+                            : 'text-[#374151]'
+                        }`}
+                      >
+                        {step.description}
+                        {step.is_current && (
+                          <span className="ml-2 text-xs text-[#6366f1] font-medium">
+                            (current)
+                          </span>
+                        )}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Edit and Delete Buttons */}
+                  {editingStepId !== step.id && (
+                    <div className="flex gap-1">
+                      {onUpdateMicroWin && (
+                        <button
+                          onClick={() => handleStartEditStep(step.id, step.description)}
+                          className="text-[#94a3b8] hover:text-[#6366f1] transition-colors p-1"
+                          title="Edit step"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                            <path d="m15 5 4 4" />
+                          </svg>
+                        </button>
+                      )}
+                      {onDeleteMicroWin && (
+                        <button
+                          onClick={() => handleDeleteStep(step.id)}
+                          className="text-[#94a3b8] hover:text-[#ef4444] transition-colors p-1"
+                          title="Delete step"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M3 6h18" />
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
