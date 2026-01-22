@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getAIProvider } from '@/lib/ai'
-import type { GoalContext } from '@/lib/ai/prompts/continuation'
+import type { GoalContext, PragmaticContext } from '@/lib/ai/prompts/continuation'
 
 export async function POST(request: Request) {
   try {
@@ -12,7 +12,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { context, documentId } = await request.json()
+    const { context, documentId, pragmaticContext } = await request.json()
 
     if (!context || typeof context !== 'string') {
       return NextResponse.json({ error: 'Context is required' }, { status: 400 })
@@ -57,10 +57,11 @@ export async function POST(request: Request) {
     }))
 
     const provider = getAIProvider()
-    const prompt = await provider.generatePrompt(
+    const result = await provider.generatePrompt(
       context,
       profile?.learning_goals || undefined,
-      activeGoals.length > 0 ? activeGoals : undefined
+      activeGoals.length > 0 ? activeGoals : undefined,
+      pragmaticContext as PragmaticContext | undefined
     )
 
     // Optionally log prompt history
@@ -70,16 +71,16 @@ export async function POST(request: Request) {
         user_id: user.id,
         document_id: documentId,
         context_text: context.substring(0, 500),
-        prompt_generated: prompt,
+        prompt_generated: result.prompt,
         provider: process.env.AI_PROVIDER || 'fallback'
       })
     }
 
-    return NextResponse.json({ prompt })
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Error generating prompt:', error)
     return NextResponse.json(
-      { error: 'Failed to generate prompt', prompt: "What happens next?" },
+      { error: 'Failed to generate prompt', prompt: "What happens next?", tone: 'reflective' },
       { status: 500 }
     )
   }

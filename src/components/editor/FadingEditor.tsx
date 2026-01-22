@@ -7,6 +7,7 @@ import { FadingWord } from './FadingWord'
 import { ContinuationPrompt } from './ContinuationPrompt'
 import { EditorToolbar } from './EditorToolbar'
 import type { WordWithTimestamp, Document } from '@/types/document'
+import type { PragmaticContext, EntryTone } from '@/lib/ai/prompts/continuation'
 
 interface FadingEditorProps {
   userId: string
@@ -19,6 +20,8 @@ export function FadingEditor({ userId, initialDocument }: FadingEditorProps) {
   const [showPrompt, setShowPrompt] = useState(false)
   const [aiPrompt, setAiPrompt] = useState<string | null>(null)
   const [isLoadingPrompt, setIsLoadingPrompt] = useState(false)
+  const [pragmaticContext, setPragmaticContext] = useState<PragmaticContext | null>(null)
+  const [currentTone, setCurrentTone] = useState<EntryTone | null>(null)
 
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const promptFetchedRef = useRef(false)
@@ -61,20 +64,28 @@ export function FadingEditor({ userId, initialDocument }: FadingEditorProps) {
       fetch('/api/ai/prompt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ context: rawContent })
+        body: JSON.stringify({
+          context: rawContent,
+          pragmaticContext: pragmaticContext || undefined
+        })
       })
         .then(res => res.json())
         .then(data => {
           setAiPrompt(data.prompt)
+          setCurrentTone(data.tone || 'reflective')
+          if (data.pragmaticContext) {
+            setPragmaticContext(data.pragmaticContext)
+          }
         })
         .catch(() => {
           setAiPrompt("What comes next?")
+          setCurrentTone('reflective')
         })
         .finally(() => {
           setIsLoadingPrompt(false)
         })
     }
-  }, [allFaded, words.length, rawContent])
+  }, [allFaded, words.length, rawContent, pragmaticContext])
 
   // Reset prompt state when user starts typing again
   const handleDismissPrompt = useCallback(() => {

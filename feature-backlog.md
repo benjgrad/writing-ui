@@ -61,6 +61,15 @@ This document tracks platform feedback, UX issues, and planned features.
 
 ## 🟢 Medium Priority / Enhancements
 
+### AI/Agent Architecture
+
+- **Convert Goal Coach to ReAct agent**: Currently uses a deterministic 6-stage state machine with marker-based parsing (`[GOAL_CAPTURED]`, etc.). Should be converted to a true ReAct (Reasoning and Acting) agent with:
+  - Tool/function calling (e.g., `create_goal()`, `search_similar_goals()`, `validate_goal()`)
+  - Iterative reasoning loop (observe → reason → act → repeat)
+  - Self-reflection and dynamic decision-making
+  - Ability to retry, backtrack, or change approach based on context
+  - Current implementation: [goal-coaching.ts](src/lib/ai/prompts/goal-coaching.ts), [coach-goal/route.ts](src/app/api/ai/coach-goal/route.ts)
+
 ### Knowledge Extraction
 
 - **No zettelkasten-style atomic notes**: Platform should extract atomic insights/notes from:

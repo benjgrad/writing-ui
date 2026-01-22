@@ -1,6 +1,6 @@
 import { OpenAIProvider } from './providers/openai'
 import { AnthropicProvider } from './providers/anthropic'
-import type { GoalContext } from './prompts/continuation'
+import type { GoalContext, PragmaticContext, ContinuationResult } from './prompts/continuation'
 
 export interface ExtractedNote {
   title: string
@@ -17,8 +17,9 @@ export interface AIProvider {
   generatePrompt(
     context: string,
     learningGoals?: string[],
-    activeGoals?: GoalContext[]
-  ): Promise<string>
+    activeGoals?: GoalContext[],
+    pragmaticContext?: PragmaticContext
+  ): Promise<ContinuationResult>
   extractNotes(text: string): Promise<ExtractedNote[]>
 }
 
@@ -33,7 +34,7 @@ export function getAIProvider(): AIProvider {
     default:
       // Fallback to a mock provider if no API keys are configured
       return {
-        async generatePrompt(): Promise<string> {
+        async generatePrompt(): Promise<ContinuationResult> {
           const prompts = [
             "What happens next?",
             "And then...",
@@ -44,7 +45,10 @@ export function getAIProvider(): AIProvider {
             "How did it begin?",
             "What were they afraid of?"
           ]
-          return prompts[Math.floor(Math.random() * prompts.length)]
+          return {
+            prompt: prompts[Math.floor(Math.random() * prompts.length)],
+            tone: 'reflective'
+          }
         },
         async extractNotes(): Promise<ExtractedNote[]> {
           return []

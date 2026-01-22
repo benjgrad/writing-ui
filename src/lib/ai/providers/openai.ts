@@ -1,6 +1,12 @@
 import OpenAI from 'openai'
 import type { AIProvider, ExtractedNote } from '../index'
-import { CONTINUATION_PROMPT, type GoalContext } from '../prompts/continuation'
+import {
+  CONTINUATION_PROMPT,
+  parseContinuationResponse,
+  type GoalContext,
+  type PragmaticContext,
+  type ContinuationResult
+} from '../prompts/continuation'
 import { EXTRACTION_PROMPT } from '../prompts/extraction'
 
 export class OpenAIProvider implements AIProvider {
@@ -15,9 +21,10 @@ export class OpenAIProvider implements AIProvider {
   async generatePrompt(
     context: string,
     learningGoals?: string[],
-    activeGoals?: GoalContext[]
-  ): Promise<string> {
-    const systemPrompt = CONTINUATION_PROMPT(learningGoals, activeGoals)
+    activeGoals?: GoalContext[],
+    pragmaticContext?: PragmaticContext
+  ): Promise<ContinuationResult> {
+    const systemPrompt = CONTINUATION_PROMPT(learningGoals, activeGoals, pragmaticContext)
 
     const response = await this.client.chat.completions.create({
       model: 'gpt-4o',
@@ -25,11 +32,13 @@ export class OpenAIProvider implements AIProvider {
         { role: 'system', content: systemPrompt },
         { role: 'user', content: `Recent writing:\n\n${context}` }
       ],
-      max_tokens: 100,
+      max_tokens: 150, // Slightly more for markers
       temperature: 0.8
     })
 
-    return response.choices[0]?.message?.content || "What happens next?"
+    const rawResponse = response.choices[0]?.message?.content || "[TONE:reflective]\nWhat happens next?"
+
+    return parseContinuationResponse(rawResponse, pragmaticContext)
   }
 
   async extractNotes(text: string): Promise<ExtractedNote[]> {
