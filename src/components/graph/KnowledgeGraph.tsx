@@ -77,16 +77,23 @@ export function KnowledgeGraph({ data, onNodeClick, selectedNodeId }: KnowledgeG
         .attr('d', 'M0,-5L10,0L0,5')
     })
 
-    // Create force simulation
+    // Scale forces based on node count for better spacing
+    const nodeCount = data.nodes.length
+    const linkDistance = Math.max(150, 300 - nodeCount * 2)
+    const chargeStrength = Math.min(-100, -800 + nodeCount * 8)
+
+    // Create force simulation with adaptive spacing
     const simulation = d3.forceSimulation(data.nodes as d3.SimulationNodeDatum[])
       .force('link', d3.forceLink(data.links)
         .id((d) => (d as GraphNode).id)
-        .distance(100)
-        .strength((d) => (d as GraphLink).strength * 0.5)
+        .distance(linkDistance)
+        .strength(0.3)
       )
-      .force('charge', d3.forceManyBody().strength(-300))
+      .force('charge', d3.forceManyBody().strength(chargeStrength))
       .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('collision', d3.forceCollide().radius(40))
+      .force('collision', d3.forceCollide().radius(80))
+      .force('x', d3.forceX(width / 2).strength(0.02))
+      .force('y', d3.forceY(height / 2).strength(0.02))
 
     // Create links
     const link = g.append('g')
@@ -131,14 +138,52 @@ export function KnowledgeGraph({ data, onNodeClick, selectedNodeId }: KnowledgeG
       .attr('stroke', d => d.id === selectedNodeId ? '#fff' : 'transparent')
       .attr('stroke-width', 2)
 
-    // Add labels to nodes
+    // Add labels to nodes - hidden by default, shown on hover
     node.append('text')
-      .text(d => d.title.length > 20 ? d.title.substring(0, 20) + '...' : d.title)
-      .attr('x', 16)
+      .text(d => d.title.length > 25 ? d.title.substring(0, 25) + '...' : d.title)
+      .attr('x', 14)
       .attr('y', 4)
-      .attr('font-size', '12px')
+      .attr('font-size', '11px')
       .attr('fill', 'currentColor')
-      .attr('class', 'text-foreground')
+      .attr('opacity', 0)
+      .attr('class', 'text-foreground pointer-events-none')
+
+    // Add background rect for label readability (hidden by default)
+    node.insert('rect', 'text')
+      .attr('x', 12)
+      .attr('y', -10)
+      .attr('width', d => Math.min(d.title.length * 6.5, 170))
+      .attr('height', 20)
+      .attr('fill', 'var(--background)')
+      .attr('opacity', 0)
+      .attr('rx', 4)
+      .attr('class', 'label-bg')
+
+    // Show labels on hover
+    node.on('mouseenter', function() {
+      d3.select(this).select('text').attr('opacity', 1)
+      d3.select(this).select('.label-bg').attr('opacity', 0.9)
+      d3.select(this).select('circle').attr('r', 14)
+    })
+    node.on('mouseleave', function(_, d) {
+      if (d.id !== selectedNodeId) {
+        d3.select(this).select('text').attr('opacity', 0)
+        d3.select(this).select('.label-bg').attr('opacity', 0)
+        d3.select(this).select('circle').attr('r', 10)
+      }
+    })
+
+    // Show label for selected node
+    if (selectedNodeId) {
+      node.filter(d => d.id === selectedNodeId)
+        .select('text').attr('opacity', 1)
+      node.filter(d => d.id === selectedNodeId)
+        .select('.label-bg').attr('opacity', 0.9)
+    }
+
+    // Add title tooltip for full text
+    node.append('title')
+      .text(d => d.title)
 
     // Update positions on tick
     simulation.on('tick', () => {
@@ -151,8 +196,22 @@ export function KnowledgeGraph({ data, onNodeClick, selectedNodeId }: KnowledgeG
       node.attr('transform', d => `translate(${d.x || 0},${d.y || 0})`)
     })
 
-    // Center view on initial load
-    svg.call(zoom.transform, d3.zoomIdentity.translate(0, 0).scale(1))
+    // Auto-zoom to fit content after simulation settles
+    simulation.on('end', () => {
+      const bounds = g.node()?.getBBox()
+      if (bounds) {
+        const fullWidth = bounds.width + 100
+        const fullHeight = bounds.height + 100
+        const midX = bounds.x + bounds.width / 2
+        const midY = bounds.y + bounds.height / 2
+        const scale = Math.min(0.9, Math.min(width / fullWidth, height / fullHeight))
+        const translate = [width / 2 - scale * midX, height / 2 - scale * midY]
+
+        svg.transition()
+          .duration(500)
+          .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale))
+      }
+    })
 
     return () => {
       simulation.stop()

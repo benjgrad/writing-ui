@@ -2,11 +2,17 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import type { GraphData, GraphNode, GraphLink } from '@/types/graph'
+import type { GraphData, GraphNode, GraphLink, NoteSource } from '@/types/graph'
 
 interface NoteTagRow {
   note_id: string
   tags: { name: string } | null
+}
+
+interface NoteSourceRow {
+  note_id: string
+  source_type: 'document' | 'coaching_session'
+  source_id: string
 }
 
 interface NoteRow {
@@ -64,6 +70,66 @@ export function useKnowledgeGraph() {
 
       if (connectionsError) throw connectionsError
 
+      // Fetch note sources
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: noteSources, error: sourcesError } = await (supabase as any)
+        .from('note_sources')
+        .select('note_id, source_type, source_id')
+
+      // Silently handle missing table (migration not yet applied)
+      const sourcesData = sourcesError ? [] : (noteSources || [])
+
+      // Fetch document titles for source links
+      const documentIds = sourcesData
+        .filter((s: NoteSourceRow) => s.source_type === 'document')
+        .map((s: NoteSourceRow) => s.source_id)
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: documents } = documentIds.length > 0
+        ? await (supabase as any)
+            .from('documents')
+            .select('id, title')
+            .in('id', documentIds)
+        : { data: [] }
+
+      const documentTitleMap = new Map<string, string>()
+      for (const doc of documents || []) {
+        documentTitleMap.set(doc.id, doc.title)
+      }
+
+      // Fetch coaching session goal titles
+      const sessionIds = sourcesData
+        .filter((s: NoteSourceRow) => s.source_type === 'coaching_session')
+        .map((s: NoteSourceRow) => s.source_id)
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: sessions } = sessionIds.length > 0
+        ? await (supabase as any)
+            .from('coaching_sessions')
+            .select('id, goals:goal_id (title)')
+            .in('id', sessionIds)
+        : { data: [] }
+
+      const sessionGoalMap = new Map<string, string>()
+      for (const sess of sessions || []) {
+        const goalTitle = sess.goals?.title || 'Coaching Session'
+        sessionGoalMap.set(sess.id, goalTitle)
+      }
+
+      // Build source map
+      const sourceMap = new Map<string, NoteSource[]>()
+      for (const ns of sourcesData as NoteSourceRow[]) {
+        const sources = sourceMap.get(ns.note_id) || []
+        sources.push({
+          id: `${ns.note_id}-${ns.source_type}-${ns.source_id}`,
+          source_type: ns.source_type,
+          source_id: ns.source_id,
+          document_title: ns.source_type === 'document' ? documentTitleMap.get(ns.source_id) : undefined,
+          session_goal_title: ns.source_type === 'coaching_session' ? sessionGoalMap.get(ns.source_id) : undefined
+        })
+        sourceMap.set(ns.note_id, sources)
+      }
+
       // Build tag map
       const tagMap = new Map<string, string[]>()
       if (noteTags) {
@@ -82,7 +148,8 @@ export function useKnowledgeGraph() {
         title: note.title,
         content: note.content,
         type: note.note_type,
-        tags: tagMap.get(note.id) || []
+        tags: tagMap.get(note.id) || [],
+        sources: sourceMap.get(note.id) || []
       }))
 
       const links: GraphLink[] = ((connections || []) as ConnectionRow[]).map(conn => ({

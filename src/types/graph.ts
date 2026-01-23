@@ -1,9 +1,19 @@
+export interface NoteSource {
+  id: string
+  source_type: 'document' | 'coaching_session'
+  source_id: string
+  // Populated from joined data
+  document_title?: string
+  session_goal_title?: string
+}
+
 export interface GraphNode {
   id: string
   title: string
   content: string
   type: string
   tags: string[]
+  sources: NoteSource[]
   x?: number
   y?: number
   fx?: number | null

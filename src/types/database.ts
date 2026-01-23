@@ -302,6 +302,59 @@ export type Database = {
           created_at?: string
         }
       }
+      extraction_queue: {
+        Row: {
+          id: string
+          user_id: string
+          source_type: 'document' | 'coaching_session' | 'manual_note'
+          source_id: string
+          content_snapshot: string
+          content_hash: string
+          status: 'pending' | 'processing' | 'completed' | 'failed' | 'skipped'
+          priority: number
+          attempts: number
+          max_attempts: number
+          error_message: string | null
+          notes_created: number | null
+          created_at: string
+          started_at: string | null
+          completed_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          source_type: 'document' | 'coaching_session' | 'manual_note'
+          source_id: string
+          content_snapshot: string
+          content_hash: string
+          status?: 'pending' | 'processing' | 'completed' | 'failed' | 'skipped'
+          priority?: number
+          attempts?: number
+          max_attempts?: number
+          error_message?: string | null
+          notes_created?: number | null
+          created_at?: string
+          started_at?: string | null
+          completed_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          source_type?: 'document' | 'coaching_session' | 'manual_note'
+          source_id?: string
+          content_snapshot?: string
+          content_hash?: string
+          status?: 'pending' | 'processing' | 'completed' | 'failed' | 'skipped'
+          priority?: number
+          attempts?: number
+          max_attempts?: number
+          error_message?: string | null
+          notes_created?: number | null
+          created_at?: string
+          started_at?: string | null
+          completed_at?: string | null
+        }
+      }
     }
     Views: {
       [_ in never]: never

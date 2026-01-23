@@ -1,13 +1,42 @@
 'use client'
 
+import { useState } from 'react'
+import Link from 'next/link'
+import { createClient } from '@/lib/supabase/client'
 import type { GraphNode } from '@/types/graph'
 
 interface NotePanelProps {
   node: GraphNode
   onClose: () => void
+  onDelete?: () => void
 }
 
-export function NotePanel({ node, onClose }: NotePanelProps) {
+export function NotePanel({ node, onClose, onDelete }: NotePanelProps) {
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
+  const supabase = createClient()
+
+  const handleDelete = async () => {
+    setIsDeleting(true)
+    try {
+      // Delete the note (cascades to note_tags and note_connections)
+      const { error } = await supabase
+        .from('atomic_notes')
+        .delete()
+        .eq('id', node.id)
+
+      if (error) throw error
+
+      onClose()
+      onDelete?.()
+    } catch (err) {
+      console.error('Error deleting note:', err)
+      alert('Failed to delete note')
+    } finally {
+      setIsDeleting(false)
+      setShowConfirm(false)
+    }
+  }
   const getTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
       permanent: 'Permanent Note',
@@ -27,13 +56,13 @@ export function NotePanel({ node, onClose }: NotePanelProps) {
   }
 
   return (
-    <div className="absolute right-0 top-0 bottom-0 w-80 bg-background border-l border-border overflow-y-auto z-20">
+    <div className="absolute right-0 top-14 bottom-0 w-96 bg-background border-l border-border overflow-y-auto z-20">
       <div className="p-4">
-        <div className="flex items-start justify-between gap-4 mb-4">
-          <h2 className="text-lg font-semibold">{node.title}</h2>
+        <div className="flex items-start justify-between gap-2 mb-4">
+          <h2 className="text-lg font-semibold leading-tight break-words flex-1 pr-2">{node.title}</h2>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-foreground/10 rounded"
+            className="p-1 hover:bg-foreground/10 rounded flex-shrink-0"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -77,6 +106,94 @@ export function NotePanel({ node, onClose }: NotePanelProps) {
             </div>
           </div>
         )}
+
+        {/* Source references */}
+        {node.sources && node.sources.length > 0 && (
+          <div className="mt-4">
+            <p className="text-xs font-medium text-muted mb-2">Sources</p>
+            <div className="space-y-1">
+              {node.sources.map(source => (
+                <Link
+                  key={source.id}
+                  href={source.source_type === 'document'
+                    ? `/write/${source.source_id}`
+                    : `/coaching`
+                  }
+                  className="flex items-center gap-2 text-sm text-foreground/70 hover:text-foreground transition-colors"
+                >
+                  {source.source_type === 'document' ? (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                      <polyline points="14,2 14,8 20,8" />
+                    </svg>
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                  )}
+                  <span className="truncate">
+                    {source.source_type === 'document'
+                      ? source.document_title || 'Document'
+                      : source.session_goal_title || 'Coaching Session'
+                    }
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Delete section */}
+        <div className="mt-6 pt-4 border-t border-border">
+          {!showConfirm ? (
+            <button
+              onClick={() => setShowConfirm(true)}
+              className="text-sm text-red-500 hover:text-red-400 transition-colors"
+            >
+              Delete note
+            </button>
+          ) : (
+            <div className="space-y-2">
+              <p className="text-sm text-muted">Delete this note?</p>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50"
+                >
+                  {isDeleting ? 'Deleting...' : 'Yes, delete'}
+                </button>
+                <button
+                  onClick={() => setShowConfirm(false)}
+                  disabled={isDeleting}
+                  className="px-3 py-1 text-sm border border-border rounded hover:bg-foreground/5"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

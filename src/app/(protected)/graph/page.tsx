@@ -102,8 +102,11 @@ export default function GraphPage() {
           </Link>
           <h1 className="text-lg font-medium">Knowledge Graph</h1>
         </div>
-        <div className="text-sm text-muted">
-          {filteredData.nodes.length} notes, {filteredData.links.length} connections
+        <div className="flex items-center gap-4 text-sm text-muted">
+          <span>{filteredData.nodes.length} notes, {filteredData.links.length} connections</span>
+          {filteredData.nodes.length > 20 && (
+            <span className="text-xs">Hover nodes to see labels</span>
+          )}
         </div>
       </div>
 
@@ -128,6 +131,7 @@ export default function GraphPage() {
           <NotePanel
             node={selectedNode}
             onClose={() => setSelectedNode(null)}
+            onDelete={refresh}
           />
         )}
       </div>
