@@ -97,7 +97,7 @@ export function useKnowledgeGraph() {
         documentTitleMap.set(doc.id, doc.title)
       }
 
-      // Fetch coaching session goal titles
+      // Fetch coaching session goal info (title and status)
       const sessionIds = sourcesData
         .filter((s: NoteSourceRow) => s.source_type === 'coaching_session')
         .map((s: NoteSourceRow) => s.source_id)
@@ -106,28 +106,40 @@ export function useKnowledgeGraph() {
       const { data: sessions } = sessionIds.length > 0
         ? await (supabase as any)
             .from('coaching_sessions')
-            .select('id, goals:goal_id (title)')
+            .select('id, goals:goal_id (id, title, status)')
             .in('id', sessionIds)
         : { data: [] }
 
-      const sessionGoalMap = new Map<string, string>()
+      const sessionGoalMap = new Map<string, { id: string; title: string; status: string }>()
       for (const sess of sessions || []) {
-        const goalTitle = sess.goals?.title || 'Coaching Session'
-        sessionGoalMap.set(sess.id, goalTitle)
+        if (sess.goals) {
+          sessionGoalMap.set(sess.id, {
+            id: sess.goals.id,
+            title: sess.goals.title,
+            status: sess.goals.status
+          })
+        }
       }
 
-      // Build source map
+      // Build source map and note-to-goal map
       const sourceMap = new Map<string, NoteSource[]>()
+      const noteGoalMap = new Map<string, { id: string; title: string; status: string }>()
       for (const ns of sourcesData as NoteSourceRow[]) {
         const sources = sourceMap.get(ns.note_id) || []
+        const goalInfo = ns.source_type === 'coaching_session' ? sessionGoalMap.get(ns.source_id) : undefined
         sources.push({
           id: `${ns.note_id}-${ns.source_type}-${ns.source_id}`,
           source_type: ns.source_type,
           source_id: ns.source_id,
           document_title: ns.source_type === 'document' ? documentTitleMap.get(ns.source_id) : undefined,
-          session_goal_title: ns.source_type === 'coaching_session' ? sessionGoalMap.get(ns.source_id) : undefined
+          session_goal_title: goalInfo?.title
         })
         sourceMap.set(ns.note_id, sources)
+
+        // Track the goal associated with this note (first one wins if multiple)
+        if (goalInfo && !noteGoalMap.has(ns.note_id)) {
+          noteGoalMap.set(ns.note_id, goalInfo)
+        }
       }
 
       // Build tag map
@@ -143,14 +155,20 @@ export function useKnowledgeGraph() {
       }
 
       // Transform to graph format
-      const nodes: GraphNode[] = ((notes || []) as NoteRow[]).map(note => ({
-        id: note.id,
-        title: note.title,
-        content: note.content,
-        type: note.note_type,
-        tags: tagMap.get(note.id) || [],
-        sources: sourceMap.get(note.id) || []
-      }))
+      const nodes: GraphNode[] = ((notes || []) as NoteRow[]).map(note => {
+        const goalInfo = noteGoalMap.get(note.id)
+        return {
+          id: note.id,
+          title: note.title,
+          content: note.content,
+          type: note.note_type,
+          tags: tagMap.get(note.id) || [],
+          sources: sourceMap.get(note.id) || [],
+          goalId: goalInfo?.id,
+          goalTitle: goalInfo?.title,
+          goalStatus: goalInfo?.status as 'active' | 'parked' | 'completed' | 'archived' | undefined
+        }
+      })
 
       const links: GraphLink[] = ((connections || []) as ConnectionRow[]).map(conn => ({
         source: conn.source_note_id,

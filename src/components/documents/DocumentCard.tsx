@@ -49,7 +49,9 @@ export function DocumentCard({ document, onArchive, onDelete }: DocumentCardProp
         <div className="flex items-center gap-3 text-xs text-muted">
           <span>{document.word_count} words</span>
           <span className="w-1 h-1 rounded-full bg-border" />
-          <span>{formatDate(document.updated_at)}</span>
+          <span>Created {formatDate(document.created_at)}</span>
+          <span className="w-1 h-1 rounded-full bg-border" />
+          <span>Modified {formatDate(document.updated_at)}</span>
         </div>
       </Link>
 

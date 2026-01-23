@@ -1,28 +1,109 @@
 'use client'
 
-import { useRef, useEffect, useCallback } from 'react'
+import { useRef, useEffect, useCallback, useMemo } from 'react'
 import * as d3 from 'd3'
 import type { GraphData, GraphNode, GraphLink } from '@/types/graph'
+
+// Color palette for active goals
+const GOAL_COLORS = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#06b6d4', '#ec4899']
+const PARKED_COLOR = '#9ca3af'
+const NO_GOAL_COLOR = '#6b7280'
+
+export interface GoalColorInfo {
+  goalId: string
+  goalTitle: string
+  goalStatus: string
+  color: string
+}
 
 interface KnowledgeGraphProps {
   data: GraphData
   onNodeClick: (node: GraphNode) => void
   selectedNodeId?: string | null
   compact?: boolean
+  height?: string // Custom height class, e.g., 'h-80' or 'h-[60vh]'
+  onGoalColorsChange?: (goalColors: GoalColorInfo[]) => void
 }
 
-export function KnowledgeGraph({ data, onNodeClick, selectedNodeId, compact = false }: KnowledgeGraphProps) {
+export function KnowledgeGraph({ data, onNodeClick, selectedNodeId, compact = false, height, onGoalColorsChange }: KnowledgeGraphProps) {
+  const heightClass = height || (compact ? 'h-80' : 'h-full')
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const getNodeColor = useCallback((type: string) => {
-    const colors: Record<string, string> = {
-      permanent: '#3b82f6',
-      fleeting: '#f59e0b',
-      literature: '#10b981'
+  // Build goal color map from nodes
+  const goalColorMap = useMemo(() => {
+    const map = new Map<string, string>()
+    const activeGoals: string[] = []
+    const parkedGoals: string[] = []
+
+    // First pass: collect unique goals and sort by status
+    data.nodes.forEach(node => {
+      if (node.goalId && !map.has(node.goalId)) {
+        if (node.goalStatus === 'active') {
+          activeGoals.push(node.goalId)
+        } else if (node.goalStatus === 'parked') {
+          parkedGoals.push(node.goalId)
+        }
+        // For completed/archived, we'll assign them later
+      }
+    })
+
+    // Assign colors to active goals
+    activeGoals.forEach((goalId, index) => {
+      map.set(goalId, GOAL_COLORS[index % GOAL_COLORS.length])
+    })
+
+    // Parked goals get gray
+    parkedGoals.forEach(goalId => {
+      map.set(goalId, PARKED_COLOR)
+    })
+
+    // Handle completed/archived - give them lighter/muted versions
+    data.nodes.forEach(node => {
+      if (node.goalId && !map.has(node.goalId)) {
+        if (node.goalStatus === 'completed' || node.goalStatus === 'archived') {
+          map.set(node.goalId, PARKED_COLOR) // Use gray for completed/archived too
+        }
+      }
+    })
+
+    return map
+  }, [data.nodes])
+
+  // Report goal colors to parent for legend
+  useEffect(() => {
+    if (onGoalColorsChange) {
+      const goalColors: GoalColorInfo[] = []
+      const seen = new Set<string>()
+
+      data.nodes.forEach(node => {
+        if (node.goalId && !seen.has(node.goalId)) {
+          seen.add(node.goalId)
+          goalColors.push({
+            goalId: node.goalId,
+            goalTitle: node.goalTitle || 'Unknown Goal',
+            goalStatus: node.goalStatus || 'active',
+            color: goalColorMap.get(node.goalId) || NO_GOAL_COLOR
+          })
+        }
+      })
+
+      // Sort: active first, then parked, then others
+      goalColors.sort((a, b) => {
+        const order = { active: 0, parked: 1, completed: 2, archived: 3 }
+        return (order[a.goalStatus as keyof typeof order] || 4) - (order[b.goalStatus as keyof typeof order] || 4)
+      })
+
+      onGoalColorsChange(goalColors)
     }
-    return colors[type] || '#6b7280'
-  }, [])
+  }, [data.nodes, goalColorMap, onGoalColorsChange])
+
+  const getNodeColor = useCallback((node: GraphNode) => {
+    if (node.goalId) {
+      return goalColorMap.get(node.goalId) || NO_GOAL_COLOR
+    }
+    return NO_GOAL_COLOR
+  }, [goalColorMap])
 
   const getLinkColor = useCallback((type: string) => {
     const colors: Record<string, string> = {
@@ -49,11 +130,20 @@ export function KnowledgeGraph({ data, onNodeClick, selectedNodeId, compact = fa
       .attr('width', width)
       .attr('height', height)
 
-    // Create zoom behavior
+    // Track current zoom scale for label sizing
+    let currentZoomScale = 1
+
+    // Create zoom behavior with label scaling
     const zoom = d3.zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.1, 4])
       .on('zoom', (event) => {
         g.attr('transform', event.transform)
+        currentZoomScale = event.transform.k
+
+        // Scale labels inversely to zoom so they remain readable at constant size
+        const inverseScale = 1 / currentZoomScale
+        g.selectAll<SVGGElement, GraphNode>('.label-group')
+          .attr('transform', `scale(${inverseScale})`)
       })
 
     svg.call(zoom)
@@ -78,23 +168,75 @@ export function KnowledgeGraph({ data, onNodeClick, selectedNodeId, compact = fa
         .attr('d', 'M0,-5L10,0L0,5')
     })
 
-    // Scale forces based on node count for better spacing
+    // Scale forces based on node count
     const nodeCount = data.nodes.length
-    const linkDistance = Math.max(150, 300 - nodeCount * 2)
-    const chargeStrength = Math.min(-100, -800 + nodeCount * 8)
+    const linkDistance = Math.max(50, 120 - nodeCount)
 
-    // Create force simulation with adaptive spacing
+    // Group nodes by their primary tag (first tag)
+    const tagGroups = new Map<string, GraphNode[]>()
+    data.nodes.forEach(node => {
+      const primaryTag = node.tags[0] || '_untagged'
+      const group = tagGroups.get(primaryTag) || []
+      group.push(node)
+      tagGroups.set(primaryTag, group)
+    })
+
+    // Custom force: nodes with shared tags attract each other
+    function tagAttractionForce(alpha: number) {
+      const strength = 0.15
+      data.nodes.forEach((nodeA, i) => {
+        if (nodeA.tags.length === 0) return
+
+        data.nodes.forEach((nodeB, j) => {
+          if (i >= j || nodeB.tags.length === 0) return
+
+          // Count shared tags
+          const sharedTags = nodeA.tags.filter(t => nodeB.tags.includes(t)).length
+          if (sharedTags === 0) return
+
+          // Pull nodes together based on shared tags
+          const dx = (nodeB.x || 0) - (nodeA.x || 0)
+          const dy = (nodeB.y || 0) - (nodeA.y || 0)
+          const distance = Math.sqrt(dx * dx + dy * dy) || 1
+
+          // Stronger pull for more shared tags, weaker at close distances
+          const pull = alpha * strength * sharedTags * Math.min(distance / 100, 1)
+
+          nodeA.x = (nodeA.x || 0) + dx * pull
+          nodeA.y = (nodeA.y || 0) + dy * pull
+          nodeB.x = (nodeB.x || 0) - dx * pull
+          nodeB.y = (nodeB.y || 0) - dy * pull
+        })
+      })
+    }
+
+    // Track which nodes have connections
+    const connectedNodeIds = new Set<string>()
+    data.links.forEach(link => {
+      const sourceId = typeof link.source === 'string' ? link.source : link.source.id
+      const targetId = typeof link.target === 'string' ? link.target : link.target.id
+      connectedNodeIds.add(sourceId)
+      connectedNodeIds.add(targetId)
+    })
+
+    // Create force simulation
     const simulation = d3.forceSimulation(data.nodes as d3.SimulationNodeDatum[])
       .force('link', d3.forceLink(data.links)
         .id((d) => (d as GraphNode).id)
         .distance(linkDistance)
-        .strength(0.3)
+        .strength(0.4)
       )
-      .force('charge', d3.forceManyBody().strength(chargeStrength))
+      .force('charge', d3.forceManyBody().strength(-150)) // Repulsion separates unrelated nodes
+      .force('tagAttraction', tagAttractionForce) // Pull nodes with same tags together
       .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('collision', d3.forceCollide().radius(80))
-      .force('x', d3.forceX(width / 2).strength(0.02))
-      .force('y', d3.forceY(height / 2).strength(0.02))
+      .force('collision', d3.forceCollide().radius(30))
+      // Keep unconnected nodes from drifting too far - constrain to a radius
+      .force('radial', d3.forceRadial(
+        (d) => connectedNodeIds.has((d as GraphNode).id) ? 0 : Math.min(width, height) / 3,
+        width / 2,
+        height / 2
+      ).strength((d) => connectedNodeIds.has((d as GraphNode).id) ? 0 : 0.1))
+      .alphaDecay(0.02)
 
     // Create links
     const link = g.append('g')
@@ -135,51 +277,52 @@ export function KnowledgeGraph({ data, onNodeClick, selectedNodeId, compact = fa
     // Add circles to nodes
     node.append('circle')
       .attr('r', d => d.id === selectedNodeId ? 14 : 10)
-      .attr('fill', d => getNodeColor(d.type))
+      .attr('fill', d => getNodeColor(d))
       .attr('stroke', d => d.id === selectedNodeId ? '#fff' : 'transparent')
       .attr('stroke-width', 2)
 
-    // Add labels to nodes - hidden by default, shown on hover
-    node.append('text')
-      .text(d => d.title.length > 25 ? d.title.substring(0, 25) + '...' : d.title)
-      .attr('x', 14)
-      .attr('y', 4)
-      .attr('font-size', '11px')
-      .attr('fill', 'currentColor')
-      .attr('opacity', 0)
-      .attr('class', 'text-foreground pointer-events-none')
+    // Create label group that will be scaled inversely to zoom
+    const labelGroup = node.append('g')
+      .attr('class', 'label-group')
+      .attr('opacity', 0) // Hidden by default
+      .style('pointer-events', 'none') // Let clicks pass through to the node
 
-    // Add background rect for label readability (hidden by default)
-    node.insert('rect', 'text')
-      .attr('x', 12)
-      .attr('y', -10)
-      .attr('width', d => Math.min(d.title.length * 6.5, 170))
-      .attr('height', 20)
+    // Add background rect for label readability
+    labelGroup.append('rect')
+      .attr('x', 14)
+      .attr('y', -12)
+      .attr('width', d => d.title.length * 7 + 16)
+      .attr('height', 22)
       .attr('fill', 'var(--background)')
-      .attr('opacity', 0)
+      .attr('opacity', 0.95)
       .attr('rx', 4)
       .attr('class', 'label-bg')
 
+    // Add full labels to nodes - no truncation
+    labelGroup.append('text')
+      .text(d => d.title)
+      .attr('x', 22)
+      .attr('y', 4)
+      .attr('font-size', '12px')
+      .attr('fill', 'currentColor')
+      .attr('class', 'text-foreground pointer-events-none')
+
     // Show labels on hover
     node.on('mouseenter', function() {
-      d3.select(this).select('text').attr('opacity', 1)
-      d3.select(this).select('.label-bg').attr('opacity', 0.9)
       d3.select(this).select('circle').attr('r', 14)
+      d3.select(this).select('.label-group').attr('opacity', 1)
     })
     node.on('mouseleave', function(_, d) {
       if (d.id !== selectedNodeId) {
-        d3.select(this).select('text').attr('opacity', 0)
-        d3.select(this).select('.label-bg').attr('opacity', 0)
         d3.select(this).select('circle').attr('r', 10)
+        d3.select(this).select('.label-group').attr('opacity', 0)
       }
     })
 
     // Show label for selected node
     if (selectedNodeId) {
       node.filter(d => d.id === selectedNodeId)
-        .select('text').attr('opacity', 1)
-      node.filter(d => d.id === selectedNodeId)
-        .select('.label-bg').attr('opacity', 0.9)
+        .select('.label-group').attr('opacity', 1)
     }
 
     // Add title tooltip for full text
@@ -221,7 +364,7 @@ export function KnowledgeGraph({ data, onNodeClick, selectedNodeId, compact = fa
 
   if (data.nodes.length === 0) {
     return (
-      <div className={`flex items-center justify-center text-muted ${compact ? 'h-64' : 'h-full'}`}>
+      <div className={`flex items-center justify-center text-muted ${heightClass}`}>
         <div className="text-center">
           <p className={compact ? 'text-base' : 'text-lg'}>No notes yet</p>
           <p className="text-sm mt-1">Write something and extract notes to see your knowledge graph</p>
@@ -231,7 +374,7 @@ export function KnowledgeGraph({ data, onNodeClick, selectedNodeId, compact = fa
   }
 
   return (
-    <div ref={containerRef} className={`w-full ${compact ? 'h-80' : 'h-full'}`}>
+    <div ref={containerRef} className={`w-full ${heightClass}`}>
       <svg ref={svgRef} className="w-full h-full" />
     </div>
   )

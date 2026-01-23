@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import { useKnowledgeGraph } from '@/hooks/useKnowledgeGraph'
-import { KnowledgeGraph } from '@/components/graph/KnowledgeGraph'
+import { KnowledgeGraph, GoalColorInfo } from '@/components/graph/KnowledgeGraph'
 import { GraphControls } from '@/components/graph/GraphControls'
+import { GraphLegend } from '@/components/graph/GraphLegend'
 import { NotePanel } from '@/components/graph/NotePanel'
 import { Loading } from '@/components/ui/Loading'
 
@@ -12,6 +13,11 @@ export default function GraphPage() {
   const { data, loading, error, selectedNode, setSelectedNode, refresh } = useKnowledgeGraph()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
+  const [goalColors, setGoalColors] = useState<GoalColorInfo[]>([])
+
+  const handleGoalColorsChange = useCallback((colors: GoalColorInfo[]) => {
+    setGoalColors(colors)
+  }, [])
 
   // Get unique tags from all nodes
   const allTags = useMemo(() => {
@@ -125,7 +131,10 @@ export default function GraphPage() {
           data={filteredData}
           onNodeClick={setSelectedNode}
           selectedNodeId={selectedNode?.id}
+          onGoalColorsChange={handleGoalColorsChange}
         />
+
+        <GraphLegend goalColors={goalColors} />
 
         {selectedNode && (
           <NotePanel

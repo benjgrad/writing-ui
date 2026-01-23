@@ -9,10 +9,13 @@ import { SearchBar } from '@/components/documents/SearchBar'
 import { CreateDocumentButton } from '@/components/documents/CreateDocumentButton'
 import { Loading } from '@/components/ui/Loading'
 
+type SortOption = 'modified' | 'created' | 'title'
+
 export default function DocumentsPage() {
   const { loading: authLoading } = useAuth()
   const { documents, loading, archiveDocument, deleteDocument, searchDocuments } = useDocuments()
   const [searchQuery, setSearchQuery] = useState('')
+  const [sortBy, setSortBy] = useState<SortOption>('modified')
 
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query)
@@ -35,6 +38,23 @@ export default function DocumentsPage() {
     const totalDocs = documents.length
     return { totalWords, totalDocs }
   }, [documents])
+
+  // Sort documents
+  const sortedDocuments = useMemo(() => {
+    const sorted = [...documents]
+    switch (sortBy) {
+      case 'modified':
+        sorted.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+        break
+      case 'created':
+        sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        break
+      case 'title':
+        sorted.sort((a, b) => (a.title || 'Untitled').localeCompare(b.title || 'Untitled'))
+        break
+    }
+    return sorted
+  }, [documents, sortBy])
 
   if (authLoading) {
     return (
@@ -89,15 +109,29 @@ export default function DocumentsPage() {
 
         {/* Actions bar */}
         <div className="flex flex-col sm:flex-row gap-4 justify-between mb-8">
-          <div className="w-full sm:w-80">
-            <SearchBar onSearch={handleSearch} />
+          <div className="flex gap-4 items-center">
+            <div className="w-full sm:w-80">
+              <SearchBar onSearch={handleSearch} />
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted whitespace-nowrap">Sort by:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortOption)}
+                className="text-sm bg-background border border-border rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-foreground/20"
+              >
+                <option value="modified">Date modified</option>
+                <option value="created">Date created</option>
+                <option value="title">Title</option>
+              </select>
+            </div>
           </div>
           <CreateDocumentButton />
         </div>
 
         {/* Document list */}
         <DocumentList
-          documents={documents}
+          documents={sortedDocuments}
           loading={loading}
           onArchive={handleArchive}
           onDelete={handleDelete}

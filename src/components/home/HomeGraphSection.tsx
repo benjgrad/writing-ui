@@ -121,6 +121,7 @@ export function HomeGraphSection() {
           onNodeClick={setSelectedNode}
           selectedNodeId={selectedNode?.id}
           compact
+          height="h-[80vh]"
         />
 
         {/* Selected node tooltip */}

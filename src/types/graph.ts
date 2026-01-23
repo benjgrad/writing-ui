@@ -14,6 +14,9 @@ export interface GraphNode {
   type: string
   tags: string[]
   sources: NoteSource[]
+  goalId?: string
+  goalTitle?: string
+  goalStatus?: 'active' | 'parked' | 'completed' | 'archived'
   x?: number
   y?: number
   fx?: number | null
