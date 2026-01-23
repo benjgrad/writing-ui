@@ -1,23 +1,30 @@
 'use client'
 
 import Link from 'next/link'
+import { TitlePopover } from './TitlePopover'
 
 interface EditorToolbarProps {
   title: string
   onTitleChange: (title: string) => void
+  onRequestAIRename: () => void
+  isAIGenerating: boolean
   isSaving: boolean
   lastSaved: Date | null
   wordCount: number
   error?: string | null
+  onTitlePopoverOpenChange?: (isOpen: boolean) => void
 }
 
 export function EditorToolbar({
   title,
   onTitleChange,
+  onRequestAIRename,
+  isAIGenerating,
   isSaving,
   lastSaved,
   wordCount,
-  error
+  error,
+  onTitlePopoverOpenChange,
 }: EditorToolbarProps) {
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -44,12 +51,12 @@ export function EditorToolbar({
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
         </Link>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => onTitleChange(e.target.value)}
-          placeholder="Untitled"
-          className="bg-transparent border-none text-lg font-medium focus:outline-none w-48 md:w-64"
+        <TitlePopover
+          title={title}
+          onTitleChange={onTitleChange}
+          onRequestAIRename={onRequestAIRename}
+          isAIGenerating={isAIGenerating}
+          onOpenChange={onTitlePopoverOpenChange}
         />
       </div>
 
@@ -88,7 +95,7 @@ export function EditorToolbar({
         {/* Navigation icons */}
         <div className="flex items-center gap-2">
           <Link
-            href="/dashboard"
+            href="/documents"
             className="p-1.5 text-muted hover:text-foreground transition-colors rounded hover:bg-foreground/5"
             title="Documents"
           >

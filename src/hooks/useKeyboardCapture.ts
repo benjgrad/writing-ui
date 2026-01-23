@@ -19,9 +19,9 @@ export function useKeyboardCapture({
     (e: KeyboardEvent) => {
       if (!enabled) return
 
-      // If event came from our hidden textarea, let it through
-      // (the textarea's onChange will handle it for mobile)
-      if ((e.target as HTMLElement)?.tagName === 'TEXTAREA') {
+      // If event came from our hidden textarea or input field, let it through
+      // (allows title editing and mobile keyboard capture)
+      if (['TEXTAREA', 'INPUT'].includes((e.target as HTMLElement)?.tagName)) {
         return
       }
 

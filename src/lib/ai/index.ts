@@ -21,6 +21,7 @@ export interface AIProvider {
     pragmaticContext?: PragmaticContext
   ): Promise<ContinuationResult>
   extractNotes(text: string): Promise<ExtractedNote[]>
+  generateTitle(content: string): Promise<string>
 }
 
 export function getAIProvider(): AIProvider {
@@ -52,6 +53,9 @@ export function getAIProvider(): AIProvider {
         },
         async extractNotes(): Promise<ExtractedNote[]> {
           return []
+        },
+        async generateTitle(): Promise<string> {
+          return 'Untitled'
         }
       }
   }

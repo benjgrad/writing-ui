@@ -4,12 +4,25 @@ This document tracks platform feedback, UX issues, and planned features.
 
 ---
 
+## Legend
+
+| Symbol | Meaning |
+|--------|---------|
+| 🔴 | Critical / Bugs - Blocking issues that prevent core functionality |
+| 🟡 | High Priority - Significant UX issues affecting user experience |
+| 🟢 | Medium Priority - Enhancements that improve the platform |
+| 🔵 | Low Priority - Nice-to-have polish and optimizations |
+| ✅ | Completed - Done and verified |
+| ~~strikethrough~~ | Fixed but kept for historical context |
+
+---
+
 ## 🔴 Critical / Bugs
 
 ### Editor
 
 - **Backspace limitations broken**: Should be possible to backspace past the last two words. Currently blocked incorrectly.
-- **Titles of the documents cannot be set**: Users cannot set or edit document titles in the editor. Also the AI is not generating titles.
+- ~~**Titles of the documents cannot be set**: Users cannot set or edit document titles in the editor. Also the AI is not generating titles.~~ **FIXED** - Added inline popover for title editing with AI title generation support.
 
 ### Mobile Experience
 
@@ -39,7 +52,6 @@ This document tracks platform feedback, UX issues, and planned features.
 
 ### Goals / Momentum Engine
 
-- **Goals not visible on dashboard**: User goals should be prominently displayed on the dashboard page, not hidden in separate Goals page.
 - **"Failed to fetch goals" error still showing**: Error banner visible even when the page loads successfully.
 
 ### Goal Coach UX
@@ -61,6 +73,28 @@ This document tracks platform feedback, UX issues, and planned features.
 
 ## 🟢 Medium Priority / Enhancements
 
+### ~~Home Page Redesign~~ **IMPLEMENTED**
+
+- ~~**Move goals to home page**: The home page should be goal-centric. Display:
+  - Active goals with coaching UI
+  - Step management (micro-wins)
+  - Momentum meter for each goal
+  - Knowledge graph visualization below the goals UX~~ **DONE** - Dashboard now shows goals + compact knowledge graph
+- ~~**Raw notes on separate page**: Documents/raw notes list should be accessible from a dedicated `/notes` or `/documents` page, not the home page.~~ **DONE** - Created `/documents` page
+
+### Daily Goal Status Update Job
+
+- **Automatic momentum updates**: A daily scheduled job should:
+  - Trigger after note extraction processing completes
+  - Analyze all atomic notes from the past day
+  - Update momentum meter for ALL goals (not just active ones)
+  - Consider connections between notes and goals
+  - Track progress patterns over time
+- **Job orchestration**: When extraction queue completes, trigger downstream jobs:
+  1. Note extraction → creates atomic notes
+  2. Daily aggregation → analyzes recent notes
+  3. Goal status update → updates momentum for all goals
+
 ### AI/Agent Architecture
 
 - **Convert Goal Coach to ReAct agent**: Currently uses a deterministic 6-stage state machine with marker-based parsing (`[GOAL_CAPTURED]`, etc.). Should be converted to a true ReAct (Reasoning and Acting) agent with:
@@ -72,10 +106,7 @@ This document tracks platform feedback, UX issues, and planned features.
 
 ### Knowledge Extraction
 
-- **No zettelkasten-style atomic notes**: Platform should extract atomic insights/notes from:
-  - Writing content
-  - Goal coaching chat transcripts
-  - This would feed the Knowledge Graph with user-generated wisdom
+- ~~**No zettelkasten-style atomic notes**: Platform should extract atomic insights/notes from writing content and coaching transcripts.~~ **IMPLEMENTED** - Knowledge-aware extraction with cross-document connections and consolidation.
 
 ### Goals Enhancement
 
@@ -90,6 +121,7 @@ This document tracks platform feedback, UX issues, and planned features.
 
 ### Knowledge Graph
 
+- **Add legend**: Display a legend explaining node colors (permanent/fleeting/literature notes) and connection types (related, supports, contradicts, extends, example_of).
 - **Empty state guidance**: Graph page needs better onboarding for new users with no notes.
 - **Search improvements**: Full-text search within note content.
 
@@ -133,6 +165,9 @@ This document tracks platform feedback, UX issues, and planned features.
 - [x] Continue coaching conversation to update goal, motivation, or next steps
 - [x] Visual indicator in chat when goal is updated via coaching
 - [x] Goal card refreshes automatically after coaching updates
+- [x] Knowledge-aware extraction with cross-document connections
+- [x] Note consolidation with history preservation (`note_history` table)
+- [x] Source linking for atomic notes (multiple sources per note)
 
 ---
 
@@ -207,9 +242,28 @@ Sample test conversation (AI-generated responses):
 
 The coaching prompts are now conversational and ask clear questions that guide users naturally through the goal-setting process.
 
-### Next Priority: Goals on Dashboard
+### ~~Next Priority: Home Page Redesign~~ **COMPLETED**
 
-Display user goals prominently on the dashboard page instead of hiding them in the separate Goals page.
+~~Redesign home page to be goal-centric:
+1. Move goals (with coaching UI, step management, momentum) to home page
+2. Display knowledge graph below goals
+3. Move raw notes/documents to separate page~~
+
+**Implementation (Jan 2026):**
+- Dashboard (`/dashboard`) is now goal-centric with embedded compact knowledge graph
+- Documents moved to dedicated `/documents` page
+- Added `HomeGoalsSection` and `HomeGraphSection` components
+- Extracted `useGoalManagement` hook for reusable goal logic
+- Added compact mode to KnowledgeGraph component
+
+### Knowledge-Aware Extraction (Jan 2026)
+
+Implemented RAG-based extraction that:
+- Queries existing atomic notes for context before extraction
+- Consolidates similar notes (merges content, preserves history in `note_history` table)
+- Creates cross-document connections (achieved 32% cross-doc connection rate)
+- Uses keyword scoring for related note retrieval
+- Updated both local test script and Edge Function
 
 ---
 

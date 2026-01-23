@@ -1,41 +1,14 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
-import { useDocuments } from '@/hooks/useDocuments'
-import { DocumentList } from '@/components/documents/DocumentList'
-import { SearchBar } from '@/components/documents/SearchBar'
-import { CreateDocumentButton } from '@/components/documents/CreateDocumentButton'
+import { HomeGoalsSection } from '@/components/home/HomeGoalsSection'
+import { HomeGraphSection } from '@/components/home/HomeGraphSection'
 import { Loading } from '@/components/ui/Loading'
 import { Button } from '@/components/ui/Button'
 
 export default function DashboardPage() {
   const { user, loading: authLoading, signOut } = useAuth()
-  const { documents, loading, archiveDocument, deleteDocument, searchDocuments } = useDocuments()
-  const [searchQuery, setSearchQuery] = useState('')
-
-  const handleSearch = useCallback((query: string) => {
-    setSearchQuery(query)
-    searchDocuments(query)
-  }, [searchDocuments])
-
-  const handleArchive = useCallback(async (id: string) => {
-    await archiveDocument(id)
-  }, [archiveDocument])
-
-  const handleDelete = useCallback(async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this document? This cannot be undone.')) {
-      await deleteDocument(id)
-    }
-  }, [deleteDocument])
-
-  // Calculate stats
-  const stats = useMemo(() => {
-    const totalWords = documents.reduce((sum, doc) => sum + doc.word_count, 0)
-    const totalDocs = documents.length
-    return { totalWords, totalDocs }
-  }, [documents])
 
   if (authLoading) {
     return (
@@ -46,15 +19,15 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#f8fafc]">
       {/* Header */}
-      <header className="border-b border-border">
+      <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm border-b border-[#f1f5f9]">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-          <h1 className="text-lg font-semibold">Writing</h1>
+          <h1 className="text-lg font-semibold text-[#1e293b]">Writing</h1>
           <div className="flex items-center gap-4">
             <Link
-              href="/goals"
-              className="text-sm text-muted hover:text-foreground transition-colors flex items-center gap-1.5"
+              href="/documents"
+              className="text-sm text-[#64748b] hover:text-[#1e293b] transition-colors flex items-center gap-1.5"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -67,15 +40,17 @@ export default function DashboardPage() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
-                <circle cx="12" cy="12" r="10" />
-                <circle cx="12" cy="12" r="6" />
-                <circle cx="12" cy="12" r="2" />
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <polyline points="10 9 9 9 8 9" />
               </svg>
-              Goals
+              Documents
             </Link>
             <Link
               href="/graph"
-              className="text-sm text-muted hover:text-foreground transition-colors flex items-center gap-1.5"
+              className="text-sm text-[#64748b] hover:text-[#1e293b] transition-colors flex items-center gap-1.5"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -100,7 +75,7 @@ export default function DashboardPage() {
               </svg>
               Graph
             </Link>
-            <span className="text-sm text-muted">{user?.email}</span>
+            <span className="text-sm text-[#64748b]">{user?.email}</span>
             <Button variant="ghost" size="sm" onClick={signOut}>
               Sign out
             </Button>
@@ -110,40 +85,15 @@ export default function DashboardPage() {
 
       {/* Main content */}
       <main className="max-w-6xl mx-auto px-4 py-8">
-        {/* Stats */}
-        <div className="flex gap-6 mb-8">
-          <div>
-            <p className="text-2xl font-semibold">{stats.totalDocs}</p>
-            <p className="text-sm text-muted">Documents</p>
-          </div>
-          <div>
-            <p className="text-2xl font-semibold">{stats.totalWords.toLocaleString()}</p>
-            <p className="text-sm text-muted">Total words</p>
-          </div>
-        </div>
+        {/* Goals Section */}
+        <section className="mb-8">
+          <HomeGoalsSection />
+        </section>
 
-        {/* Actions bar */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-between mb-8">
-          <div className="w-full sm:w-80">
-            <SearchBar onSearch={handleSearch} />
-          </div>
-          <CreateDocumentButton />
-        </div>
-
-        {/* Document list */}
-        <DocumentList
-          documents={documents}
-          loading={loading}
-          onArchive={handleArchive}
-          onDelete={handleDelete}
-        />
-
-        {/* Search results indicator */}
-        {searchQuery && (
-          <p className="mt-4 text-sm text-muted">
-            Showing results for &ldquo;{searchQuery}&rdquo;
-          </p>
-        )}
+        {/* Knowledge Graph Section */}
+        <section>
+          <HomeGraphSection />
+        </section>
       </main>
     </div>
   )

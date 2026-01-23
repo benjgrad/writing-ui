@@ -8,6 +8,7 @@ import {
   type ContinuationResult
 } from '../prompts/continuation'
 import { EXTRACTION_PROMPT } from '../prompts/extraction'
+import { TITLE_GENERATION_PROMPT } from '../prompts/title-generation'
 
 export class AnthropicProvider implements AIProvider {
   private client: Anthropic
@@ -64,5 +65,26 @@ export class AnthropicProvider implements AIProvider {
     } catch {
       return []
     }
+  }
+
+  async generateTitle(content: string): Promise<string> {
+    // Truncate content to avoid token limits (first ~2000 chars is usually enough)
+    const truncatedContent = content.slice(0, 2000)
+
+    const response = await this.client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 50,
+      system: TITLE_GENERATION_PROMPT,
+      messages: [
+        { role: 'user', content: truncatedContent }
+      ]
+    })
+
+    const textBlock = response.content.find(block => block.type === 'text')
+    if (!textBlock || textBlock.type !== 'text') return 'Untitled'
+
+    // Clean up the response (trim whitespace, remove quotes if present)
+    const title = textBlock.text.trim().replace(/^["']|["']$/g, '')
+    return title || 'Untitled'
   }
 }

@@ -8,9 +8,10 @@ interface KnowledgeGraphProps {
   data: GraphData
   onNodeClick: (node: GraphNode) => void
   selectedNodeId?: string | null
+  compact?: boolean
 }
 
-export function KnowledgeGraph({ data, onNodeClick, selectedNodeId }: KnowledgeGraphProps) {
+export function KnowledgeGraph({ data, onNodeClick, selectedNodeId, compact = false }: KnowledgeGraphProps) {
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -220,9 +221,9 @@ export function KnowledgeGraph({ data, onNodeClick, selectedNodeId }: KnowledgeG
 
   if (data.nodes.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full text-muted">
+      <div className={`flex items-center justify-center text-muted ${compact ? 'h-64' : 'h-full'}`}>
         <div className="text-center">
-          <p className="text-lg">No notes yet</p>
+          <p className={compact ? 'text-base' : 'text-lg'}>No notes yet</p>
           <p className="text-sm mt-1">Write something and extract notes to see your knowledge graph</p>
         </div>
       </div>
@@ -230,7 +231,7 @@ export function KnowledgeGraph({ data, onNodeClick, selectedNodeId }: KnowledgeG
   }
 
   return (
-    <div ref={containerRef} className="w-full h-full">
+    <div ref={containerRef} className={`w-full ${compact ? 'h-80' : 'h-full'}`}>
       <svg ref={svgRef} className="w-full h-full" />
     </div>
   )

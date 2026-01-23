@@ -8,6 +8,7 @@ import {
   type ContinuationResult
 } from '../prompts/continuation'
 import { EXTRACTION_PROMPT } from '../prompts/extraction'
+import { TITLE_GENERATION_PROMPT } from '../prompts/title-generation'
 
 export class OpenAIProvider implements AIProvider {
   private client: OpenAI
@@ -62,5 +63,23 @@ export class OpenAIProvider implements AIProvider {
     } catch {
       return []
     }
+  }
+
+  async generateTitle(content: string): Promise<string> {
+    // Truncate content to avoid token limits
+    const truncatedContent = content.slice(0, 2000)
+
+    const response = await this.client.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [
+        { role: 'system', content: TITLE_GENERATION_PROMPT },
+        { role: 'user', content: truncatedContent }
+      ],
+      max_tokens: 50,
+      temperature: 0.7
+    })
+
+    const title = response.choices[0]?.message?.content?.trim().replace(/^["']|["']$/g, '')
+    return title || 'Untitled'
   }
 }
