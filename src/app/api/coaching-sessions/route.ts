@@ -3,7 +3,10 @@ import { createClient } from '@/lib/supabase/server'
 import type { CoachingSession, CoachingMessage } from '@/types/goal'
 
 // GET /api/coaching-sessions - Fetch all coaching sessions for current user
-// Optional query params: ?goal_id=xxx to filter by goal
+// Optional query params:
+//   ?goal_id=xxx - filter by goal
+//   ?limit=N - limit results
+//   ?active=true - only return active sessions
 export async function GET(request: Request) {
   try {
     const supabase = await createClient()
@@ -15,6 +18,8 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url)
     const goalId = searchParams.get('goal_id')
+    const limit = searchParams.get('limit')
+    const activeOnly = searchParams.get('active') === 'true'
 
     // Build query
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,10 +30,18 @@ export async function GET(request: Request) {
         coaching_messages (*)
       `)
       .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
+      .order('updated_at', { ascending: false })
 
     if (goalId) {
       query = query.eq('goal_id', goalId)
+    }
+
+    if (activeOnly) {
+      query = query.eq('is_active', true)
+    }
+
+    if (limit) {
+      query = query.limit(parseInt(limit, 10))
     }
 
     const { data: sessions, error } = await query

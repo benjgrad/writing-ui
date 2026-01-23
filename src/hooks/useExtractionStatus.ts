@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
 interface ExtractionStats {
@@ -28,6 +28,7 @@ export function useExtractionStatus() {
   const [recentJobs, setRecentJobs] = useState<ExtractionJob[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
   const [isEnabled, setIsEnabled] = useState(true)
+  const processingRef = useRef(false)
 
   const supabase = createClient()
 
@@ -112,10 +113,72 @@ export function useExtractionStatus() {
     }
   }, [supabase, fetchStats, isEnabled])
 
+  // Trigger extraction processing
+  const triggerProcessing = useCallback(async () => {
+    if (processingRef.current) return
+    processingRef.current = true
+
+    try {
+      const response = await fetch('/api/extraction/process', {
+        method: 'POST',
+      })
+
+      if (response.ok) {
+        // Refresh stats after processing
+        await fetchStats()
+      }
+    } catch (err) {
+      console.error('Error triggering extraction:', err)
+    } finally {
+      processingRef.current = false
+    }
+  }, [fetchStats])
+
+  // Reset stuck jobs
+  const resetStuckJobs = useCallback(async () => {
+    try {
+      const response = await fetch('/api/extraction/reset-stuck', {
+        method: 'POST',
+      })
+
+      if (response.ok) {
+        await fetchStats()
+      }
+    } catch (err) {
+      console.error('Error resetting stuck jobs:', err)
+    }
+  }, [fetchStats])
+
+  // Auto-trigger processing when there are pending jobs
+  useEffect(() => {
+    if (!isEnabled || processingRef.current) return
+
+    // If there are pending jobs but nothing processing, trigger processing
+    if (stats.pending > 0 && stats.processing === 0) {
+      triggerProcessing()
+    }
+  }, [stats.pending, stats.processing, isEnabled, triggerProcessing])
+
+  // Auto-reset jobs stuck in processing for too long
+  useEffect(() => {
+    if (!isEnabled) return
+
+    // If jobs have been processing for a while with no progress, reset them
+    if (stats.processing > 0 && stats.pending === 0) {
+      const resetTimeout = setTimeout(() => {
+        resetStuckJobs()
+      }, 60000) // Reset after 1 minute of no progress
+
+      return () => clearTimeout(resetTimeout)
+    }
+  }, [stats.processing, stats.pending, isEnabled, resetStuckJobs])
+
   return {
     stats,
     recentJobs,
     isProcessing,
-    refresh: fetchStats
+    refresh: fetchStats,
+    triggerProcessing,
+    resetStuckJobs,
   }
 }

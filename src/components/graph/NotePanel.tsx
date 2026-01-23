@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { openCoachingSession } from '@/components/coaching/CoachingProvider'
 import type { GraphNode } from '@/types/graph'
 
 interface NotePanelProps {
@@ -113,15 +114,12 @@ export function NotePanel({ node, onClose, onDelete }: NotePanelProps) {
             <p className="text-xs font-medium text-muted mb-2">Sources</p>
             <div className="space-y-1">
               {node.sources.map(source => (
-                <Link
-                  key={source.id}
-                  href={source.source_type === 'document'
-                    ? `/write/${source.source_id}`
-                    : `/coaching`
-                  }
-                  className="flex items-center gap-2 text-sm text-foreground/70 hover:text-foreground transition-colors"
-                >
-                  {source.source_type === 'document' ? (
+                source.source_type === 'document' ? (
+                  <Link
+                    key={source.id}
+                    href={`/write/${source.source_id}`}
+                    className="flex items-center gap-2 text-sm text-foreground/70 hover:text-foreground transition-colors"
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="14"
@@ -136,7 +134,16 @@ export function NotePanel({ node, onClose, onDelete }: NotePanelProps) {
                       <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
                       <polyline points="14,2 14,8 20,8" />
                     </svg>
-                  ) : (
+                    <span className="truncate">
+                      {source.document_title || 'Document'}
+                    </span>
+                  </Link>
+                ) : (
+                  <button
+                    key={source.id}
+                    onClick={() => openCoachingSession(source.source_id)}
+                    className="flex items-center gap-2 text-sm text-foreground/70 hover:text-foreground transition-colors w-full text-left"
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="14"
@@ -150,14 +157,11 @@ export function NotePanel({ node, onClose, onDelete }: NotePanelProps) {
                     >
                       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                     </svg>
-                  )}
-                  <span className="truncate">
-                    {source.source_type === 'document'
-                      ? source.document_title || 'Document'
-                      : source.session_goal_title || 'Coaching Session'
-                    }
-                  </span>
-                </Link>
+                    <span className="truncate">
+                      {source.session_goal_title || 'Coaching Session'}
+                    </span>
+                  </button>
+                )
               ))}
             </div>
           </div>

@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { CoachingProvider } from '@/components/coaching/CoachingProvider'
 
 export default async function ProtectedLayout({
   children,
@@ -8,7 +9,7 @@ export default async function ProtectedLayout({
 }) {
   // Skip auth check when SKIP_AUTH is enabled (for testing/development)
   if (process.env.SKIP_AUTH === 'true') {
-    return <>{children}</>
+    return <CoachingProvider>{children}</CoachingProvider>
   }
 
   const supabase = await createClient()
@@ -18,5 +19,5 @@ export default async function ProtectedLayout({
     redirect('/login')
   }
 
-  return <>{children}</>
+  return <CoachingProvider>{children}</CoachingProvider>
 }

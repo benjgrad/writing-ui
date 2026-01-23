@@ -20,6 +20,7 @@ interface NoteRow {
   title: string
   content: string
   note_type: string
+  created_at: string
 }
 
 interface ConnectionRow {
@@ -46,7 +47,7 @@ export function useKnowledgeGraph() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: notes, error: notesError } = await (supabase as any)
         .from('atomic_notes')
-        .select('id, title, content, note_type')
+        .select('id, title, content, note_type, created_at')
         .order('created_at', { ascending: false })
 
       if (notesError) throw notesError
@@ -166,7 +167,8 @@ export function useKnowledgeGraph() {
           sources: sourceMap.get(note.id) || [],
           goalId: goalInfo?.id,
           goalTitle: goalInfo?.title,
-          goalStatus: goalInfo?.status as 'active' | 'parked' | 'completed' | 'archived' | undefined
+          goalStatus: goalInfo?.status as 'active' | 'parked' | 'completed' | 'archived' | undefined,
+          createdAt: note.created_at
         }
       })
 

@@ -17,10 +17,26 @@ export interface GraphNode {
   goalId?: string
   goalTitle?: string
   goalStatus?: 'active' | 'parked' | 'completed' | 'archived'
+  createdAt: string
   x?: number
   y?: number
   fx?: number | null
   fy?: number | null
+}
+
+// Recency range as percentage (0-100) where 0 is oldest, 100 is newest
+// [start, end] means show notes from position start% to end%
+export interface RecencyRange {
+  start: number // 0-100
+  end: number   // 0-100
+}
+
+export interface SavedFilter {
+  id: string
+  name: string
+  tags: string[]
+  recencyRange: RecencyRange | null
+  searchQuery: string
 }
 
 export interface GraphLink {

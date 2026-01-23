@@ -8,6 +8,8 @@ import type { CoachingSession } from '@/types/goal'
 interface GoalCoachProps {
   isOpen: boolean
   onClose: () => void
+  onMinimize?: () => void // Called when user clicks outside or minimize button
+  isMinimized?: boolean
   onGoalCreated: (goalData: GoalData, sessionId: string | null) => void
   existingSession?: CoachingSession
   viewOnly?: boolean
@@ -24,7 +26,7 @@ const stageLabels: Record<CoachingStage, string> = {
   continuation: 'Updating your goal'
 }
 
-export function GoalCoach({ isOpen, onClose, onGoalCreated, existingSession, viewOnly = false, onGoalUpdated }: GoalCoachProps) {
+export function GoalCoach({ isOpen, onClose, onMinimize, isMinimized = false, onGoalCreated, existingSession, viewOnly = false, onGoalUpdated }: GoalCoachProps) {
   const {
     messages,
     stage,
@@ -126,63 +128,134 @@ export function GoalCoach({ isOpen, onClose, onGoalCreated, existingSession, vie
 
   if (!isOpen) return null
 
+  // Handle clicking outside - minimize instead of close
+  const handleBackdropClick = () => {
+    if (onMinimize) {
+      onMinimize()
+    }
+  }
+
   return (
-    <div className="fixed inset-0 z-50 flex">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-        onClick={handleClose}
-      />
+    <div className={`fixed z-50 ${isMinimized ? 'bottom-6 right-6' : 'inset-0'} flex`}>
+      {/* Backdrop - only show when expanded, no blur */}
+      {!isMinimized && (
+        <div
+          className="absolute inset-0 bg-black/20"
+          onClick={handleBackdropClick}
+        />
+      )}
 
-      {/* Chat panel - slides in from right */}
-      <div className="relative ml-auto w-full max-w-lg h-dvh bg-white shadow-2xl flex flex-col animate-slide-in-right">
+      {/* Chat panel - slides in from right when expanded, small card when minimized */}
+      <div className={`relative ${isMinimized
+        ? 'w-80 h-auto max-h-16 rounded-2xl cursor-pointer'
+        : 'ml-auto w-full max-w-lg h-dvh'} bg-white shadow-2xl flex flex-col ${!isMinimized ? 'animate-slide-in-right' : ''}`}
+        onClick={isMinimized ? onMinimize : undefined}
+      >
         {/* Header */}
-        <div className="flex-shrink-0 p-4 border-b border-[#e2e8f0] bg-gradient-to-r from-[#6366f1] to-[#8b5cf6]">
+        <div className={`flex-shrink-0 ${isMinimized ? 'p-3 rounded-2xl' : 'p-4 border-b border-[#e2e8f0]'} bg-gradient-to-r from-[#6366f1] to-[#8b5cf6]`}>
           <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-bold text-white">
-                {existingSession ? 'Continue Coaching' : 'Goal Coach'}
-              </h2>
-              <p className="text-sm text-white/80">
-                {stageLabels[stage]}
-              </p>
+            <div className="flex items-center gap-3">
+              {/* Whistle icon when minimized */}
+              {isMinimized && (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <ellipse cx="14" cy="14" rx="7" ry="5" />
+                  <path d="M7 14H4a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1h3" />
+                  <circle cx="3" cy="8" r="2" />
+                </svg>
+              )}
+              <div>
+                <h2 className={`${isMinimized ? 'text-sm' : 'text-lg'} font-bold text-white`}>
+                  {existingSession ? 'Continue Coaching' : 'Goal Coach'}
+                </h2>
+                {!isMinimized && (
+                  <p className="text-sm text-white/80">
+                    {stageLabels[stage]}
+                  </p>
+                )}
+              </div>
             </div>
-            <button
-              onClick={handleClose}
-              className="text-white/80 hover:text-white transition-colors p-1"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M18 6 6 18" />
-                <path d="m6 6 12 12" />
-              </svg>
-            </button>
+            {!isMinimized && (
+              <div className="flex items-center gap-1">
+                {/* Minimize button */}
+                {onMinimize && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onMinimize() }}
+                    className="text-white/80 hover:text-white transition-colors p-1"
+                    title="Minimize"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M8 3v3a2 2 0 0 1-2 2H3" />
+                      <path d="M21 8h-3a2 2 0 0 1-2-2V3" />
+                      <path d="M3 16h3a2 2 0 0 1 2 2v3" />
+                      <path d="M16 21v-3a2 2 0 0 1 2-2h3" />
+                    </svg>
+                  </button>
+                )}
+                {/* Close button */}
+                <button
+                  onClick={handleClose}
+                  className="text-white/80 hover:text-white transition-colors p-1"
+                  title="Close"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M18 6 6 18" />
+                    <path d="m6 6 12 12" />
+                  </svg>
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Progress indicator */}
-          <div className="mt-3 flex gap-1">
-            {(['welcome', 'goal_discovery', 'why_drilling', 'micro_win', 'confirmation'] as CoachingStage[]).map((s, i) => (
-              <div
-                key={s}
-                className={`h-1 flex-1 rounded-full transition-colors ${
-                  getStageIndex(stage) >= i
-                    ? 'bg-white'
-                    : 'bg-white/30'
-                }`}
-              />
-            ))}
-          </div>
+          {/* Progress indicator - only when expanded */}
+          {!isMinimized && (
+            <div className="mt-3 flex gap-1">
+              {(['welcome', 'goal_discovery', 'why_drilling', 'micro_win', 'confirmation'] as CoachingStage[]).map((s, i) => (
+                <div
+                  key={s}
+                  className={`h-1 flex-1 rounded-full transition-colors ${
+                    getStageIndex(stage) >= i
+                      ? 'bg-white'
+                      : 'bg-white/30'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
+        {/* Content - hide when minimized */}
+        {!isMinimized && (
+          <>
         {/* Goal summary card (shows as goal takes shape) */}
         {goalData.title && (
           <div className="flex-shrink-0 mx-4 mt-4 p-3 rounded-xl bg-[#f0fdf4] border border-[#86efac]">
@@ -341,6 +414,8 @@ export function GoalCoach({ isOpen, onClose, onGoalCreated, existingSession, vie
               This is a past coaching session
             </p>
           </div>
+        )}
+          </>
         )}
       </div>
 

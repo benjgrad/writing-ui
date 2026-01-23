@@ -24,6 +24,10 @@ This document tracks platform feedback, UX issues, and planned features.
 - **Backspace limitations broken**: Should be possible to backspace past the last two words. Currently blocked incorrectly.
 - ~~**Titles of the documents cannot be set**: Users cannot set or edit document titles in the editor. Also the AI is not generating titles.~~ **FIXED** - Added inline popover for title editing with AI title generation support.
 
+### Knowledge Extraction
+
+- **Atomic notes don't link to coaching sessions**: Notes extracted from coaching sessions don't properly link back to the source session. The `source_type: 'coaching_session'` extraction works but the note-to-source linking may be broken.
+
 ### Mobile Experience
 
 - ~~**Editor keyboard doesn't appear**: On mobile, the editor doesn't bring up the keyboard at all, making it unusable for writing.~~ **FIXED** - Added hidden textarea for mobile keyboard capture.
@@ -79,8 +83,8 @@ This document tracks platform feedback, UX issues, and planned features.
   - Active goals with coaching UI
   - Step management (micro-wins)
   - Momentum meter for each goal
-  - Knowledge graph visualization below the goals UX~~ **DONE** - Dashboard now shows goals + compact knowledge graph
-- ~~**Raw notes on separate page**: Documents/raw notes list should be accessible from a dedicated `/notes` or `/documents` page, not the home page.~~ **DONE** - Created `/documents` page
+  - Knowledge graph visualization below the goals UX~~ **DONE** - Dashboard now shows goals + compact knowledge graph (80vh height)
+- ~~**Raw notes on separate page**: Documents/raw notes list should be accessible from a dedicated `/notes` or `/documents` page, not the home page.~~ **DONE** - Created `/documents` page with sorting (date modified, date created, title)
 
 ### Daily Goal Status Update Job
 
@@ -168,6 +172,11 @@ This document tracks platform feedback, UX issues, and planned features.
 - [x] Knowledge-aware extraction with cross-document connections
 - [x] Note consolidation with history preservation (`note_history` table)
 - [x] Source linking for atomic notes (multiple sources per note)
+- [x] Document naming with inline title popover and AI auto-generation on first save
+- [x] Home page redesigned to be goal-centric with compact knowledge graph
+- [x] Documents page (`/documents`) with sorting by date modified, date created, or title
+- [x] Document cards show creation date and modification date
+- [x] Knowledge graph keeps unconnected nodes visible (radial force constraint)
 
 ---
 

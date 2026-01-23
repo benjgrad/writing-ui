@@ -3,16 +3,20 @@
 import { useState, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import { useKnowledgeGraph } from '@/hooks/useKnowledgeGraph'
+import { useSavedFilters } from '@/hooks/useSavedFilters'
 import { KnowledgeGraph, GoalColorInfo } from '@/components/graph/KnowledgeGraph'
 import { GraphControls } from '@/components/graph/GraphControls'
 import { GraphLegend } from '@/components/graph/GraphLegend'
 import { NotePanel } from '@/components/graph/NotePanel'
 import { Loading } from '@/components/ui/Loading'
+import type { SavedFilter, RecencyRange } from '@/types/graph'
 
 export default function GraphPage() {
   const { data, loading, error, selectedNode, setSelectedNode, refresh } = useKnowledgeGraph()
+  const { savedFilters, saveFilter, deleteFilter } = useSavedFilters()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
+  const [recencyRange, setRecencyRange] = useState<RecencyRange | null>(null)
   const [goalColors, setGoalColors] = useState<GoalColorInfo[]>([])
 
   const handleGoalColorsChange = useCallback((colors: GoalColorInfo[]) => {
@@ -26,7 +30,7 @@ export default function GraphPage() {
     return Array.from(tags).sort()
   }, [data.nodes])
 
-  // Filter nodes based on search and tags
+  // Filter nodes based on search, tags, and date range
   const filteredData = useMemo(() => {
     let nodes = data.nodes
 
@@ -44,6 +48,18 @@ export default function GraphPage() {
       )
     }
 
+    // Filter by recency range (percentage-based slicing)
+    // Notes are sorted by created_at desc (newest first, index 0)
+    // Slider: 0% = oldest, 100% = newest
+    // So we need to invert: 100% maps to index 0 (newest)
+    if (recencyRange) {
+      const totalCount = nodes.length
+      // Convert percentage to array indices (inverted because array is newest-first)
+      const startIndex = Math.floor(((100 - recencyRange.end) / 100) * totalCount)
+      const endIndex = Math.ceil(((100 - recencyRange.start) / 100) * totalCount)
+      nodes = nodes.slice(startIndex, endIndex)
+    }
+
     const nodeIds = new Set(nodes.map(n => n.id))
     const links = data.links.filter(link => {
       const sourceId = typeof link.source === 'string' ? link.source : link.source.id
@@ -52,7 +68,7 @@ export default function GraphPage() {
     })
 
     return { nodes, links }
-  }, [data, searchQuery, selectedTags])
+  }, [data, searchQuery, selectedTags, recencyRange])
 
   const handleTagToggle = (tag: string) => {
     setSelectedTags(prev =>
@@ -61,6 +77,12 @@ export default function GraphPage() {
         : [...prev, tag]
     )
   }
+
+  const handleApplyFilter = useCallback((filter: SavedFilter) => {
+    setSearchQuery(filter.searchQuery)
+    setSelectedTags(filter.tags)
+    setRecencyRange(filter.recencyRange)
+  }, [])
 
   if (loading) {
     return (
@@ -125,6 +147,13 @@ export default function GraphPage() {
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           onRefresh={refresh}
+          totalNotes={data.nodes.length}
+          recencyRange={recencyRange}
+          onRecencyRangeChange={setRecencyRange}
+          savedFilters={savedFilters}
+          onSaveFilter={saveFilter}
+          onDeleteFilter={deleteFilter}
+          onApplyFilter={handleApplyFilter}
         />
 
         <KnowledgeGraph
