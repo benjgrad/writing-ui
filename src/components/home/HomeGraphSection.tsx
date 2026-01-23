@@ -44,15 +44,15 @@ export function HomeGraphSection() {
   if (error) {
     return (
       <div className="py-8 text-center">
-        <p className="text-red-500 text-sm">{error}</p>
+        <p className="text-red-500 dark:text-red-400 text-sm">{error}</p>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden">
+    <div className="bg-background rounded-xl border border-border overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#e2e8f0]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 py-3 border-b border-border gap-3">
         <div className="flex items-center gap-3">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -64,7 +64,7 @@ export function HomeGraphSection() {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="text-[#64748b]"
+            className="text-muted"
           >
             <circle cx="12" cy="12" r="3" />
             <circle cx="4" cy="6" r="2" />
@@ -76,13 +76,13 @@ export function HomeGraphSection() {
             <line x1="6" y1="18" x2="9" y2="14" />
             <line x1="15" y1="14" x2="18" y2="18" />
           </svg>
-          <h3 className="font-medium text-[#1e293b]">Knowledge Graph</h3>
-          <span className="text-xs text-[#64748b]">
+          <h3 className="font-medium text-foreground">Knowledge Graph</h3>
+          <span className="text-xs text-muted">
             {filteredData.nodes.length} notes
           </span>
         </div>
         <div className="flex items-center gap-3">
-          <div className="w-48">
+          <div className="flex-1 sm:flex-none sm:w-48">
             <Input
               type="text"
               placeholder="Search notes..."
@@ -93,7 +93,7 @@ export function HomeGraphSection() {
           </div>
           <Link
             href="/graph"
-            className="text-sm text-[#6366f1] hover:text-[#4f46e5] transition-colors flex items-center gap-1"
+            className="text-sm text-foreground/70 hover:text-foreground transition-colors flex items-center gap-1 whitespace-nowrap"
           >
             View full graph
             <svg
@@ -121,28 +121,28 @@ export function HomeGraphSection() {
           onNodeClick={setSelectedNode}
           selectedNodeId={selectedNode?.id}
           compact
-          height="h-[80vh]"
+          height="h-[60vh] sm:h-[80vh]"
         />
 
         {/* Selected node tooltip */}
         {selectedNode && (
-          <div className="absolute bottom-4 left-4 right-4 bg-white rounded-lg shadow-lg border border-[#e2e8f0] p-3 z-10">
+          <div className="absolute bottom-4 left-4 right-4 bg-background rounded-lg shadow-lg border border-border p-3 z-10">
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
-                <h4 className="font-medium text-[#1e293b] truncate">{selectedNode.title}</h4>
-                <p className="text-xs text-[#64748b] mt-1 line-clamp-2">{selectedNode.content}</p>
+                <h4 className="font-medium text-foreground truncate">{selectedNode.title}</h4>
+                <p className="text-xs text-muted mt-1 line-clamp-2">{selectedNode.content}</p>
                 {selectedNode.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-2">
                     {selectedNode.tags.slice(0, 3).map(tag => (
                       <span
                         key={tag}
-                        className="px-2 py-0.5 text-xs bg-[#f1f5f9] text-[#64748b] rounded"
+                        className="px-2 py-0.5 text-xs bg-foreground/5 text-muted rounded"
                       >
                         {tag}
                       </span>
                     ))}
                     {selectedNode.tags.length > 3 && (
-                      <span className="text-xs text-[#64748b]">
+                      <span className="text-xs text-muted">
                         +{selectedNode.tags.length - 3} more
                       </span>
                     )}
@@ -151,7 +151,7 @@ export function HomeGraphSection() {
               </div>
               <button
                 onClick={() => setSelectedNode(null)}
-                className="ml-2 p-1 text-[#94a3b8] hover:text-[#64748b] transition-colors"
+                className="ml-2 p-1 text-muted hover:text-foreground transition-colors"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

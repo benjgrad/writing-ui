@@ -52,7 +52,7 @@ export function HomeGoalsSection() {
   return (
     <div>
       {error && (
-        <div className="mb-6 p-4 rounded-xl bg-[#fef2f2] text-[#dc2626] text-sm">
+        <div className="mb-6 p-4 rounded-xl bg-red-500/10 text-red-600 dark:text-red-400 text-sm">
           {error}
           <button
             onClick={refresh}
@@ -97,7 +97,7 @@ export function HomeGoalsSection() {
       {/* Empty state */}
       {activeGoals.length === 0 && parkedGoals.length === 0 && (
         <div className="text-center py-12">
-          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-[#f1f5f9] flex items-center justify-center">
+          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-foreground/5 flex items-center justify-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="40"
@@ -108,21 +108,21 @@ export function HomeGoalsSection() {
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-[#94a3b8]"
+              className="text-muted"
             >
               <path d="M12 20h9" />
               <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
             </svg>
           </div>
-          <h2 className="text-xl font-semibold text-[#1e293b] mb-2">
+          <h2 className="text-xl font-semibold text-foreground mb-2">
             Start with one goal
           </h2>
-          <p className="text-[#64748b] mb-4 max-w-md mx-auto text-sm">
+          <p className="text-muted mb-4 max-w-md mx-auto text-sm">
             Focus on what matters most. The Rule of Three keeps you centered.
           </p>
           <button
             onClick={openGoalCoach}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#6366f1] text-white hover:bg-[#4f46e5] transition-colors text-sm"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-foreground text-background hover:opacity-90 transition-opacity text-sm"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -162,9 +162,9 @@ export function HomeGoalsSection() {
       {/* Loading indicator for session fetch */}
       {loadingSession && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
-          <div className="bg-white rounded-xl p-6 shadow-xl">
+          <div className="bg-background rounded-xl p-6 shadow-xl border border-border">
             <Loading />
-            <p className="mt-2 text-sm text-[#64748b]">Loading coaching history...</p>
+            <p className="mt-2 text-sm text-muted">Loading coaching history...</p>
           </div>
         </div>
       )}

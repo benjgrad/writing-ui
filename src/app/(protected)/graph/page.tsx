@@ -108,8 +108,8 @@ export default function GraphPage() {
   return (
     <div className="min-h-screen bg-background relative">
       {/* Header */}
-      <div className="fixed top-0 left-0 right-0 h-14 flex items-center justify-between px-4 bg-background/80 backdrop-blur-sm border-b border-border z-30">
-        <div className="flex items-center gap-4">
+      <div className="fixed top-0 left-0 right-0 h-14 flex items-center justify-between px-3 sm:px-4 bg-background/80 backdrop-blur-sm border-b border-border z-30">
+        <div className="flex items-center gap-2 sm:gap-4">
           <Link
             href="/dashboard"
             className="text-muted hover:text-foreground transition-colors"
@@ -128,12 +128,13 @@ export default function GraphPage() {
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
           </Link>
-          <h1 className="text-lg font-medium">Knowledge Graph</h1>
+          <h1 className="text-base sm:text-lg font-medium">Knowledge Graph</h1>
         </div>
-        <div className="flex items-center gap-4 text-sm text-muted">
-          <span>{filteredData.nodes.length} notes, {filteredData.links.length} connections</span>
+        <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted">
+          <span>{filteredData.nodes.length} notes</span>
+          <span className="hidden sm:inline">{filteredData.links.length} connections</span>
           {filteredData.nodes.length > 20 && (
-            <span className="text-xs">Hover nodes to see labels</span>
+            <span className="hidden sm:inline text-xs">Hover nodes to see labels</span>
           )}
         </div>
       </div>

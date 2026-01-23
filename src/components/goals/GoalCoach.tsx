@@ -148,11 +148,11 @@ export function GoalCoach({ isOpen, onClose, onMinimize, isMinimized = false, on
       {/* Chat panel - slides in from right when expanded, small card when minimized */}
       <div className={`relative ${isMinimized
         ? 'w-80 h-auto max-h-16 rounded-2xl cursor-pointer'
-        : 'ml-auto w-full max-w-lg h-dvh'} bg-white shadow-2xl flex flex-col ${!isMinimized ? 'animate-slide-in-right' : ''}`}
+        : 'ml-auto w-full max-w-lg h-dvh'} bg-background shadow-2xl flex flex-col ${!isMinimized ? 'animate-slide-in-right' : ''}`}
         onClick={isMinimized ? onMinimize : undefined}
       >
         {/* Header */}
-        <div className={`flex-shrink-0 ${isMinimized ? 'p-3 rounded-2xl' : 'p-4 border-b border-[#e2e8f0]'} bg-gradient-to-r from-[#6366f1] to-[#8b5cf6]`}>
+        <div className={`flex-shrink-0 ${isMinimized ? 'p-3 rounded-2xl' : 'p-4 border-b border-border'} bg-gradient-to-r from-[#6366f1] to-[#8b5cf6]`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               {/* Whistle icon when minimized */}
@@ -258,9 +258,9 @@ export function GoalCoach({ isOpen, onClose, onMinimize, isMinimized = false, on
           <>
         {/* Goal summary card (shows as goal takes shape) */}
         {goalData.title && (
-          <div className="flex-shrink-0 mx-4 mt-4 p-3 rounded-xl bg-[#f0fdf4] border border-[#86efac]">
+          <div className="flex-shrink-0 mx-4 mt-4 p-3 rounded-xl bg-green-500/10 border border-green-500/30">
             <div className="flex items-start gap-2">
-              <div className="w-6 h-6 rounded-full bg-[#10b981] flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="14"
@@ -278,16 +278,16 @@ export function GoalCoach({ isOpen, onClose, onMinimize, isMinimized = false, on
                 </svg>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-[#15803d] text-sm">
+                <p className="font-semibold text-green-600 dark:text-green-400 text-sm">
                   {goalData.title}
                 </p>
                 {goalData.whyRoot && (
-                  <p className="text-xs text-[#166534] mt-1 italic">
+                  <p className="text-xs text-green-700 dark:text-green-300 mt-1 italic">
                     &ldquo;{goalData.whyRoot}&rdquo;
                   </p>
                 )}
                 {goalData.microWin && (
-                  <p className="text-xs text-[#166534] mt-1 flex items-center gap-1">
+                  <p className="text-xs text-green-700 dark:text-green-300 mt-1 flex items-center gap-1">
                     <span className="font-medium">First step:</span> {goalData.microWin}
                   </p>
                 )}
@@ -305,11 +305,11 @@ export function GoalCoach({ isOpen, onClose, onMinimize, isMinimized = false, on
           {/* Loading indicator */}
           {isLoading && (
             <div className="flex justify-start">
-              <div className="bg-[#f1f5f9] text-[#1e293b] rounded-2xl rounded-bl-md px-4 py-3 max-w-[80%]">
+              <div className="bg-foreground/10 text-foreground rounded-2xl rounded-bl-md px-4 py-3 max-w-[80%]">
                 <div className="flex gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-[#64748b] animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <div className="w-2 h-2 rounded-full bg-[#64748b] animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <div className="w-2 h-2 rounded-full bg-[#64748b] animate-bounce" style={{ animationDelay: '300ms' }} />
+                  <div className="w-2 h-2 rounded-full bg-muted animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <div className="w-2 h-2 rounded-full bg-muted animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <div className="w-2 h-2 rounded-full bg-muted animate-bounce" style={{ animationDelay: '300ms' }} />
                 </div>
               </div>
             </div>
@@ -318,7 +318,7 @@ export function GoalCoach({ isOpen, onClose, onMinimize, isMinimized = false, on
           {/* Error message */}
           {error && (
             <div className="text-center">
-              <p className="text-sm text-[#dc2626] bg-[#fef2f2] px-3 py-2 rounded-lg inline-block">
+              <p className="text-sm text-red-600 dark:text-red-400 bg-red-500/10 px-3 py-2 rounded-lg inline-block">
                 {error}
               </p>
             </div>
@@ -327,7 +327,7 @@ export function GoalCoach({ isOpen, onClose, onMinimize, isMinimized = false, on
           {/* Completion celebration */}
           {isComplete && !viewOnly && (
             <div className="text-center py-4">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#dcfce7] text-[#15803d] text-sm font-semibold border border-[#86efac]">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/15 text-green-600 dark:text-green-400 text-sm font-semibold border border-green-500/30">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -353,11 +353,11 @@ export function GoalCoach({ isOpen, onClose, onMinimize, isMinimized = false, on
         {/* Input - auto-growing textarea */}
         {/* Show input: 1) when not complete, OR 2) when continuing an existing session */}
         {(!isComplete || existingSession) && !viewOnly && (
-          <form onSubmit={handleSubmit} className="flex-shrink-0 border-t border-[#e2e8f0] bg-[#f8fafc]">
+          <form onSubmit={handleSubmit} className="flex-shrink-0 border-t border-border bg-background">
             {/* Hint for continuing existing sessions */}
             {existingSession && isComplete && (
-              <div className="px-4 py-2 bg-[#f0fdf4] border-b border-[#86efac]">
-                <p className="text-xs text-[#15803d] text-center">
+              <div className="px-4 py-2 bg-green-500/10 border-b border-green-500/30">
+                <p className="text-xs text-green-600 dark:text-green-400 text-center">
                   Update your goal: change steps, motivation, or ask for coaching advice
                 </p>
               </div>
@@ -376,7 +376,7 @@ export function GoalCoach({ isOpen, onClose, onMinimize, isMinimized = false, on
                   : "Type your response..."}
                 disabled={isLoading}
                 rows={1}
-                className="flex-1 px-4 py-3 rounded-xl border-2 border-[#e2e8f0] focus:border-[#6366f1] focus:outline-none transition-colors disabled:opacity-50 text-[#1e293b] placeholder:text-[#94a3b8] resize-none overflow-hidden min-h-[48px] max-h-[150px]"
+                className="flex-1 px-4 py-3 rounded-xl border-2 border-border focus:border-[#6366f1] focus:outline-none transition-colors disabled:opacity-50 text-foreground bg-background placeholder:text-muted resize-none overflow-hidden min-h-[48px] max-h-[150px]"
                 style={{ height: 'auto' }}
               />
               <button
@@ -400,7 +400,7 @@ export function GoalCoach({ isOpen, onClose, onMinimize, isMinimized = false, on
                 </svg>
               </button>
             </div>
-            <p className="text-xs text-[#94a3b8] px-4 pb-2">
+            <p className="text-xs text-muted px-4 pb-2">
               Press Enter to send, Shift+Enter for new line
             </p>
           </form>
@@ -409,8 +409,8 @@ export function GoalCoach({ isOpen, onClose, onMinimize, isMinimized = false, on
 
         {/* View-only footer */}
         {viewOnly && (
-          <div className="flex-shrink-0 p-4 border-t border-[#e2e8f0] bg-[#f8fafc]">
-            <p className="text-sm text-[#64748b] text-center">
+          <div className="flex-shrink-0 p-4 border-t border-border bg-background">
+            <p className="text-sm text-muted text-center">
               This is a past coaching session
             </p>
           </div>
@@ -453,7 +453,7 @@ function MessageBubble({ message }: { message: ChatMessage }) {
       <div className="max-w-[80%]">
         {/* Update indicator */}
         {message.updateInfo && (
-          <div className="mb-1.5 flex items-center gap-1.5 text-xs text-[#10b981]">
+          <div className="mb-1.5 flex items-center gap-1.5 text-xs text-green-500">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="12"
@@ -475,7 +475,7 @@ function MessageBubble({ message }: { message: ChatMessage }) {
           className={`px-4 py-3 ${
             isUser
               ? 'bg-[#6366f1] text-white rounded-2xl rounded-br-md'
-              : 'bg-[#f1f5f9] text-[#1e293b] rounded-2xl rounded-bl-md'
+              : 'bg-foreground/10 text-foreground rounded-2xl rounded-bl-md'
           }`}
         >
           <p className="text-sm leading-relaxed whitespace-pre-wrap">

@@ -45,7 +45,7 @@ This document tracks platform feedback, UX issues, and planned features.
 
 ### Design System
 
-- **Inconsistent dark mode**: Dashboard uses dark theme, Goals page uses light theme, Editor has gradient. Need unified color system across all pages.
+- ~~**Inconsistent dark mode**: Dashboard uses dark theme, Goals page uses light theme, Editor has gradient. Need unified color system across all pages.~~ **FIXED** - All components now use CSS custom properties (--background, --foreground, --border, --muted) with dark mode media queries.
 - **Inconsistent navigation**: Dashboard has horizontal nav, Goals page has different header layout, Editor/Graph have back arrows. Need unified nav pattern.
 
 ### Mobile UX
@@ -177,6 +177,12 @@ This document tracks platform feedback, UX issues, and planned features.
 - [x] Documents page (`/documents`) with sorting by date modified, date created, or title
 - [x] Document cards show creation date and modification date
 - [x] Knowledge graph keeps unconnected nodes visible (radial force constraint)
+- [x] Sign out redirects to login immediately (not waiting for state change)
+- [x] Onboarding modal for new users explaining platform features
+- [x] Clear navigation to start new document on home page ("Write" button in nav)
+- [x] Theme consistency across all screens (CSS variables with dark mode support)
+- [x] Mobile layout fixes for home page nav and knowledge graph section
+- [x] GoalCard and GoalCoach components updated for dark mode support
 
 ---
 

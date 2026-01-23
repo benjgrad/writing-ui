@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 import { HomeGoalsSection } from '@/components/home/HomeGoalsSection'
 import { HomeGraphSection } from '@/components/home/HomeGraphSection'
+import { OnboardingModal } from '@/components/onboarding/OnboardingModal'
 import { Loading } from '@/components/ui/Loading'
 import { Button } from '@/components/ui/Button'
 
@@ -12,22 +13,46 @@ export default function DashboardPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <Loading size="lg" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
+    <div className="min-h-screen bg-background">
+      {/* Onboarding for new users */}
+      <OnboardingModal />
+
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm border-b border-[#f1f5f9]">
+      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-          <h1 className="text-lg font-semibold text-[#1e293b]">Writing</h1>
-          <div className="flex items-center gap-4">
+          <h1 className="text-lg font-semibold text-foreground">Writing</h1>
+          {/* Desktop nav */}
+          <nav className="hidden sm:flex items-center gap-4">
+            <Link
+              href="/write/new"
+              className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 bg-foreground text-background rounded-lg hover:opacity-90 transition-opacity"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 5v14" />
+                <path d="M5 12h14" />
+              </svg>
+              Write
+            </Link>
             <Link
               href="/documents"
-              className="text-sm text-[#64748b] hover:text-[#1e293b] transition-colors flex items-center gap-1.5"
+              className="text-sm text-muted hover:text-foreground transition-colors flex items-center gap-1.5"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -50,7 +75,7 @@ export default function DashboardPage() {
             </Link>
             <Link
               href="/graph"
-              className="text-sm text-[#64748b] hover:text-[#1e293b] transition-colors flex items-center gap-1.5"
+              className="text-sm text-muted hover:text-foreground transition-colors flex items-center gap-1.5"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -75,18 +100,77 @@ export default function DashboardPage() {
               </svg>
               Graph
             </Link>
-            <span className="text-sm text-[#64748b]">{user?.email}</span>
+            <span className="text-sm text-muted hidden md:block">{user?.email}</span>
             <Button variant="ghost" size="sm" onClick={signOut}>
               Sign out
             </Button>
-          </div>
+          </nav>
+          {/* Mobile nav */}
+          <nav className="flex sm:hidden items-center gap-2">
+            <Link
+              href="/write/new"
+              className="inline-flex items-center gap-1 text-sm px-2.5 py-1.5 bg-foreground text-background rounded-lg"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 5v14" />
+                <path d="M5 12h14" />
+              </svg>
+              Write
+            </Link>
+            <Link href="/documents" className="p-2 text-muted hover:text-foreground">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+              </svg>
+            </Link>
+            <Link href="/graph" className="p-2 text-muted hover:text-foreground">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="3" />
+                <circle cx="4" cy="6" r="2" />
+                <circle cx="20" cy="6" r="2" />
+              </svg>
+            </Link>
+            <Button variant="ghost" size="sm" onClick={signOut} className="text-xs px-2">
+              Sign out
+            </Button>
+          </nav>
         </div>
       </header>
 
       {/* Main content */}
-      <main className="max-w-6xl mx-auto px-4 py-8">
+      <main className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
         {/* Goals Section */}
-        <section className="mb-8">
+        <section className="mb-6 sm:mb-8">
           <HomeGoalsSection />
         </section>
 

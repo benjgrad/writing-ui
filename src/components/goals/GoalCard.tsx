@@ -198,38 +198,38 @@ export function GoalCard({
 
   return (
     <div
-      className="goal-card relative"
+      className="goal-card relative bg-background border border-border"
       data-momentum={goal.momentum}
     >
       {/* Edit Mode */}
       {isEditing ? (
         <div className="space-y-3 mb-4">
           <div>
-            <label className="block text-xs font-medium text-[#64748b] mb-1">Goal</label>
+            <label className="block text-xs font-medium text-muted mb-1">Goal</label>
             <input
               type="text"
               value={editTitle}
               onChange={(e) => setEditTitle(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border-2 border-[#cbd5e1] focus:border-[#6366f1] focus:outline-none text-[#1e293b]"
+              className="w-full px-3 py-2 rounded-lg border-2 border-border focus:border-foreground focus:outline-none text-foreground bg-background"
               placeholder="What do you want to achieve?"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-[#64748b] mb-1">Why (motivation)</label>
+            <label className="block text-xs font-medium text-muted mb-1">Why (motivation)</label>
             <textarea
               value={editWhy}
               onChange={(e) => setEditWhy(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border-2 border-[#cbd5e1] focus:border-[#6366f1] focus:outline-none text-[#1e293b] resize-none min-h-[60px]"
+              className="w-full px-3 py-2 rounded-lg border-2 border-border focus:border-foreground focus:outline-none text-foreground bg-background resize-none min-h-[60px]"
               placeholder="Why is this important to you?"
               rows={2}
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-[#64748b] mb-1">Notes (longer-term plans)</label>
+            <label className="block text-xs font-medium text-muted mb-1">Notes (longer-term plans)</label>
             <textarea
               value={editNotes}
               onChange={(e) => setEditNotes(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border-2 border-[#cbd5e1] focus:border-[#6366f1] focus:outline-none text-[#1e293b] resize-none min-h-[80px]"
+              className="w-full px-3 py-2 rounded-lg border-2 border-border focus:border-foreground focus:outline-none text-foreground bg-background resize-none min-h-[80px]"
               placeholder="Capture your medium-long term plans, milestones, or reflections..."
               rows={3}
             />
@@ -238,13 +238,13 @@ export function GoalCard({
             <button
               onClick={handleSaveEdit}
               disabled={isSaving || !editTitle.trim()}
-              className="flex-1 px-3 py-2 rounded-lg bg-[#6366f1] text-white text-sm font-medium hover:bg-[#4f46e5] disabled:opacity-50 transition-colors"
+              className="flex-1 px-3 py-2 rounded-lg bg-foreground text-background text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity"
             >
               {isSaving ? 'Saving...' : 'Save'}
             </button>
             <button
               onClick={handleCancelEdit}
-              className="px-3 py-2 rounded-lg border border-[#cbd5e1] text-[#64748b] text-sm hover:bg-[#f1f5f9] transition-colors"
+              className="px-3 py-2 rounded-lg border border-border text-muted text-sm hover:bg-foreground/5 transition-colors"
             >
               Cancel
             </button>
@@ -256,7 +256,7 @@ export function GoalCard({
           {goal.why_root && (
             <button
               onClick={() => setShowFullWhy(!showFullWhy)}
-              className="why-badge mb-3 text-left w-full cursor-pointer hover:bg-[#dcfce7] transition-colors"
+              className="why-badge mb-3 text-left w-full cursor-pointer hover:opacity-80 transition-opacity"
               title={showFullWhy ? 'Click to collapse' : 'Click to expand'}
             >
               {showFullWhy || goal.why_root.length <= 80
@@ -267,13 +267,13 @@ export function GoalCard({
 
           {/* Goal Title with Edit Button */}
           <div className="flex items-start justify-between gap-2 mb-3">
-            <h3 className="text-lg font-semibold text-[#1e293b] break-words">
+            <h3 className="text-lg font-semibold text-foreground break-words">
               {goal.title}
             </h3>
             {onUpdateGoal && (
               <button
                 onClick={() => setIsEditing(true)}
-                className="text-[#94a3b8] hover:text-[#64748b] transition-colors p-1 -mt-1 -mr-1 flex-shrink-0"
+                className="text-muted hover:text-foreground transition-colors p-1 -mt-1 -mr-1 flex-shrink-0"
                 title="Edit goal"
               >
                 <svg
@@ -312,11 +312,11 @@ export function GoalCard({
             />
             {showCelebration && (
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="micro-win-celebration w-6 h-6 rounded-full bg-[#10b981]" />
+                <div className="micro-win-celebration w-6 h-6 rounded-full bg-green-500" />
               </div>
             )}
           </button>
-          <p className="text-[#374151] text-base leading-relaxed flex-1">
+          <p className="text-foreground/80 text-base leading-relaxed flex-1">
             {goal.current_micro_win.description}
           </p>
         </div>
@@ -328,7 +328,7 @@ export function GoalCard({
           {onAddMicroWin ? (
             <button
               onClick={() => setShowMicroWinInput(true)}
-              className="flex items-center gap-2 text-[#6366f1] hover:text-[#4f46e5] text-sm font-medium transition-colors"
+              className="flex items-center gap-2 text-foreground/70 hover:text-foreground text-sm font-medium transition-colors"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -347,7 +347,7 @@ export function GoalCard({
               Add your first small step
             </button>
           ) : (
-            <p className="text-[#94a3b8] text-sm italic">
+            <p className="text-muted text-sm italic">
               Add your first small step to get started
             </p>
           )}
@@ -360,7 +360,7 @@ export function GoalCard({
           {onAddMicroWin ? (
             <button
               onClick={() => setShowMicroWinInput(true)}
-              className="flex items-center gap-2 text-[#10b981] hover:text-[#059669] text-sm font-medium transition-colors"
+              className="flex items-center gap-2 text-green-600 dark:text-green-400 hover:opacity-80 text-sm font-medium transition-opacity"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -379,7 +379,7 @@ export function GoalCard({
               Add next step
             </button>
           ) : (
-            <p className="text-[#10b981] text-sm font-medium">
+            <p className="text-green-600 dark:text-green-400 text-sm font-medium">
               All steps completed!
             </p>
           )}
@@ -402,14 +402,14 @@ export function GoalCard({
               }
             }}
             placeholder="What's the smallest next step?"
-            className="w-full px-3 py-2 rounded-lg border-2 border-[#cbd5e1] focus:border-[#6366f1] focus:outline-none text-[#1e293b] text-sm"
+            className="w-full px-3 py-2 rounded-lg border-2 border-border focus:border-foreground focus:outline-none text-foreground bg-background text-sm"
             autoFocus
           />
           <div className="flex gap-2">
             <button
               onClick={handleAddMicroWin}
               disabled={isSaving || !newMicroWin.trim()}
-              className="flex-1 px-3 py-1.5 rounded-lg bg-[#6366f1] text-white text-sm hover:bg-[#4f46e5] disabled:opacity-50 transition-colors"
+              className="flex-1 px-3 py-1.5 rounded-lg bg-foreground text-background text-sm hover:opacity-90 disabled:opacity-50 transition-opacity"
             >
               {isSaving ? 'Adding...' : 'Add step'}
             </button>
@@ -418,7 +418,7 @@ export function GoalCard({
                 setShowMicroWinInput(false)
                 setNewMicroWin('')
               }}
-              className="px-3 py-1.5 rounded-lg border border-[#cbd5e1] text-[#64748b] text-sm hover:bg-[#f1f5f9] transition-colors"
+              className="px-3 py-1.5 rounded-lg border border-border text-muted text-sm hover:bg-foreground/5 transition-colors"
             >
               Cancel
             </button>
@@ -431,7 +431,7 @@ export function GoalCard({
         <div className="mb-4">
           <button
             onClick={() => setShowAllSteps(!showAllSteps)}
-            className="flex items-center gap-2 text-xs text-[#6366f1] hover:text-[#4f46e5] font-medium transition-colors"
+            className="flex items-center gap-2 text-xs text-foreground/70 hover:text-foreground font-medium transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -461,13 +461,13 @@ export function GoalCard({
                   onDragEnd={handleDragEnd}
                   className={`flex items-start gap-2 p-2 rounded-lg border ${
                     step.is_current
-                      ? 'border-[#6366f1] bg-[#eef2ff]'
-                      : 'border-[#e2e8f0] bg-white'
+                      ? 'border-foreground/30 bg-foreground/5'
+                      : 'border-border bg-background'
                   } ${draggedStepId === step.id ? 'opacity-50' : ''}`}
                 >
                   {/* Drag Handle */}
                   {onReorderMicroWins && editingStepId !== step.id && (
-                    <div className="cursor-move text-[#94a3b8] mt-1">
+                    <div className="cursor-move text-muted mt-1">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="16"
@@ -518,20 +518,20 @@ export function GoalCard({
                               handleCancelStepEdit()
                             }
                           }}
-                          className="w-full px-2 py-1 rounded border-2 border-[#6366f1] focus:outline-none text-sm"
+                          className="w-full px-2 py-1 rounded border-2 border-foreground focus:outline-none text-sm bg-background text-foreground"
                           autoFocus
                         />
                         <div className="flex gap-2">
                           <button
                             onClick={handleSaveStepEdit}
                             disabled={isSaving || !editStepText.trim()}
-                            className="px-2 py-1 rounded bg-[#6366f1] text-white text-xs hover:bg-[#4f46e5] disabled:opacity-50 transition-colors"
+                            className="px-2 py-1 rounded bg-foreground text-background text-xs hover:opacity-90 disabled:opacity-50 transition-opacity"
                           >
                             Save
                           </button>
                           <button
                             onClick={handleCancelStepEdit}
-                            className="px-2 py-1 rounded border border-[#cbd5e1] text-[#64748b] text-xs hover:bg-[#f1f5f9] transition-colors"
+                            className="px-2 py-1 rounded border border-border text-muted text-xs hover:bg-foreground/5 transition-colors"
                           >
                             Cancel
                           </button>
@@ -541,13 +541,13 @@ export function GoalCard({
                       <p
                         className={`text-sm ${
                           step.completed_at
-                            ? 'line-through text-[#94a3b8]'
-                            : 'text-[#374151]'
+                            ? 'line-through text-muted'
+                            : 'text-foreground/80'
                         }`}
                       >
                         {step.description}
                         {step.is_current && (
-                          <span className="ml-2 text-xs text-[#6366f1] font-medium">
+                          <span className="ml-2 text-xs text-foreground/60 font-medium">
                             (current)
                           </span>
                         )}
@@ -561,7 +561,7 @@ export function GoalCard({
                       {onUpdateMicroWin && (
                         <button
                           onClick={() => handleStartEditStep(step.id, step.description)}
-                          className="text-[#94a3b8] hover:text-[#6366f1] transition-colors p-1"
+                          className="text-muted hover:text-foreground transition-colors p-1"
                           title="Edit step"
                         >
                           <svg
@@ -583,7 +583,7 @@ export function GoalCard({
                       {onDeleteMicroWin && (
                         <button
                           onClick={() => handleDeleteStep(step.id)}
-                          className="text-[#94a3b8] hover:text-[#ef4444] transition-colors p-1"
+                          className="text-muted hover:text-red-500 transition-colors p-1"
                           title="Delete step"
                         >
                           <svg
@@ -618,7 +618,7 @@ export function GoalCard({
           {totalMicroWins > 0 && (
             <div className="flex items-center gap-3 mb-4">
               <ProgressRing progress={progress} size={36} strokeWidth={3} />
-              <span className="text-sm text-[#64748b]">
+              <span className="text-sm text-muted">
                 {completedMicroWins} of {totalMicroWins} steps
               </span>
             </div>
@@ -634,12 +634,12 @@ export function GoalCard({
 
           {/* Notes Section - Expandable */}
           {showNotes && onUpdateGoal && (
-            <div className="mb-4 p-3 rounded-lg bg-[#f8fafc] border border-[#e2e8f0]">
+            <div className="mb-4 p-3 rounded-lg bg-foreground/5 border border-border">
               <div className="flex items-center justify-between mb-2">
-                <label className="text-xs font-medium text-[#64748b]">Notes & Plans</label>
+                <label className="text-xs font-medium text-muted">Notes & Plans</label>
                 <button
                   onClick={() => setShowNotes(false)}
-                  className="text-[#94a3b8] hover:text-[#64748b] transition-colors"
+                  className="text-muted hover:text-foreground transition-colors"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="m18 15-6-6-6 6"/>
@@ -654,11 +654,11 @@ export function GoalCard({
                   adjustNotesHeight()
                 }}
                 onBlur={handleSaveNotes}
-                className="w-full px-3 py-2 rounded-lg border border-[#e2e8f0] focus:border-[#6366f1] focus:outline-none text-[#1e293b] text-sm resize-none min-h-[60px] max-h-[200px]"
+                className="w-full px-3 py-2 rounded-lg border border-border focus:border-foreground focus:outline-none text-foreground bg-background text-sm resize-none min-h-[60px] max-h-[200px]"
                 placeholder="Capture your medium-long term plans, milestones, or reflections..."
                 rows={3}
               />
-              <p className="text-xs text-[#94a3b8] mt-1">Auto-saves when you click away</p>
+              <p className="text-xs text-muted mt-1">Auto-saves when you click away</p>
             </div>
           )}
 
@@ -666,20 +666,20 @@ export function GoalCard({
           {!showNotes && goal.notes && (
             <button
               onClick={() => setShowNotes(true)}
-              className="mb-4 p-2 rounded-lg bg-[#f8fafc] border border-[#e2e8f0] w-full text-left hover:bg-[#f1f5f9] transition-colors"
+              className="mb-4 p-2 rounded-lg bg-foreground/5 border border-border w-full text-left hover:bg-foreground/10 transition-colors"
             >
-              <p className="text-xs text-[#64748b] line-clamp-2">
+              <p className="text-xs text-muted line-clamp-2">
                 {goal.notes.length > 100 ? `${goal.notes.substring(0, 100)}...` : goal.notes}
               </p>
             </button>
           )}
 
           {/* Actions */}
-          <div className="flex items-center flex-wrap gap-3 pt-3 border-t border-[#e2e8f0]">
+          <div className="flex items-center flex-wrap gap-3 pt-3 border-t border-border">
             {onViewCoaching && (
               <button
                 onClick={onViewCoaching}
-                className="flex items-center gap-1 text-xs text-[#6366f1] hover:text-[#4f46e5] font-medium transition-colors"
+                className="flex items-center gap-1 text-xs text-foreground/70 hover:text-foreground font-medium transition-colors"
                 title="Continue coaching conversation"
               >
                 <svg
@@ -701,7 +701,7 @@ export function GoalCard({
             {onUpdateGoal && !showNotes && (
               <button
                 onClick={() => setShowNotes(true)}
-                className="flex items-center gap-1 text-xs text-[#6366f1] hover:text-[#4f46e5] font-medium transition-colors"
+                className="flex items-center gap-1 text-xs text-foreground/70 hover:text-foreground font-medium transition-colors"
                 title="Add notes and plans"
               >
                 <svg
@@ -726,7 +726,7 @@ export function GoalCard({
             {onAddMicroWin && !showMicroWinInput && goal.current_micro_win && (
               <button
                 onClick={() => setShowMicroWinInput(true)}
-                className="flex items-center gap-1 text-xs text-[#6366f1] hover:text-[#4f46e5] font-medium transition-colors"
+                className="flex items-center gap-1 text-xs text-foreground/70 hover:text-foreground font-medium transition-colors"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -748,7 +748,7 @@ export function GoalCard({
             {onMoveToParking && (
               <button
                 onClick={onMoveToParking}
-                className="flex items-center gap-1 text-xs text-[#64748b] hover:text-[#1e293b] font-medium transition-colors"
+                className="flex items-center gap-1 text-xs text-muted hover:text-foreground font-medium transition-colors"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -770,7 +770,7 @@ export function GoalCard({
             {onArchive && (
               <button
                 onClick={onArchive}
-                className="flex items-center gap-1 text-xs text-[#94a3b8] hover:text-[#ef4444] transition-colors ml-auto"
+                className="flex items-center gap-1 text-xs text-muted hover:text-red-500 transition-colors ml-auto"
                 title="Archive goal"
               >
                 <svg
