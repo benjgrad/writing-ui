@@ -23,6 +23,11 @@ This document tracks platform feedback, UX issues, and planned features.
 
 - **Backspace limitations broken**: Should be possible to backspace past the last two words. Currently blocked incorrectly.
 - ~~**Titles of the documents cannot be set**: Users cannot set or edit document titles in the editor. Also the AI is not generating titles.~~ **FIXED** - Added inline popover for title editing with AI title generation support.
+- **User should be able to ask for prompts**: Users cannot request AI writing prompts initially, and there should be a way of requesting specific types of prompts (e.g., brainstorming, outlining, etc.). Prompts can build of user goals, recent notes, or writing history -- identifying contradictions in atomic notes from the knowledge graph for example.
+- **Auto-correct is missing**: This is a basic feature expected in any text editor. Currently there is no auto-correct functionality. We need to provide some pop-over tooltip style experience to correct words or selected phrases, since we have removed the native textarea and all cursor handling is custom.
+- **Editor doesn't make use of the theme colors**: The editor background is a fixed gradient that doesn't adapt to light/dark mode or user theme preferences. It should use CSS variables for background and text colors to match the rest of the platform, while still providing a pleasant writing experience through gradients. I would also like to add a cloud-like texture overlay to the background to give it more depth and visual interest.
+- **On desktop, there are too many words per line**: This makes it hard to type as words disappear. The max line length should ver short, limited to around 30-50 characters for optimal readability and typing experience. This means increasing the text size, adding padding/margins, and limiting the width of the writing area on large screens.
+- **30 seconds is too long to wait for AI prompt**: Users should not have to wait 30 seconds or more for the AI to generate a writing prompt. We need to optimize the prompt generation process to deliver prompts within 10 seconds. This will require us to put AI prompts in a different place in the screen maybe, so prompts can display as the words are still disappearing, or we will need to change the word fading mechanism to allow prompts to appear faster. More design exploration is needed here.
 
 ### Knowledge Extraction
 
@@ -50,9 +55,11 @@ This document tracks platform feedback, UX issues, and planned features.
 
 ### Mobile UX
 
-- **Unexplained "1 Issue" badge**: Editor shows a red "1 Issue ×" badge at bottom left with no explanation of what the issue is.
+- **Unexplained "1 Issue" badge**: Editor shows a red "1 Issue ×" badge at bottom left with no explanation of what the issue is. (## Error Type\n\nConsole AuthApiError\n\n## Error Message
+Invalid Refresh Token: Refresh Token Not Found\n\nNext.js version: 16.1.1 (Turbopack))
 - **Goal card touch targets too small**: Action buttons (Coaching, Notes, Add step, Park, Archive) appear under 44px and are hard to tap on mobile.
 - **Goal card edit icon too small**: Pencil icon for editing goal is very small and hard to tap.
+- **Full PWA support missing**: No "Add to Home Screen" prompt or manifest.json for full PWA functionality on mobile devices, no offline support, no notifications, etc.
 
 ### Goals / Momentum Engine
 
