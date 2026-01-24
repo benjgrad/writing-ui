@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import type { Word } from './useCharacterBuffer'
 
-const FADE_DELAY_MS = 30000 // 30 seconds
+const FADE_DELAY_MS = 15000 // 15 seconds - reduced from 30 for faster prompt availability
 const FADE_ANIMATION_MS = 1000 // 1 second animation
 const CHECK_INTERVAL_MS = 100 // Check every 100ms for smooth timing
 const IDLE_COMPLETE_MS = 5000 // 5 seconds of inactivity marks word as implicitly complete

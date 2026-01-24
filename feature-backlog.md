@@ -23,8 +23,12 @@ This document tracks platform feedback, UX issues, and planned features.
 
 - **Backspace limitations broken**: Should be possible to backspace past the last two words. Currently blocked incorrectly.
 - ~~**Titles of the documents cannot be set**: Users cannot set or edit document titles in the editor. Also the AI is not generating titles.~~ **FIXED** - Added inline popover for title editing with AI title generation support.
-- **User should be able to ask for prompts**: Users cannot request AI writing prompts initially, and there should be a way of requesting specific types of prompts (e.g., brainstorming, outlining, etc.). Prompts can build of user goals, recent notes, or writing history -- identifying contradictions in atomic notes from the knowledge graph for example.
-- **Auto-correct is missing**: This is a basic feature expected in any text editor. Currently there is no auto-correct functionality. We need to provide some pop-over tooltip style experience to correct words or selected phrases, since we have removed the native textarea and all cursor handling is custom.
+- ~~**User should be able to ask for prompts**: Users cannot request AI writing prompts initially, and there should be a way of requesting specific types of prompts (e.g., brainstorming, outlining, etc.). Prompts can build of user goals, recent notes, or writing history -- identifying contradictions in atomic notes from the knowledge graph for example.~~ **FIXED** - Added "Inspire me" button that appears when the prompt is hidden, allowing users to request a new AI writing prompt at any time.
+- **Auto-correct and spellcheck**: Implement a click-to-replace mechanism with a tooltip menu for correcting misspelled words or selected phrases. Features needed:
+  - Click on a word to show correction suggestions in a tooltip/popover
+  - Support selection of multiple words for phrase-level corrections
+  - Allow users to add custom words to a personal dictionary if the word isn't recognized
+  - Since we have removed the native textarea and all cursor handling is custom, this needs to be built from scratch
 - **Editor doesn't make use of the theme colors**: The editor background is a fixed gradient that doesn't adapt to light/dark mode or user theme preferences. It should use CSS variables for background and text colors to match the rest of the platform, while still providing a pleasant writing experience through gradients. I would also like to add a cloud-like texture overlay to the background to give it more depth and visual interest.
 - **On desktop, there are too many words per line**: This makes it hard to type as words disappear. The max line length should ver short, limited to around 30-50 characters for optimal readability and typing experience. This means increasing the text size, adding padding/margins, and limiting the width of the writing area on large screens.
 - **30 seconds is too long to wait for AI prompt**: Users should not have to wait 30 seconds or more for the AI to generate a writing prompt. We need to optimize the prompt generation process to deliver prompts within 10 seconds. This will require us to put AI prompts in a different place in the screen maybe, so prompts can display as the words are still disappearing, or we will need to change the word fading mechanism to allow prompts to appear faster. More design exploration is needed here.
@@ -115,9 +119,10 @@ Invalid Refresh Token: Refresh Token Not Found\n\nNext.js version: 16.1.1 (Turbo
   - Ability to retry, backtrack, or change approach based on context
   - Current implementation: [goal-coaching.ts](src/lib/ai/prompts/goal-coaching.ts), [coach-goal/route.ts](src/app/api/ai/coach-goal/route.ts)
 
-### Knowledge Extraction
+### ~~Knowledge Extraction~~ **IMPLEMENTED**
 
 - ~~**No zettelkasten-style atomic notes**: Platform should extract atomic insights/notes from writing content and coaching transcripts.~~ **IMPLEMENTED** - Knowledge-aware extraction with cross-document connections and consolidation.
+- ~~**Improved note extraction algorithm**: Enhanced RAG-based extraction with better context awareness and cross-document connection rates.~~ **DONE**
 
 ### Goals Enhancement
 
@@ -130,11 +135,16 @@ Invalid Refresh Token: Refresh Token Not Found\n\nNext.js version: 16.1.1 (Turbo
 - **Export functionality**: Allow exporting writing sessions to markdown/PDF.
 - **Auto-save triggers too frequently**: Console shows auto-save triggered on every keystroke - should debounce.
 
-### Knowledge Graph
+### ~~Knowledge Graph~~ **IMPLEMENTED**
 
-- **Add legend**: Display a legend explaining node colors (permanent/fleeting/literature notes) and connection types (related, supports, contradicts, extends, example_of).
-- **Empty state guidance**: Graph page needs better onboarding for new users with no notes.
-- **Search improvements**: Full-text search within note content.
+- ~~**Add legend**: Display a legend explaining node colors (permanent/fleeting/literature notes) and connection types (related, supports, contradicts, extends, example_of).~~ **DONE**
+- ~~**Empty state guidance**: Graph page needs better onboarding for new users with no notes.~~ **DONE**
+- ~~**Search improvements**: Full-text search within note content.~~ **DONE**
+- ~~**Clone Obsidian knowledge graph experience**: Implement advanced graph controls and features similar to Obsidian:~~
+  - ~~**Groups**: Ability to define and color-code node groups~~ **DONE**
+  - ~~**Physics controls**: Adjustable center force, repel force, link force, and link distance~~ **DONE**
+  - ~~**Visual controls**: Configurable node thickness, link thickness, and label size~~ **DONE**
+  - ~~**Timelapse animation**: Animate graph growth over time showing when notes were created (like Obsidian's timelapse feature)~~ **DONE**
 
 ---
 
@@ -190,6 +200,10 @@ Invalid Refresh Token: Refresh Token Not Found\n\nNext.js version: 16.1.1 (Turbo
 - [x] Theme consistency across all screens (CSS variables with dark mode support)
 - [x] Mobile layout fixes for home page nav and knowledge graph section
 - [x] GoalCard and GoalCoach components updated for dark mode support
+- [x] "Inspire me" button to request AI writing prompts on demand
+- [x] Editor scroll/layout fixes (no double scrollbars, fixed toolbar visibility, prompt fading on scroll)
+- [x] Obsidian-style knowledge graph with groups, physics controls, visual controls, and timelapse animation
+- [x] Improved note extraction algorithm with better cross-document connections
 
 ---
 

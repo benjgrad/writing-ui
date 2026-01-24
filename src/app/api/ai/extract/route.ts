@@ -11,7 +11,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { text, documentId } = await request.json()
+    const { text, documentId, coachingSessionId } = await request.json()
 
     if (!text || typeof text !== 'string') {
       return NextResponse.json({ error: 'Text is required' }, { status: 400 })
@@ -42,6 +42,25 @@ export async function POST(request: Request) {
       if (noteError || !noteData) continue
 
       createdNotes.push({ id: noteData.id, title: note.title })
+
+      // Create note_sources entry for document or coaching session
+      if (documentId) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (supabase as any).from('note_sources').insert({
+          note_id: noteData.id,
+          source_type: 'document',
+          source_id: documentId
+        })
+      }
+
+      if (coachingSessionId) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (supabase as any).from('note_sources').insert({
+          note_id: noteData.id,
+          source_type: 'coaching_session',
+          source_id: coachingSessionId
+        })
+      }
 
       // Create tags
       for (const tagName of note.tags) {

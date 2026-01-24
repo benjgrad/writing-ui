@@ -5,11 +5,13 @@ import { createClient } from '@/lib/supabase/client'
 import type { WordWithTimestamp } from '@/types/document'
 
 const DEBOUNCE_MS = 2000
+const EXTRACTION_DEBOUNCE_MS = 10000 // Wait 10s of no saves before triggering extraction
 
 interface UseAutoSaveOptions {
   documentId: string | null
   userId: string
   onFirstSave?: (documentId: string, content: string) => void
+  enableExtraction?: boolean // Enable automatic extraction after saves
 }
 
 interface PendingSave {
@@ -18,16 +20,38 @@ interface PendingSave {
   title?: string
 }
 
-export function useAutoSave({ documentId, userId, onFirstSave }: UseAutoSaveOptions) {
+export function useAutoSave({ documentId, userId, onFirstSave, enableExtraction = true }: UseAutoSaveOptions) {
   const [isSaving, setIsSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [currentDocId, setCurrentDocId] = useState<string | null>(documentId)
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const extractionTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const pendingSaveRef = useRef<PendingSave | null>(null)
   const isFirstSaveRef = useRef(!documentId) // Track if this is a new document
   const supabase = createClient()
+
+  // Trigger extraction after a period of no saves
+  const scheduleExtraction = useCallback((docId: string) => {
+    if (!enableExtraction) return
+
+    // Clear any pending extraction trigger
+    if (extractionTimeoutRef.current) {
+      clearTimeout(extractionTimeoutRef.current)
+    }
+
+    // Schedule extraction after 10s of no saves
+    extractionTimeoutRef.current = setTimeout(() => {
+      fetch('/api/extraction/queue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ documentId: docId }),
+      }).catch(err => {
+        console.error('[AutoSave] Failed to trigger extraction:', err)
+      })
+    }, EXTRACTION_DEBOUNCE_MS)
+  }, [enableExtraction])
 
   const save = useCallback(async (
     content: string,
@@ -87,12 +111,20 @@ export function useAutoSave({ documentId, userId, onFirstSave }: UseAutoSaveOpti
             isFirstSaveRef.current = false
             onFirstSave(data.id, content)
           }
+
+          // Schedule extraction for new document
+          scheduleExtraction(data.id)
         }
       }
 
       // Clear pending save on success
       pendingSaveRef.current = null
       setLastSaved(new Date())
+
+      // Schedule extraction for existing document updates
+      if (currentDocId) {
+        scheduleExtraction(currentDocId)
+      }
     } catch (err) {
       console.error('[AutoSave] Error:', err)
       // Handle both Error objects and Supabase error objects
@@ -108,7 +140,7 @@ export function useAutoSave({ documentId, userId, onFirstSave }: UseAutoSaveOpti
     } finally {
       setIsSaving(false)
     }
-  }, [currentDocId, userId, supabase, onFirstSave])
+  }, [currentDocId, userId, supabase, onFirstSave, scheduleExtraction])
 
   const debouncedSave = useCallback((
     content: string,
@@ -127,13 +159,16 @@ export function useAutoSave({ documentId, userId, onFirstSave }: UseAutoSaveOpti
     }, DEBOUNCE_MS)
   }, [save])
 
-  // Clean up timeout on unmount
+  // Clean up timeouts on unmount
   // Note: We don't try to save during cleanup as calling async functions during
   // React cleanup can cause issues. The debounced save should complete naturally.
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
+      }
+      if (extractionTimeoutRef.current) {
+        clearTimeout(extractionTimeoutRef.current)
       }
     }
   }, [])

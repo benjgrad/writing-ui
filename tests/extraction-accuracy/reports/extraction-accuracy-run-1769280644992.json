@@ -1,0 +1,1199 @@
+{
+  "runId": "run-1769280644992",
+  "timestamp": "2026-01-24T18:50:44.992Z",
+  "summary": {
+    "overallF1Score": 1,
+    "overallConsolidationAccuracy": 1,
+    "overallTagReuseRate": 1,
+    "bestStrategy": "semantic",
+    "recommendations": [
+      "Best for duplicate detection: \"semantic\" (F1: 100.0%)",
+      "Best for consolidation: \"semantic\" (Accuracy: 100.0%)",
+      "Best for tag reuse: \"keyword-baseline\" (Rate: 100.0%)",
+      "\"keyword-baseline\": Improve duplicate recall - too many duplicates being missed",
+      "\"keyword-baseline\": Improve consolidation detection - more consolidations missed than caught"
+    ]
+  },
+  "byScenario": {
+    "Exact Duplicate Detection": {
+      "byStrategy": {
+        "keyword-baseline": {
+          "duplicateDetection": {
+            "truePositives": 1,
+            "falsePositives": 0,
+            "falseNegatives": 0,
+            "trueNegatives": 3,
+            "precision": 1,
+            "recall": 1,
+            "f1Score": 1
+          },
+          "consolidation": {
+            "correctConsolidations": 1,
+            "missedConsolidations": 0,
+            "wrongConsolidations": 0,
+            "correctNewNotes": 3,
+            "accuracy": 1
+          },
+          "tagReuse": {
+            "reusedExisting": 8,
+            "correctlyCreatedNew": 1,
+            "shouldHaveReused": 0,
+            "reuseRate": 1,
+            "totalTagsAssigned": 9
+          },
+          "connections": {
+            "correctConnections": 1,
+            "missedConnections": 0,
+            "spuriousConnections": 1,
+            "precision": 0.5,
+            "recall": 1
+          },
+          "timing": {
+            "totalMs": 2,
+            "contextRetrievalMs": 0,
+            "extractionMs": 2
+          }
+        },
+        "semantic": {
+          "duplicateDetection": {
+            "truePositives": 1,
+            "falsePositives": 0,
+            "falseNegatives": 0,
+            "trueNegatives": 3,
+            "precision": 1,
+            "recall": 1,
+            "f1Score": 1
+          },
+          "consolidation": {
+            "correctConsolidations": 1,
+            "missedConsolidations": 0,
+            "wrongConsolidations": 0,
+            "correctNewNotes": 3,
+            "accuracy": 1
+          },
+          "tagReuse": {
+            "reusedExisting": 8,
+            "correctlyCreatedNew": 1,
+            "shouldHaveReused": 0,
+            "reuseRate": 1,
+            "totalTagsAssigned": 9
+          },
+          "connections": {
+            "correctConnections": 0,
+            "missedConnections": 1,
+            "spuriousConnections": 1,
+            "precision": 0,
+            "recall": 0
+          },
+          "timing": {
+            "totalMs": 1,
+            "contextRetrievalMs": 0,
+            "extractionMs": 1
+          }
+        },
+        "hybrid": {
+          "duplicateDetection": {
+            "truePositives": 1,
+            "falsePositives": 0,
+            "falseNegatives": 0,
+            "trueNegatives": 3,
+            "precision": 1,
+            "recall": 1,
+            "f1Score": 1
+          },
+          "consolidation": {
+            "correctConsolidations": 1,
+            "missedConsolidations": 0,
+            "wrongConsolidations": 0,
+            "correctNewNotes": 3,
+            "accuracy": 1
+          },
+          "tagReuse": {
+            "reusedExisting": 8,
+            "correctlyCreatedNew": 1,
+            "shouldHaveReused": 0,
+            "reuseRate": 1,
+            "totalTagsAssigned": 9
+          },
+          "connections": {
+            "correctConnections": 0,
+            "missedConnections": 1,
+            "spuriousConnections": 1,
+            "precision": 0,
+            "recall": 0
+          },
+          "timing": {
+            "totalMs": 2,
+            "contextRetrievalMs": 1,
+            "extractionMs": 1
+          }
+        }
+      }
+    },
+    "Paraphrase Detection": {
+      "byStrategy": {
+        "keyword-baseline": {
+          "duplicateDetection": {
+            "truePositives": 0,
+            "falsePositives": 0,
+            "falseNegatives": 6,
+            "trueNegatives": 1,
+            "precision": 1,
+            "recall": 0,
+            "f1Score": 0
+          },
+          "consolidation": {
+            "correctConsolidations": 0,
+            "missedConsolidations": 6,
+            "wrongConsolidations": 0,
+            "correctNewNotes": 1,
+            "accuracy": 0.14285714285714285
+          },
+          "tagReuse": {
+            "reusedExisting": 4,
+            "correctlyCreatedNew": 0,
+            "shouldHaveReused": 0,
+            "reuseRate": 1,
+            "totalTagsAssigned": 4
+          },
+          "connections": {
+            "correctConnections": 0,
+            "missedConnections": 0,
+            "spuriousConnections": 5,
+            "precision": 0,
+            "recall": 1
+          },
+          "timing": {
+            "totalMs": 2,
+            "contextRetrievalMs": 0,
+            "extractionMs": 2
+          }
+        },
+        "semantic": {
+          "duplicateDetection": {
+            "truePositives": 3,
+            "falsePositives": 0,
+            "falseNegatives": 0,
+            "trueNegatives": 1,
+            "precision": 1,
+            "recall": 1,
+            "f1Score": 1
+          },
+          "consolidation": {
+            "correctConsolidations": 3,
+            "missedConsolidations": 0,
+            "wrongConsolidations": 0,
+            "correctNewNotes": 1,
+            "accuracy": 1
+          },
+          "tagReuse": {
+            "reusedExisting": 4,
+            "correctlyCreatedNew": 0,
+            "shouldHaveReused": 0,
+            "reuseRate": 1,
+            "totalTagsAssigned": 4
+          },
+          "connections": {
+            "correctConnections": 0,
+            "missedConnections": 0,
+            "spuriousConnections": 1,
+            "precision": 0,
+            "recall": 1
+          },
+          "timing": {
+            "totalMs": 1,
+            "contextRetrievalMs": 0,
+            "extractionMs": 1
+          }
+        },
+        "hybrid": {
+          "duplicateDetection": {
+            "truePositives": 3,
+            "falsePositives": 0,
+            "falseNegatives": 0,
+            "trueNegatives": 1,
+            "precision": 1,
+            "recall": 1,
+            "f1Score": 1
+          },
+          "consolidation": {
+            "correctConsolidations": 3,
+            "missedConsolidations": 0,
+            "wrongConsolidations": 0,
+            "correctNewNotes": 1,
+            "accuracy": 1
+          },
+          "tagReuse": {
+            "reusedExisting": 4,
+            "correctlyCreatedNew": 0,
+            "shouldHaveReused": 0,
+            "reuseRate": 1,
+            "totalTagsAssigned": 4
+          },
+          "connections": {
+            "correctConnections": 0,
+            "missedConnections": 0,
+            "spuriousConnections": 3,
+            "precision": 0,
+            "recall": 1
+          },
+          "timing": {
+            "totalMs": 3,
+            "contextRetrievalMs": 1,
+            "extractionMs": 2
+          }
+        }
+      }
+    },
+    "Tag Synonym Handling": {
+      "byStrategy": {
+        "keyword-baseline": {
+          "duplicateDetection": {
+            "truePositives": 0,
+            "falsePositives": 0,
+            "falseNegatives": 0,
+            "trueNegatives": 3,
+            "precision": 1,
+            "recall": 1,
+            "f1Score": 1
+          },
+          "consolidation": {
+            "correctConsolidations": 0,
+            "missedConsolidations": 0,
+            "wrongConsolidations": 0,
+            "correctNewNotes": 3,
+            "accuracy": 1
+          },
+          "tagReuse": {
+            "reusedExisting": 3,
+            "correctlyCreatedNew": 1,
+            "shouldHaveReused": 0,
+            "reuseRate": 1,
+            "totalTagsAssigned": 4
+          },
+          "connections": {
+            "correctConnections": 1,
+            "missedConnections": 0,
+            "spuriousConnections": 1,
+            "precision": 0.5,
+            "recall": 1
+          },
+          "timing": {
+            "totalMs": 1,
+            "contextRetrievalMs": 0,
+            "extractionMs": 1
+          }
+        },
+        "semantic": {
+          "duplicateDetection": {
+            "truePositives": 0,
+            "falsePositives": 0,
+            "falseNegatives": 0,
+            "trueNegatives": 3,
+            "precision": 1,
+            "recall": 1,
+            "f1Score": 1
+          },
+          "consolidation": {
+            "correctConsolidations": 0,
+            "missedConsolidations": 0,
+            "wrongConsolidations": 0,
+            "correctNewNotes": 3,
+            "accuracy": 1
+          },
+          "tagReuse": {
+            "reusedExisting": 3,
+            "correctlyCreatedNew": 1,
+            "shouldHaveReused": 0,
+            "reuseRate": 1,
+            "totalTagsAssigned": 4
+          },
+          "connections": {
+            "correctConnections": 0,
+            "missedConnections": 1,
+            "spuriousConnections": 0,
+            "precision": 1,
+            "recall": 0
+          },
+          "timing": {
+            "totalMs": 0,
+            "contextRetrievalMs": 0,
+            "extractionMs": 0
+          }
+        },
+        "hybrid": {
+          "duplicateDetection": {
+            "truePositives": 0,
+            "falsePositives": 0,
+            "falseNegatives": 0,
+            "trueNegatives": 3,
+            "precision": 1,
+            "recall": 1,
+            "f1Score": 1
+          },
+          "consolidation": {
+            "correctConsolidations": 0,
+            "missedConsolidations": 0,
+            "wrongConsolidations": 0,
+            "correctNewNotes": 3,
+            "accuracy": 1
+          },
+          "tagReuse": {
+            "reusedExisting": 3,
+            "correctlyCreatedNew": 1,
+            "shouldHaveReused": 0,
+            "reuseRate": 1,
+            "totalTagsAssigned": 4
+          },
+          "connections": {
+            "correctConnections": 0,
+            "missedConnections": 1,
+            "spuriousConnections": 0,
+            "precision": 1,
+            "recall": 0
+          },
+          "timing": {
+            "totalMs": 1,
+            "contextRetrievalMs": 1,
+            "extractionMs": 0
+          }
+        }
+      }
+    }
+  },
+  "rawResults": [
+    {
+      "scenarioName": "Exact Duplicate Detection",
+      "strategyName": "keyword-baseline",
+      "metrics": {
+        "duplicateDetection": {
+          "truePositives": 1,
+          "falsePositives": 0,
+          "falseNegatives": 0,
+          "trueNegatives": 3,
+          "precision": 1,
+          "recall": 1,
+          "f1Score": 1
+        },
+        "consolidation": {
+          "correctConsolidations": 1,
+          "missedConsolidations": 0,
+          "wrongConsolidations": 0,
+          "correctNewNotes": 3,
+          "accuracy": 1
+        },
+        "tagReuse": {
+          "reusedExisting": 8,
+          "correctlyCreatedNew": 1,
+          "shouldHaveReused": 0,
+          "reuseRate": 1,
+          "totalTagsAssigned": 9
+        },
+        "connections": {
+          "correctConnections": 1,
+          "missedConnections": 0,
+          "spuriousConnections": 1,
+          "precision": 0.5,
+          "recall": 1
+        },
+        "timing": {
+          "totalMs": 2,
+          "contextRetrievalMs": 0,
+          "extractionMs": 2
+        }
+      },
+      "extractedNotes": [
+        {
+          "title": "The power of compound learning lies...",
+          "content": "The power of compound learning lies in consistent daily practice. Small improvements of just 1% per day compound to remarkable results over time. This is why daily habits matter more than occasional bursts of effort.",
+          "tags": [
+            "learning",
+            "habits"
+          ],
+          "consolidatedWith": "The Power of Compound Learning",
+          "mergedContent": "The power of compound learning lies in consistent daily practice. Small improvements of just 1% per day compound to remarkable results over time. This is why daily habits matter more than occasional bursts of effort.\n\nAdditional insight: The power of compound learning lies in consistent daily practice. Small improvements of just 1% per day compound to remarkable results over time. This is why daily habits matter more than occasional bursts of effort.",
+          "connections": [
+            {
+              "targetTitle": "The Power of Compound Learning",
+              "type": "related",
+              "strength": 1
+            }
+          ]
+        },
+        {
+          "title": "Writing in flow state requires removing...",
+          "content": "Writing in flow state requires removing all distractions and surrendering to the process. The inner critic must be silenced during the first draft. Editing comes later - creation and critique are separate phases.",
+          "tags": [
+            "learning",
+            "habits",
+            "writing"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": []
+        },
+        {
+          "title": "Atomic habits are tiny changes that...",
+          "content": "Atomic habits are tiny changes that compound over time. The key insight is that habits are the compound interest of self-improvement. Getting 1% better every day is more sustainable than trying to transform overnight.",
+          "tags": [
+            "learning",
+            "habits"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": [
+            {
+              "targetTitle": "The Power of Compound Learning",
+              "type": "related",
+              "strength": 0.4
+            }
+          ]
+        },
+        {
+          "title": "Regular exercise improves mental clarity and...",
+          "content": "Regular exercise improves mental clarity and reduces stress. Even a 20-minute walk can boost cognitive function for hours afterward. Physical movement is essential for creative thinking.",
+          "tags": [
+            "learning",
+            "habits"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": []
+        }
+      ],
+      "errors": []
+    },
+    {
+      "scenarioName": "Paraphrase Detection",
+      "strategyName": "keyword-baseline",
+      "metrics": {
+        "duplicateDetection": {
+          "truePositives": 0,
+          "falsePositives": 0,
+          "falseNegatives": 6,
+          "trueNegatives": 1,
+          "precision": 1,
+          "recall": 0,
+          "f1Score": 0
+        },
+        "consolidation": {
+          "correctConsolidations": 0,
+          "missedConsolidations": 6,
+          "wrongConsolidations": 0,
+          "correctNewNotes": 1,
+          "accuracy": 0.14285714285714285
+        },
+        "tagReuse": {
+          "reusedExisting": 4,
+          "correctlyCreatedNew": 0,
+          "shouldHaveReused": 0,
+          "reuseRate": 1,
+          "totalTagsAssigned": 4
+        },
+        "connections": {
+          "correctConnections": 0,
+          "missedConnections": 0,
+          "spuriousConnections": 5,
+          "precision": 0,
+          "recall": 1
+        },
+        "timing": {
+          "totalMs": 2,
+          "contextRetrievalMs": 0,
+          "extractionMs": 2
+        }
+      },
+      "extractedNotes": [
+        {
+          "title": "The Zettelkasten method succeeds due to...",
+          "content": "The Zettelkasten method succeeds due to its single-idea-per-note rule. This granularity allows ideas to be remixed freely. The interconnected notes create an evolving network of understanding.",
+          "tags": [
+            "learning"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": [
+            {
+              "targetTitle": "Zettelkasten Single-Idea Notes",
+              "type": "related",
+              "strength": 0.3
+            }
+          ]
+        },
+        {
+          "title": "Refactoring improves code structure without changing...",
+          "content": "Refactoring improves code structure without changing behavior. The key is to make small, incremental changes while keeping tests passing. Never refactor and add features in the same commit.",
+          "tags": [
+            "learning"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": [
+            {
+              "targetTitle": "Exercise Boosts Mental Clarity",
+              "type": "related",
+              "strength": 0.1
+            }
+          ]
+        },
+        {
+          "title": "Physical activity enhances cognitive function and...",
+          "content": "Physical activity enhances cognitive function and lowers anxiety. Brief periods of movement, like short walks, provide extended mental benefits. Bodily exercise supports imaginative thought processes.",
+          "tags": [
+            "learning"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": [
+            {
+              "targetTitle": "Exercise Boosts Mental Clarity",
+              "type": "related",
+              "strength": 0.4
+            }
+          ]
+        },
+        {
+          "title": "Rest periods cement knowledge acquisition and...",
+          "content": "Rest periods cement knowledge acquisition and recall. The brain organizes and incorporates fresh information during slumber. Sacrificing sleep for extra study time undermines the consolidation process.",
+          "tags": [
+            "learning"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": [
+            {
+              "targetTitle": "Sleep and Memory Consolidation",
+              "type": "related",
+              "strength": 0.2
+            },
+            {
+              "targetTitle": "Zettelkasten Single-Idea Notes",
+              "type": "related",
+              "strength": 0.1
+            }
+          ]
+        }
+      ],
+      "errors": []
+    },
+    {
+      "scenarioName": "Tag Synonym Handling",
+      "strategyName": "keyword-baseline",
+      "metrics": {
+        "duplicateDetection": {
+          "truePositives": 0,
+          "falsePositives": 0,
+          "falseNegatives": 0,
+          "trueNegatives": 3,
+          "precision": 1,
+          "recall": 1,
+          "f1Score": 1
+        },
+        "consolidation": {
+          "correctConsolidations": 0,
+          "missedConsolidations": 0,
+          "wrongConsolidations": 0,
+          "correctNewNotes": 3,
+          "accuracy": 1
+        },
+        "tagReuse": {
+          "reusedExisting": 3,
+          "correctlyCreatedNew": 1,
+          "shouldHaveReused": 0,
+          "reuseRate": 1,
+          "totalTagsAssigned": 4
+        },
+        "connections": {
+          "correctConnections": 1,
+          "missedConnections": 0,
+          "spuriousConnections": 1,
+          "precision": 0.5,
+          "recall": 1
+        },
+        "timing": {
+          "totalMs": 1,
+          "contextRetrievalMs": 0,
+          "extractionMs": 1
+        }
+      },
+      "extractedNotes": [
+        {
+          "title": "Deep learning and neural networks are...",
+          "content": "Deep learning and neural networks are revolutionizing AI/ML applications. The intersection of ML and data science creates powerful predictive models. Modern machine learning techniques enable unprecedented pattern recognition.",
+          "tags": [
+            "learning",
+            "productivity"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": [
+            {
+              "targetTitle": "Machine Learning Fundamentals",
+              "type": "related",
+              "strength": 0.4
+            }
+          ]
+        },
+        {
+          "title": "Personal knowledge management (PKM) systems help...",
+          "content": "Personal knowledge management (PKM) systems help with being productive and managing your notes effectively. Good note management leads to better work output and efficiency.",
+          "tags": [
+            "productivity"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": [
+            {
+              "targetTitle": "Machine Learning Fundamentals",
+              "type": "related",
+              "strength": 0.1
+            }
+          ]
+        },
+        {
+          "title": "Physical wellness and exercise are crucial...",
+          "content": "Physical wellness and exercise are crucial for maintaining good health. Regular workouts and staying fit improves both physical and mental wellbeing.",
+          "tags": [
+            "productivity"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": []
+        }
+      ],
+      "errors": []
+    },
+    {
+      "scenarioName": "Exact Duplicate Detection",
+      "strategyName": "semantic",
+      "metrics": {
+        "duplicateDetection": {
+          "truePositives": 1,
+          "falsePositives": 0,
+          "falseNegatives": 0,
+          "trueNegatives": 3,
+          "precision": 1,
+          "recall": 1,
+          "f1Score": 1
+        },
+        "consolidation": {
+          "correctConsolidations": 1,
+          "missedConsolidations": 0,
+          "wrongConsolidations": 0,
+          "correctNewNotes": 3,
+          "accuracy": 1
+        },
+        "tagReuse": {
+          "reusedExisting": 8,
+          "correctlyCreatedNew": 1,
+          "shouldHaveReused": 0,
+          "reuseRate": 1,
+          "totalTagsAssigned": 9
+        },
+        "connections": {
+          "correctConnections": 0,
+          "missedConnections": 1,
+          "spuriousConnections": 1,
+          "precision": 0,
+          "recall": 0
+        },
+        "timing": {
+          "totalMs": 1,
+          "contextRetrievalMs": 0,
+          "extractionMs": 1
+        }
+      },
+      "extractedNotes": [
+        {
+          "title": "The power of compound learning lies...",
+          "content": "The power of compound learning lies in consistent daily practice. Small improvements of just 1% per day compound to remarkable results over time. This is why daily habits matter more than occasional bursts of effort.",
+          "tags": [
+            "learning",
+            "habits"
+          ],
+          "consolidatedWith": "The Power of Compound Learning",
+          "mergedContent": "The power of compound learning lies in consistent daily practice. Small improvements of just 1% per day compound to remarkable results over time. This is why daily habits matter more than occasional bursts of effort.\n\nAdditional insight: The power of compound learning lies in consistent daily practice. Small improvements of just 1% per day compound to remarkable results over time. This is why daily habits matter more than occasional bursts of effort.",
+          "connections": [
+            {
+              "targetTitle": "The Power of Compound Learning",
+              "type": "related",
+              "strength": 0.1
+            }
+          ]
+        },
+        {
+          "title": "Writing in flow state requires removing...",
+          "content": "Writing in flow state requires removing all distractions and surrendering to the process. The inner critic must be silenced during the first draft. Editing comes later - creation and critique are separate phases.",
+          "tags": [
+            "learning",
+            "habits",
+            "writing"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": []
+        },
+        {
+          "title": "Atomic habits are tiny changes that...",
+          "content": "Atomic habits are tiny changes that compound over time. The key insight is that habits are the compound interest of self-improvement. Getting 1% better every day is more sustainable than trying to transform overnight.",
+          "tags": [
+            "learning",
+            "habits"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": []
+        },
+        {
+          "title": "Regular exercise improves mental clarity and...",
+          "content": "Regular exercise improves mental clarity and reduces stress. Even a 20-minute walk can boost cognitive function for hours afterward. Physical movement is essential for creative thinking.",
+          "tags": [
+            "learning",
+            "habits"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": []
+        }
+      ],
+      "errors": []
+    },
+    {
+      "scenarioName": "Paraphrase Detection",
+      "strategyName": "semantic",
+      "metrics": {
+        "duplicateDetection": {
+          "truePositives": 3,
+          "falsePositives": 0,
+          "falseNegatives": 0,
+          "trueNegatives": 1,
+          "precision": 1,
+          "recall": 1,
+          "f1Score": 1
+        },
+        "consolidation": {
+          "correctConsolidations": 3,
+          "missedConsolidations": 0,
+          "wrongConsolidations": 0,
+          "correctNewNotes": 1,
+          "accuracy": 1
+        },
+        "tagReuse": {
+          "reusedExisting": 4,
+          "correctlyCreatedNew": 0,
+          "shouldHaveReused": 0,
+          "reuseRate": 1,
+          "totalTagsAssigned": 4
+        },
+        "connections": {
+          "correctConnections": 0,
+          "missedConnections": 0,
+          "spuriousConnections": 1,
+          "precision": 0,
+          "recall": 1
+        },
+        "timing": {
+          "totalMs": 1,
+          "contextRetrievalMs": 0,
+          "extractionMs": 1
+        }
+      },
+      "extractedNotes": [
+        {
+          "title": "The Zettelkasten method succeeds due to...",
+          "content": "The Zettelkasten method succeeds due to its single-idea-per-note rule. This granularity allows ideas to be remixed freely. The interconnected notes create an evolving network of understanding.",
+          "tags": [
+            "learning"
+          ],
+          "consolidatedWith": "Zettelkasten Single-Idea Notes",
+          "mergedContent": "A Zettelkasten works because each note contains exactly one idea. This atomicity enables flexible recombination. Notes link to each other, forming an emergent web of knowledge that grows smarter over time.\n\nAdditional insight: The Zettelkasten method succeeds due to its single-idea-per-note rule. This granularity allows ideas to be remixed freely. The interconnected notes create an evolving network of understanding.",
+          "connections": []
+        },
+        {
+          "title": "Refactoring improves code structure without changing...",
+          "content": "Refactoring improves code structure without changing behavior. The key is to make small, incremental changes while keeping tests passing. Never refactor and add features in the same commit.",
+          "tags": [
+            "learning"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": []
+        },
+        {
+          "title": "Physical activity enhances cognitive function and...",
+          "content": "Physical activity enhances cognitive function and lowers anxiety. Brief periods of movement, like short walks, provide extended mental benefits. Bodily exercise supports imaginative thought processes.",
+          "tags": [
+            "learning"
+          ],
+          "consolidatedWith": "Exercise Boosts Mental Clarity",
+          "mergedContent": "Regular exercise improves mental clarity and reduces stress. Even a 20-minute walk can boost cognitive function for hours afterward. Physical movement is essential for creative thinking.\n\nAdditional insight: Physical activity enhances cognitive function and lowers anxiety. Brief periods of movement, like short walks, provide extended mental benefits. Bodily exercise supports imaginative thought processes.",
+          "connections": []
+        },
+        {
+          "title": "Rest periods cement knowledge acquisition and...",
+          "content": "Rest periods cement knowledge acquisition and recall. The brain organizes and incorporates fresh information during slumber. Sacrificing sleep for extra study time undermines the consolidation process.",
+          "tags": [
+            "learning"
+          ],
+          "consolidatedWith": "Sleep and Memory Consolidation",
+          "mergedContent": "Sleep consolidates learning and memory. During deep sleep, the brain processes and integrates new information. Skipping sleep to study more is counterproductive - rest is when learning solidifies.\n\nAdditional insight: Rest periods cement knowledge acquisition and recall. The brain organizes and incorporates fresh information during slumber. Sacrificing sleep for extra study time undermines the consolidation process.",
+          "connections": [
+            {
+              "targetTitle": "Sleep and Memory Consolidation",
+              "type": "related",
+              "strength": 0.051875000000000004
+            }
+          ]
+        }
+      ],
+      "errors": []
+    },
+    {
+      "scenarioName": "Tag Synonym Handling",
+      "strategyName": "semantic",
+      "metrics": {
+        "duplicateDetection": {
+          "truePositives": 0,
+          "falsePositives": 0,
+          "falseNegatives": 0,
+          "trueNegatives": 3,
+          "precision": 1,
+          "recall": 1,
+          "f1Score": 1
+        },
+        "consolidation": {
+          "correctConsolidations": 0,
+          "missedConsolidations": 0,
+          "wrongConsolidations": 0,
+          "correctNewNotes": 3,
+          "accuracy": 1
+        },
+        "tagReuse": {
+          "reusedExisting": 3,
+          "correctlyCreatedNew": 1,
+          "shouldHaveReused": 0,
+          "reuseRate": 1,
+          "totalTagsAssigned": 4
+        },
+        "connections": {
+          "correctConnections": 0,
+          "missedConnections": 1,
+          "spuriousConnections": 0,
+          "precision": 1,
+          "recall": 0
+        },
+        "timing": {
+          "totalMs": 0,
+          "contextRetrievalMs": 0,
+          "extractionMs": 0
+        }
+      },
+      "extractedNotes": [
+        {
+          "title": "Deep learning and neural networks are...",
+          "content": "Deep learning and neural networks are revolutionizing AI/ML applications. The intersection of ML and data science creates powerful predictive models. Modern machine learning techniques enable unprecedented pattern recognition.",
+          "tags": [
+            "learning",
+            "productivity"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": []
+        },
+        {
+          "title": "Personal knowledge management (PKM) systems help...",
+          "content": "Personal knowledge management (PKM) systems help with being productive and managing your notes effectively. Good note management leads to better work output and efficiency.",
+          "tags": [
+            "productivity"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": []
+        },
+        {
+          "title": "Physical wellness and exercise are crucial...",
+          "content": "Physical wellness and exercise are crucial for maintaining good health. Regular workouts and staying fit improves both physical and mental wellbeing.",
+          "tags": [
+            "productivity"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": []
+        }
+      ],
+      "errors": []
+    },
+    {
+      "scenarioName": "Exact Duplicate Detection",
+      "strategyName": "hybrid",
+      "metrics": {
+        "duplicateDetection": {
+          "truePositives": 1,
+          "falsePositives": 0,
+          "falseNegatives": 0,
+          "trueNegatives": 3,
+          "precision": 1,
+          "recall": 1,
+          "f1Score": 1
+        },
+        "consolidation": {
+          "correctConsolidations": 1,
+          "missedConsolidations": 0,
+          "wrongConsolidations": 0,
+          "correctNewNotes": 3,
+          "accuracy": 1
+        },
+        "tagReuse": {
+          "reusedExisting": 8,
+          "correctlyCreatedNew": 1,
+          "shouldHaveReused": 0,
+          "reuseRate": 1,
+          "totalTagsAssigned": 9
+        },
+        "connections": {
+          "correctConnections": 0,
+          "missedConnections": 1,
+          "spuriousConnections": 1,
+          "precision": 0,
+          "recall": 0
+        },
+        "timing": {
+          "totalMs": 2,
+          "contextRetrievalMs": 1,
+          "extractionMs": 1
+        }
+      },
+      "extractedNotes": [
+        {
+          "title": "The power of compound learning lies...",
+          "content": "The power of compound learning lies in consistent daily practice. Small improvements of just 1% per day compound to remarkable results over time. This is why daily habits matter more than occasional bursts of effort.",
+          "tags": [
+            "learning",
+            "habits"
+          ],
+          "consolidatedWith": "The Power of Compound Learning",
+          "mergedContent": "The power of compound learning lies in consistent daily practice. Small improvements of just 1% per day compound to remarkable results over time. This is why daily habits matter more than occasional bursts of effort.\n\nAdditional insight: The power of compound learning lies in consistent daily practice. Small improvements of just 1% per day compound to remarkable results over time. This is why daily habits matter more than occasional bursts of effort.",
+          "connections": [
+            {
+              "targetTitle": "The Power of Compound Learning",
+              "type": "related",
+              "strength": 0.094
+            }
+          ]
+        },
+        {
+          "title": "Writing in flow state requires removing...",
+          "content": "Writing in flow state requires removing all distractions and surrendering to the process. The inner critic must be silenced during the first draft. Editing comes later - creation and critique are separate phases.",
+          "tags": [
+            "learning",
+            "habits",
+            "writing"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": []
+        },
+        {
+          "title": "Atomic habits are tiny changes that...",
+          "content": "Atomic habits are tiny changes that compound over time. The key insight is that habits are the compound interest of self-improvement. Getting 1% better every day is more sustainable than trying to transform overnight.",
+          "tags": [
+            "learning",
+            "habits"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": []
+        },
+        {
+          "title": "Regular exercise improves mental clarity and...",
+          "content": "Regular exercise improves mental clarity and reduces stress. Even a 20-minute walk can boost cognitive function for hours afterward. Physical movement is essential for creative thinking.",
+          "tags": [
+            "learning",
+            "habits"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": []
+        }
+      ],
+      "errors": []
+    },
+    {
+      "scenarioName": "Paraphrase Detection",
+      "strategyName": "hybrid",
+      "metrics": {
+        "duplicateDetection": {
+          "truePositives": 3,
+          "falsePositives": 0,
+          "falseNegatives": 0,
+          "trueNegatives": 1,
+          "precision": 1,
+          "recall": 1,
+          "f1Score": 1
+        },
+        "consolidation": {
+          "correctConsolidations": 3,
+          "missedConsolidations": 0,
+          "wrongConsolidations": 0,
+          "correctNewNotes": 1,
+          "accuracy": 1
+        },
+        "tagReuse": {
+          "reusedExisting": 4,
+          "correctlyCreatedNew": 0,
+          "shouldHaveReused": 0,
+          "reuseRate": 1,
+          "totalTagsAssigned": 4
+        },
+        "connections": {
+          "correctConnections": 0,
+          "missedConnections": 0,
+          "spuriousConnections": 3,
+          "precision": 0,
+          "recall": 1
+        },
+        "timing": {
+          "totalMs": 3,
+          "contextRetrievalMs": 1,
+          "extractionMs": 2
+        }
+      },
+      "extractedNotes": [
+        {
+          "title": "The Zettelkasten method succeeds due to...",
+          "content": "The Zettelkasten method succeeds due to its single-idea-per-note rule. This granularity allows ideas to be remixed freely. The interconnected notes create an evolving network of understanding.",
+          "tags": [
+            "learning"
+          ],
+          "consolidatedWith": "Zettelkasten Single-Idea Notes",
+          "mergedContent": "A Zettelkasten works because each note contains exactly one idea. This atomicity enables flexible recombination. Notes link to each other, forming an emergent web of knowledge that grows smarter over time.\n\nAdditional insight: The Zettelkasten method succeeds due to its single-idea-per-note rule. This granularity allows ideas to be remixed freely. The interconnected notes create an evolving network of understanding.",
+          "connections": [
+            {
+              "targetTitle": "Zettelkasten Single-Idea Notes",
+              "type": "related",
+              "strength": 0.06455263157894738
+            }
+          ]
+        },
+        {
+          "title": "Refactoring improves code structure without changing...",
+          "content": "Refactoring improves code structure without changing behavior. The key is to make small, incremental changes while keeping tests passing. Never refactor and add features in the same commit.",
+          "tags": [
+            "learning"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": []
+        },
+        {
+          "title": "Physical activity enhances cognitive function and...",
+          "content": "Physical activity enhances cognitive function and lowers anxiety. Brief periods of movement, like short walks, provide extended mental benefits. Bodily exercise supports imaginative thought processes.",
+          "tags": [
+            "learning"
+          ],
+          "consolidatedWith": "Exercise Boosts Mental Clarity",
+          "mergedContent": "Regular exercise improves mental clarity and reduces stress. Even a 20-minute walk can boost cognitive function for hours afterward. Physical movement is essential for creative thinking.\n\nAdditional insight: Physical activity enhances cognitive function and lowers anxiety. Brief periods of movement, like short walks, provide extended mental benefits. Bodily exercise supports imaginative thought processes.",
+          "connections": [
+            {
+              "targetTitle": "Exercise Boosts Mental Clarity",
+              "type": "related",
+              "strength": 0.06605263157894736
+            }
+          ]
+        },
+        {
+          "title": "Rest periods cement knowledge acquisition and...",
+          "content": "Rest periods cement knowledge acquisition and recall. The brain organizes and incorporates fresh information during slumber. Sacrificing sleep for extra study time undermines the consolidation process.",
+          "tags": [
+            "learning"
+          ],
+          "consolidatedWith": "Sleep and Memory Consolidation",
+          "mergedContent": "Sleep consolidates learning and memory. During deep sleep, the brain processes and integrates new information. Skipping sleep to study more is counterproductive - rest is when learning solidifies.\n\nAdditional insight: Rest periods cement knowledge acquisition and recall. The brain organizes and incorporates fresh information during slumber. Sacrificing sleep for extra study time undermines the consolidation process.",
+          "connections": [
+            {
+              "targetTitle": "Sleep and Memory Consolidation",
+              "type": "related",
+              "strength": 0.0673125
+            }
+          ]
+        }
+      ],
+      "errors": []
+    },
+    {
+      "scenarioName": "Tag Synonym Handling",
+      "strategyName": "hybrid",
+      "metrics": {
+        "duplicateDetection": {
+          "truePositives": 0,
+          "falsePositives": 0,
+          "falseNegatives": 0,
+          "trueNegatives": 3,
+          "precision": 1,
+          "recall": 1,
+          "f1Score": 1
+        },
+        "consolidation": {
+          "correctConsolidations": 0,
+          "missedConsolidations": 0,
+          "wrongConsolidations": 0,
+          "correctNewNotes": 3,
+          "accuracy": 1
+        },
+        "tagReuse": {
+          "reusedExisting": 3,
+          "correctlyCreatedNew": 1,
+          "shouldHaveReused": 0,
+          "reuseRate": 1,
+          "totalTagsAssigned": 4
+        },
+        "connections": {
+          "correctConnections": 0,
+          "missedConnections": 1,
+          "spuriousConnections": 0,
+          "precision": 1,
+          "recall": 0
+        },
+        "timing": {
+          "totalMs": 1,
+          "contextRetrievalMs": 1,
+          "extractionMs": 0
+        }
+      },
+      "extractedNotes": [
+        {
+          "title": "Deep learning and neural networks are...",
+          "content": "Deep learning and neural networks are revolutionizing AI/ML applications. The intersection of ML and data science creates powerful predictive models. Modern machine learning techniques enable unprecedented pattern recognition.",
+          "tags": [
+            "learning",
+            "productivity"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": []
+        },
+        {
+          "title": "Personal knowledge management (PKM) systems help...",
+          "content": "Personal knowledge management (PKM) systems help with being productive and managing your notes effectively. Good note management leads to better work output and efficiency.",
+          "tags": [
+            "productivity"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": []
+        },
+        {
+          "title": "Physical wellness and exercise are crucial...",
+          "content": "Physical wellness and exercise are crucial for maintaining good health. Regular workouts and staying fit improves both physical and mental wellbeing.",
+          "tags": [
+            "productivity"
+          ],
+          "consolidatedWith": null,
+          "mergedContent": null,
+          "connections": []
+        }
+      ],
+      "errors": []
+    }
+  ]
+}

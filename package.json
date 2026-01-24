@@ -14,6 +14,10 @@
     "test:ai:headed": "SKIP_AUTH=true HEADLESS=false npx ts-node tests/ai-agent/run-tests.ts --headed",
     "test:ai:headless": "SKIP_AUTH=true HEADLESS=true npx ts-node tests/ai-agent/run-tests.ts --headless",
     "test:ux-review": "npx tsx tests/ai-agent/ux-review-test.ts",
+    "test:extraction": "npx tsx tests/extraction-accuracy/runner.ts",
+    "test:extraction:baseline": "npx tsx tests/extraction-accuracy/runner.ts --strategy keyword-baseline",
+    "test:extraction:semantic": "npx tsx tests/extraction-accuracy/runner.ts --strategy semantic",
+    "test:extraction:compare": "npx tsx tests/extraction-accuracy/runner.ts --compare",
     "chrome:debug": "bash scripts/start-chrome-debug.sh"
   },
   "dependencies": {

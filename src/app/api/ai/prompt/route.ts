@@ -14,7 +14,8 @@ export async function POST(request: Request) {
 
     const { context, documentId, pragmaticContext } = await request.json()
 
-    if (!context || typeof context !== 'string') {
+    // Context can be empty string for initial empty state
+    if (context === undefined || context === null || typeof context !== 'string') {
       return NextResponse.json({ error: 'Context is required' }, { status: 400 })
     }
 

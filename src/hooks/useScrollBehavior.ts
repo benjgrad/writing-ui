@@ -71,22 +71,33 @@ export function useScrollBehavior({
     return () => clearTimeout(timer)
   }, [containerRef, hasHistory])
 
-  // Calculate scroll progress (0 = at editor, 1 = fully in history)
+  // Calculate scroll progress (0 = at editor, 1 = scrolled away)
   const calculateScrollProgress = useCallback(() => {
     const container = containerRef.current
     if (!container) return 0
 
     const scrollTop = container.scrollTop
-    const historyHeight = historyHeightRef.current || editorZoneTop
 
-    // Progress is based on how far we've scrolled UP into history
-    // At scrollTop = historyHeight, we're at the editor (progress = 0)
-    // At scrollTop = 0, we're at full history (progress = 1)
-    if (historyHeight <= 0) return 0
+    // If there's history content, calculate progress based on history height
+    if (hasHistory && historyHeightRef.current > 0) {
+      const historyHeight = historyHeightRef.current
+      // Progress is based on how far we've scrolled UP into history
+      // At scrollTop = historyHeight, we're at the editor (progress = 0)
+      // At scrollTop = 0, we're at full history (progress = 1)
+      const progress = 1 - (scrollTop / historyHeight)
+      return Math.max(0, Math.min(1, progress))
+    }
 
-    const progress = 1 - (scrollTop / historyHeight)
-    return Math.max(0, Math.min(1, progress))
-  }, [containerRef, editorZoneTop])
+    // For new documents without history, fade prompt when user scrolls down
+    // Use a small threshold (50px) to start fading
+    if (scrollTop > 50) {
+      const fadeDistance = 200 // Fully faded after 200px of scroll
+      const progress = Math.min(1, (scrollTop - 50) / fadeDistance)
+      return progress
+    }
+
+    return 0
+  }, [containerRef, hasHistory])
 
   // Handle scroll events
   const handleScroll = useCallback(() => {
@@ -108,7 +119,7 @@ export function useScrollBehavior({
     } else {
       setCurrentZone('transitioning')
     }
-  }, [enabled, calculateScrollProgress])
+  }, [enabled, calculateScrollProgress, hasHistory])
 
   // Set up scroll listener
   useEffect(() => {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { openCoachingSession } from '@/components/coaching/CoachingProvider'
@@ -10,12 +10,120 @@ interface NotePanelProps {
   node: GraphNode
   onClose: () => void
   onDelete?: () => void
+  onTagsChange?: () => void
+  allTags?: string[]
 }
 
-export function NotePanel({ node, onClose, onDelete }: NotePanelProps) {
+export function NotePanel({ node, onClose, onDelete, onTagsChange, allTags = [] }: NotePanelProps) {
   const [isDeleting, setIsDeleting] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+  const [nodeTags, setNodeTags] = useState<string[]>(node.tags)
+  const [isEditingTags, setIsEditingTags] = useState(false)
+  const [newTagName, setNewTagName] = useState('')
+  const [tagSearch, setTagSearch] = useState('')
+  const [isAddingTag, setIsAddingTag] = useState(false)
   const supabase = createClient()
+
+  // Update local tags when node changes
+  useEffect(() => {
+    setNodeTags(node.tags)
+  }, [node.tags])
+
+  // Filter available tags (exclude already added ones)
+  const availableTags = useMemo(() => {
+    const currentTags = new Set(nodeTags)
+    let tags = allTags.filter(t => !currentTags.has(t))
+    if (tagSearch) {
+      const search = tagSearch.toLowerCase()
+      tags = tags.filter(t => t.toLowerCase().includes(search))
+    }
+    return tags.slice(0, 10) // Limit to 10 suggestions
+  }, [allTags, nodeTags, tagSearch])
+
+  // Check if search matches any existing tag
+  const searchMatchesExisting = useMemo(() => {
+    if (!tagSearch) return false
+    const search = tagSearch.toLowerCase()
+    return allTags.some(t => t.toLowerCase() === search) || nodeTags.some(t => t.toLowerCase() === search)
+  }, [tagSearch, allTags, nodeTags])
+
+  const handleAddTag = async (tagName: string) => {
+    if (!tagName.trim() || isAddingTag) return
+    setIsAddingTag(true)
+
+    try {
+      // Get or create the tag
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let { data: existingTag } = await (supabase as any)
+        .from('tags')
+        .select('id')
+        .eq('name', tagName.trim())
+        .single()
+
+      let tagId = existingTag?.id
+
+      if (!tagId) {
+        // Create new tag
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: newTag, error: createError } = await (supabase as any)
+          .from('tags')
+          .insert({ name: tagName.trim() })
+          .select('id')
+          .single()
+
+        if (createError) throw createError
+        tagId = newTag.id
+      }
+
+      // Add tag to note
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error: linkError } = await (supabase as any)
+        .from('note_tags')
+        .insert({ note_id: node.id, tag_id: tagId })
+
+      if (linkError && !linkError.message?.includes('duplicate')) {
+        throw linkError
+      }
+
+      // Update local state
+      setNodeTags(prev => [...prev, tagName.trim()])
+      setTagSearch('')
+      setNewTagName('')
+      onTagsChange?.()
+    } catch (err) {
+      console.error('Error adding tag:', err)
+    } finally {
+      setIsAddingTag(false)
+    }
+  }
+
+  const handleRemoveTag = async (tagName: string) => {
+    try {
+      // Get tag ID
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: tag } = await (supabase as any)
+        .from('tags')
+        .select('id')
+        .eq('name', tagName)
+        .single()
+
+      if (!tag) return
+
+      // Remove tag from note
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase as any)
+        .from('note_tags')
+        .delete()
+        .eq('note_id', node.id)
+        .eq('tag_id', tag.id)
+
+      // Update local state
+      setNodeTags(prev => prev.filter(t => t !== tagName))
+      onTagsChange?.()
+    } catch (err) {
+      console.error('Error removing tag:', err)
+    }
+  }
 
   const handleDelete = async () => {
     setIsDeleting(true)
@@ -92,21 +200,118 @@ export function NotePanel({ node, onClose, onDelete }: NotePanelProps) {
           </p>
         </div>
 
-        {node.tags.length > 0 && (
-          <div className="mt-4">
-            <p className="text-xs font-medium text-muted mb-2">Tags</p>
-            <div className="flex flex-wrap gap-1">
-              {node.tags.map(tag => (
-                <span
-                  key={tag}
-                  className="px-2 py-0.5 text-xs bg-foreground/5 rounded-full"
-                >
-                  #{tag}
-                </span>
-              ))}
-            </div>
+        {/* Tags section - always show for editing */}
+        <div className="mt-4">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs font-medium text-muted">Tags</p>
+            <button
+              onClick={() => setIsEditingTags(!isEditingTags)}
+              className="text-xs text-muted-foreground hover:text-foreground"
+            >
+              {isEditingTags ? 'Done' : 'Edit'}
+            </button>
           </div>
-        )}
+
+          <div className="flex flex-wrap gap-1">
+            {nodeTags.map(tag => (
+              <span
+                key={tag}
+                className={`px-2 py-0.5 text-xs bg-foreground/5 rounded-full flex items-center gap-1 ${
+                  isEditingTags ? 'pr-1' : ''
+                }`}
+              >
+                #{tag}
+                {isEditingTags && (
+                  <button
+                    onClick={() => handleRemoveTag(tag)}
+                    className="w-3.5 h-3.5 rounded-full bg-foreground/10 hover:bg-red-500/20 hover:text-red-500 flex items-center justify-center"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </span>
+            ))}
+            {nodeTags.length === 0 && !isEditingTags && (
+              <span className="text-xs text-muted-foreground">No tags</span>
+            )}
+          </div>
+
+          {/* Tag editing UI */}
+          {isEditingTags && (
+            <div className="mt-2 space-y-2">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={tagSearch}
+                  onChange={(e) => setTagSearch(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && tagSearch.trim()) {
+                      e.preventDefault()
+                      handleAddTag(tagSearch.trim())
+                    }
+                  }}
+                  placeholder="Search or create tag..."
+                  className="w-full px-3 py-1.5 text-sm bg-foreground/5 border border-border rounded-md focus:outline-none focus:ring-1 focus:ring-foreground/20"
+                  disabled={isAddingTag}
+                />
+                {isAddingTag && (
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                    <div className="w-4 h-4 border-2 border-foreground/20 border-t-foreground/60 rounded-full animate-spin" />
+                  </div>
+                )}
+              </div>
+
+              {/* Tag suggestions */}
+              {tagSearch && (
+                <div className="space-y-1">
+                  {/* Create new tag option */}
+                  {!searchMatchesExisting && (
+                    <button
+                      onClick={() => handleAddTag(tagSearch.trim())}
+                      disabled={isAddingTag}
+                      className="w-full text-left px-2 py-1 text-xs rounded hover:bg-foreground/5 flex items-center gap-2"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 5v14M5 12h14" />
+                      </svg>
+                      Create &quot;{tagSearch.trim()}&quot;
+                    </button>
+                  )}
+
+                  {/* Existing tag suggestions */}
+                  {availableTags.map(tag => (
+                    <button
+                      key={tag}
+                      onClick={() => handleAddTag(tag)}
+                      disabled={isAddingTag}
+                      className="w-full text-left px-2 py-1 text-xs rounded hover:bg-foreground/5"
+                    >
+                      #{tag}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Quick add from existing tags when not searching */}
+              {!tagSearch && availableTags.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {availableTags.slice(0, 5).map(tag => (
+                    <button
+                      key={tag}
+                      onClick={() => handleAddTag(tag)}
+                      disabled={isAddingTag}
+                      className="px-2 py-0.5 text-xs border border-dashed border-border rounded-full hover:border-foreground/50 hover:bg-foreground/5"
+                    >
+                      + {tag}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Source references */}
         {node.sources && node.sources.length > 0 && (

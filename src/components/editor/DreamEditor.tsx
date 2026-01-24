@@ -142,10 +142,8 @@ export function DreamEditor({ userId, initialDocument }: DreamEditorProps) {
     promptOpacity,
     editorOpacity,
     historyOpacity,
-    scrollToEditor,
     handleKeyboardInput,
     updateHistoryHeight,
-    isInEditor,
   } = useScrollBehavior({
     containerRef,
     editorZoneTop,
@@ -365,8 +363,46 @@ export function DreamEditor({ userId, initialDocument }: DreamEditorProps) {
     return fullContent.split(/\s+/).filter(Boolean).length
   }, [fullContent])
 
+  // Request a new AI prompt manually
+  const handleRequestPrompt = useCallback(() => {
+    setShowPrompt(true)
+    promptFetchedRef.current = false
+    setIsLoadingPrompt(true)
+    setAiPrompt(null)
+
+    const context = historyContent || fullContent || initialDocument?.content || ''
+
+    fetch('/api/ai/prompt', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ context }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setAiPrompt(data.prompt)
+        promptFetchedRef.current = true
+      })
+      .catch(() => {
+        setAiPrompt('What would you like to write about?')
+      })
+      .finally(() => {
+        setIsLoadingPrompt(false)
+      })
+  }, [historyContent, fullContent, initialDocument?.content])
+
   return (
-    <div className="dream-gradient min-h-screen relative">
+    <>
+      {/* AI prompt overlay - outside dream-gradient to avoid position:relative override */}
+      {showPrompt && (
+        <IdlePrompt
+          prompt={aiPrompt}
+          isLoading={isLoadingPrompt}
+          opacity={promptOpacity}
+          onDismiss={() => setShowPrompt(false)}
+        />
+      )}
+
+      {/* Editor toolbar - outside dream-gradient to keep fixed positioning */}
       <EditorToolbar
         title={title}
         onTitleChange={handleTitleChange}
@@ -377,6 +413,8 @@ export function DreamEditor({ userId, initialDocument }: DreamEditorProps) {
         wordCount={wordCount}
         error={saveError}
       />
+
+      <div className="dream-gradient h-screen relative overflow-hidden">
 
       {/* Hidden textarea for mobile keyboard - positioned off-screen */}
       <textarea
@@ -457,15 +495,17 @@ export function DreamEditor({ userId, initialDocument }: DreamEditorProps) {
         <div style={{ height: '50vh' }} />
       </div>
 
-      {/* AI prompt overlay */}
-      {showPrompt && isInEditor && (
-        <IdlePrompt
-          prompt={aiPrompt}
-          isLoading={isLoadingPrompt}
-          opacity={promptOpacity}
-          onDismiss={() => setShowPrompt(false)}
-        />
+      {/* Inspire me button - shows when prompt is hidden */}
+      {!showPrompt && (
+        <button
+          onClick={handleRequestPrompt}
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-foreground/10 hover:bg-foreground/20 text-foreground/60 hover:text-foreground/80 text-sm font-medium transition-all duration-200 backdrop-blur-sm border border-foreground/10"
+          style={{ zIndex: 10 }}
+        >
+          ✨ Inspire me
+        </button>
       )}
     </div>
+    </>
   )
 }

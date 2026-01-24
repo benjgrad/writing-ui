@@ -3,24 +3,60 @@
 import { useState, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import { useKnowledgeGraph } from '@/hooks/useKnowledgeGraph'
-import { useSavedFilters } from '@/hooks/useSavedFilters'
-import { KnowledgeGraph, GoalColorInfo } from '@/components/graph/KnowledgeGraph'
-import { GraphControls } from '@/components/graph/GraphControls'
-import { GraphLegend } from '@/components/graph/GraphLegend'
+import { useGraphGroups } from '@/hooks/useGraphGroups'
+import { usePhysicsSettings } from '@/hooks/usePhysicsSettings'
+import { KnowledgeGraph } from '@/components/graph/KnowledgeGraph'
+import { GraphPanel } from '@/components/graph/GraphPanel'
 import { NotePanel } from '@/components/graph/NotePanel'
 import { Loading } from '@/components/ui/Loading'
-import type { SavedFilter, RecencyRange } from '@/types/graph'
+import type { RecencyRange } from '@/types/graph'
 
 export default function GraphPage() {
   const { data, loading, error, selectedNode, setSelectedNode, refresh } = useKnowledgeGraph()
-  const { savedFilters, saveFilter, deleteFilter } = useSavedFilters()
+  const { groups, createGroup, deleteGroup, updateGroup, reorderGroups } = useGraphGroups()
+  const { physics, updatePhysics, resetPhysics } = usePhysicsSettings()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [recencyRange, setRecencyRange] = useState<RecencyRange | null>(null)
-  const [goalColors, setGoalColors] = useState<GoalColorInfo[]>([])
+  const [selectedConnectionTypes, setSelectedConnectionTypes] = useState<string[]>([])
+  const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([])
 
-  const handleGoalColorsChange = useCallback((colors: GoalColorInfo[]) => {
-    setGoalColors(colors)
+  const handleConnectionTypeToggle = useCallback((type: string) => {
+    setSelectedConnectionTypes(prev => {
+      if (prev.includes(type)) {
+        return prev.filter(t => t !== type)
+      } else {
+        return [...prev, type]
+      }
+    })
+  }, [])
+
+  const handleGroupToggle = useCallback((groupId: string) => {
+    setSelectedGroupIds(prev => {
+      // If "none" is selected and we click a group, replace with just that group
+      if (prev.includes('__none__')) {
+        return [groupId]
+      }
+      if (prev.length === 0) {
+        // Currently showing all - select only this one
+        return [groupId]
+      }
+      if (prev.includes(groupId)) {
+        // Deselect - if this is the last one, go back to showing all
+        const newSelection = prev.filter(id => id !== groupId)
+        return newSelection.length === 0 ? [] : newSelection
+      } else {
+        return [...prev, groupId]
+      }
+    })
+  }, [])
+
+  const handleSelectAllGroups = useCallback(() => {
+    setSelectedGroupIds([])  // Empty means all are shown
+  }, [])
+
+  const handleDeselectAllGroups = useCallback(() => {
+    setSelectedGroupIds(['__none__'])  // Special marker for "none selected"
   }, [])
 
   // Get unique tags from all nodes
@@ -61,14 +97,19 @@ export default function GraphPage() {
     }
 
     const nodeIds = new Set(nodes.map(n => n.id))
-    const links = data.links.filter(link => {
+    let links = data.links.filter(link => {
       const sourceId = typeof link.source === 'string' ? link.source : link.source.id
       const targetId = typeof link.target === 'string' ? link.target : link.target.id
       return nodeIds.has(sourceId) && nodeIds.has(targetId)
     })
 
+    // Filter by connection type if any are selected
+    if (selectedConnectionTypes.length > 0) {
+      links = links.filter(link => selectedConnectionTypes.includes(link.type))
+    }
+
     return { nodes, links }
-  }, [data, searchQuery, selectedTags, recencyRange])
+  }, [data, searchQuery, selectedTags, recencyRange, selectedConnectionTypes])
 
   const handleTagToggle = (tag: string) => {
     setSelectedTags(prev =>
@@ -78,11 +119,86 @@ export default function GraphPage() {
     )
   }
 
-  const handleApplyFilter = useCallback((filter: SavedFilter) => {
-    setSearchQuery(filter.searchQuery)
-    setSelectedTags(filter.tags)
-    setRecencyRange(filter.recencyRange)
+  // Filter data based on selected groups
+  const activeGroups = useMemo(() => {
+    if (selectedGroupIds.length === 0) return groups
+    if (selectedGroupIds.includes('__none__')) return []
+    return groups.filter(g => selectedGroupIds.includes(g.id))
+  }, [groups, selectedGroupIds])
+
+  // Helper: check if a node matches a group's filters
+  const nodeMatchesGroup = useCallback((node: typeof data.nodes[0], group: typeof groups[0], allNodes: typeof data.nodes) => {
+    // Check search query
+    if (group.searchQuery) {
+      const query = group.searchQuery.toLowerCase()
+      const matchesQuery = node.title.toLowerCase().includes(query) ||
+        node.content.toLowerCase().includes(query)
+      if (!matchesQuery) return false
+    }
+
+    // Check tags (any match)
+    if (group.tags.length > 0) {
+      const hasMatchingTag = group.tags.some(tag => node.tags.includes(tag))
+      if (!hasMatchingTag) return false
+    }
+
+    // Check recency range
+    if (group.recencyRange) {
+      const nodeIndex = allNodes.findIndex(n => n.id === node.id)
+      if (nodeIndex === -1) return false
+
+      const totalCount = allNodes.length
+      const nodePercent = 100 - (nodeIndex / totalCount) * 100
+
+      if (nodePercent < group.recencyRange.start || nodePercent > group.recencyRange.end) {
+        return false
+      }
+    }
+
+    return true
   }, [])
+
+  // Check if a node is uncategorized (doesn't match any group)
+  const isNodeUncategorized = useCallback((node: typeof data.nodes[0]) => {
+    return !groups.some(group => nodeMatchesGroup(node, group, data.nodes))
+  }, [groups, nodeMatchesGroup, data.nodes])
+
+  // Filter nodes based on active groups (when groups are selected, show only nodes matching those groups)
+  const groupFilteredData = useMemo(() => {
+    // If no groups selected or showing all, don't filter by groups
+    if (selectedGroupIds.length === 0) {
+      return filteredData
+    }
+
+    // If "none" selected, show no nodes
+    if (selectedGroupIds.includes('__none__')) {
+      return { nodes: [], links: [] }
+    }
+
+    // Check if uncategorized is selected
+    const showUncategorized = selectedGroupIds.includes('__uncategorized__')
+    const regularGroupIds = selectedGroupIds.filter(id => id !== '__uncategorized__')
+
+    // Filter nodes to only those matching at least one active group or uncategorized
+    const nodes = filteredData.nodes.filter(node => {
+      // Check if matches any selected regular group
+      const matchesGroup = activeGroups.some(group => nodeMatchesGroup(node, group, data.nodes))
+
+      // Check if should show as uncategorized
+      const matchesUncategorized = showUncategorized && isNodeUncategorized(node)
+
+      return matchesGroup || matchesUncategorized
+    })
+
+    const nodeIds = new Set(nodes.map(n => n.id))
+    const links = filteredData.links.filter(link => {
+      const sourceId = typeof link.source === 'string' ? link.source : link.source.id
+      const targetId = typeof link.target === 'string' ? link.target : link.target.id
+      return nodeIds.has(sourceId) && nodeIds.has(targetId)
+    })
+
+    return { nodes, links }
+  }, [filteredData, selectedGroupIds, activeGroups, nodeMatchesGroup, data.nodes, isNodeUncategorized])
 
   if (loading) {
     return (
@@ -131,9 +247,9 @@ export default function GraphPage() {
           <h1 className="text-base sm:text-lg font-medium">Knowledge Graph</h1>
         </div>
         <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted">
-          <span>{filteredData.nodes.length} notes</span>
-          <span className="hidden sm:inline">{filteredData.links.length} connections</span>
-          {filteredData.nodes.length > 20 && (
+          <span>{groupFilteredData.nodes.length} notes</span>
+          <span className="hidden sm:inline">{groupFilteredData.links.length} connections</span>
+          {groupFilteredData.nodes.length > 20 && (
             <span className="hidden sm:inline text-xs">Hover nodes to see labels</span>
           )}
         </div>
@@ -141,36 +257,47 @@ export default function GraphPage() {
 
       {/* Graph container */}
       <div className="pt-14 h-screen relative">
-        <GraphControls
+        <KnowledgeGraph
+          data={groupFilteredData}
+          onNodeClick={setSelectedNode}
+          selectedNodeId={selectedNode?.id}
+          groups={activeGroups}
+          physics={physics}
+        />
+
+        <GraphPanel
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
           tags={allTags}
           selectedTags={selectedTags}
           onTagToggle={handleTagToggle}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          onRefresh={refresh}
           totalNotes={data.nodes.length}
           recencyRange={recencyRange}
           onRecencyRangeChange={setRecencyRange}
-          savedFilters={savedFilters}
-          onSaveFilter={saveFilter}
-          onDeleteFilter={deleteFilter}
-          onApplyFilter={handleApplyFilter}
+          groups={groups}
+          selectedGroupIds={selectedGroupIds}
+          onGroupToggle={handleGroupToggle}
+          onSelectAllGroups={handleSelectAllGroups}
+          onDeselectAllGroups={handleDeselectAllGroups}
+          onCreateGroup={createGroup}
+          onDeleteGroup={deleteGroup}
+          onUpdateGroup={updateGroup}
+          onReorderGroups={reorderGroups}
+          physics={physics}
+          onPhysicsChange={updatePhysics}
+          onResetPhysics={resetPhysics}
+          selectedConnectionTypes={selectedConnectionTypes}
+          onConnectionTypeToggle={handleConnectionTypeToggle}
+          onRefresh={refresh}
         />
-
-        <KnowledgeGraph
-          data={filteredData}
-          onNodeClick={setSelectedNode}
-          selectedNodeId={selectedNode?.id}
-          onGoalColorsChange={handleGoalColorsChange}
-        />
-
-        <GraphLegend goalColors={goalColors} />
 
         {selectedNode && (
           <NotePanel
             node={selectedNode}
             onClose={() => setSelectedNode(null)}
             onDelete={refresh}
+            onTagsChange={refresh}
+            allTags={allTags}
           />
         )}
       </div>

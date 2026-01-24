@@ -380,7 +380,32 @@ export function useGoalCoaching(options: UseGoalCoachingOptions = {}) {
 
       return data
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Something went wrong'
+      // Parse error to provide user-friendly message
+      let errorMessage = 'Something went wrong. Please try again.'
+
+      if (err instanceof Error) {
+        // Check if error message looks like JSON (raw API error)
+        const msg = err.message
+        if (msg.startsWith('{') || msg.startsWith('[')) {
+          try {
+            const parsed = JSON.parse(msg)
+            errorMessage = parsed.error || parsed.message || 'An unexpected error occurred. Please try again.'
+          } catch {
+            errorMessage = 'Unable to connect to the coaching service. Please try again.'
+          }
+        } else if (msg.includes('Failed to')) {
+          // Clean up common error prefixes
+          errorMessage = 'Unable to get a response. Please try again.'
+        } else {
+          errorMessage = msg
+        }
+      }
+
+      // Ensure we never show raw JSON to users
+      if (errorMessage.startsWith('{') || errorMessage.startsWith('[')) {
+        errorMessage = 'An unexpected error occurred. Please try again.'
+      }
+
       setError(errorMessage)
       throw err
     } finally {

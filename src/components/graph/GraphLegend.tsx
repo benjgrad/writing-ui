@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import type { GoalColorInfo } from './KnowledgeGraph'
+import type { GraphGroup } from '@/types/graph'
 
 interface GraphLegendProps {
-  goalColors: GoalColorInfo[]
+  groups: GraphGroup[]
 }
 
 const LINK_TYPES = [
@@ -15,12 +15,11 @@ const LINK_TYPES = [
   { type: 'example_of', color: '#f59e0b', label: 'Example of' }
 ]
 
-export function GraphLegend({ goalColors }: GraphLegendProps) {
+export function GraphLegend({ groups }: GraphLegendProps) {
   const [isExpanded, setIsExpanded] = useState(true)
 
-  const activeGoals = goalColors.filter(g => g.goalStatus === 'active')
-  const parkedGoals = goalColors.filter(g => g.goalStatus === 'parked')
-  const otherGoals = goalColors.filter(g => g.goalStatus !== 'active' && g.goalStatus !== 'parked')
+  // Sort groups by order
+  const sortedGroups = [...groups].sort((a, b) => a.order - b.order)
 
   return (
     <div className="absolute bottom-4 left-4 z-20 pointer-events-auto">
@@ -48,65 +47,33 @@ export function GraphLegend({ goalColors }: GraphLegendProps) {
 
         {isExpanded && (
           <div className="px-3 pb-3 space-y-3 max-h-80 overflow-y-auto">
-            {/* Goals Section */}
-            {goalColors.length > 0 && (
+            {/* Groups Section */}
+            {sortedGroups.length > 0 && (
               <div>
-                <p className="text-xs text-muted-foreground mb-1.5 uppercase tracking-wide">Goals</p>
+                <p className="text-xs text-muted-foreground mb-1.5 uppercase tracking-wide">Groups</p>
                 <div className="space-y-1">
-                  {activeGoals.map(goal => (
-                    <div key={goal.goalId} className="flex items-center gap-2">
+                  {sortedGroups.map((group, index) => (
+                    <div key={group.id} className="flex items-center gap-2">
                       <div
-                        className="w-3 h-3 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: goal.color }}
+                        className="w-3 h-3 rounded-full shrink-0"
+                        style={{ backgroundColor: group.color }}
                       />
-                      <span className="text-xs truncate max-w-[140px]" title={goal.goalTitle}>
-                        {goal.goalTitle}
+                      <span className="text-xs truncate max-w-35" title={group.name}>
+                        {index + 1}. {group.name}
                       </span>
                     </div>
                   ))}
-                  {parkedGoals.length > 0 && (
-                    <>
-                      <div className="text-xs text-muted-foreground mt-2 mb-1">Parked</div>
-                      {parkedGoals.map(goal => (
-                        <div key={goal.goalId} className="flex items-center gap-2 opacity-60">
-                          <div
-                            className="w-3 h-3 rounded-full flex-shrink-0"
-                            style={{ backgroundColor: goal.color }}
-                          />
-                          <span className="text-xs truncate max-w-[140px]" title={goal.goalTitle}>
-                            {goal.goalTitle}
-                          </span>
-                        </div>
-                      ))}
-                    </>
-                  )}
-                  {otherGoals.length > 0 && (
-                    <>
-                      <div className="text-xs text-muted-foreground mt-2 mb-1">Completed</div>
-                      {otherGoals.map(goal => (
-                        <div key={goal.goalId} className="flex items-center gap-2 opacity-50">
-                          <div
-                            className="w-3 h-3 rounded-full flex-shrink-0"
-                            style={{ backgroundColor: goal.color }}
-                          />
-                          <span className="text-xs truncate max-w-[140px]" title={goal.goalTitle}>
-                            {goal.goalTitle}
-                          </span>
-                        </div>
-                      ))}
-                    </>
-                  )}
                 </div>
               </div>
             )}
 
-            {/* No Goal indicator */}
+            {/* Ungrouped indicator */}
             <div className="flex items-center gap-2">
               <div
-                className="w-3 h-3 rounded-full flex-shrink-0"
+                className="w-3 h-3 rounded-full shrink-0"
                 style={{ backgroundColor: '#6b7280' }}
               />
-              <span className="text-xs text-muted-foreground">No goal</span>
+              <span className="text-xs text-muted-foreground">Ungrouped</span>
             </div>
 
             {/* Link Types Section */}

@@ -81,6 +81,14 @@ export function GoalCoach({ isOpen, onClose, onMinimize, isMinimized = false, on
     }
   }, [isLoading, isOpen, viewOnly])
 
+  // Scroll to bottom when textarea is focused (for mobile keyboard)
+  const handleInputFocus = useCallback(() => {
+    // Small delay to let keyboard animation complete
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }, 300)
+  }, [])
+
   // Handle completion
   useEffect(() => {
     if (isComplete && goalData.title && !viewOnly) {
@@ -371,6 +379,7 @@ export function GoalCoach({ isOpen, onClose, onMinimize, isMinimized = false, on
                   adjustTextareaHeight()
                 }}
                 onKeyDown={handleKeyDown}
+                onFocus={handleInputFocus}
                 placeholder={existingSession && isComplete
                   ? "Update your motivation, add a new step, or ask for advice..."
                   : "Type your response..."}

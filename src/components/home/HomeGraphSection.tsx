@@ -3,12 +3,16 @@
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { useKnowledgeGraph } from '@/hooks/useKnowledgeGraph'
+import { useGraphGroups } from '@/hooks/useGraphGroups'
+import { usePhysicsSettings } from '@/hooks/usePhysicsSettings'
 import { KnowledgeGraph } from '@/components/graph/KnowledgeGraph'
 import { Loading } from '@/components/ui/Loading'
 import { Input } from '@/components/ui/Input'
 
 export function HomeGraphSection() {
   const { data, loading, error, selectedNode, setSelectedNode } = useKnowledgeGraph()
+  const { groups } = useGraphGroups()
+  const { physics } = usePhysicsSettings()
   const [searchQuery, setSearchQuery] = useState('')
 
   // Filter nodes based on search only (no tag filter in compact mode)
@@ -122,6 +126,8 @@ export function HomeGraphSection() {
           selectedNodeId={selectedNode?.id}
           compact
           height="h-[60vh] sm:h-[80vh]"
+          groups={groups}
+          physics={physics}
         />
 
         {/* Selected node tooltip */}
