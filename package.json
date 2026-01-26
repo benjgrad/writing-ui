@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prepare": "husky",
+    "typecheck": "tsc --noEmit",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -32,6 +34,7 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "husky": "^9.1.7",
     "@playwright/test": "^1.57.0",
     "@tailwindcss/postcss": "^4",
     "@types/d3": "^7.4.3",

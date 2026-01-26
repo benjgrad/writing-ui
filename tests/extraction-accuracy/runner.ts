@@ -23,6 +23,7 @@ import type {
   ScenarioResult,
   ExtractionMetrics,
   QualityEvaluationResults,
+  TestReportWithQuality,
 } from './metrics/types'
 import { createHarness } from './harness/extraction-harness'
 import { getAllScenarios, getScenario } from './fixtures/synthetic-generator'
@@ -328,9 +329,15 @@ async function runQualityScenario(
         aggregateMetrics: {
           meanNVQ: 0, medianNVQ: 0, minNVQ: 0, maxNVQ: 0, passingRate: 0,
           whyFailureRate: 1, metadataFailureRate: 1, taxonomyFailureRate: 1,
-          connectivityFailureRate: 1, originalityFailureRate: 1, topFailures: [],
+          connectivityFailureRate: 1, originalityFailureRate: 1,
+          whyScoreDistribution: {}, metadataScoreDistribution: {},
+          taxonomyScoreDistribution: {}, connectivityScoreDistribution: {},
+          originalityScoreDistribution: {},
+          totalNotesEvaluated: 0, notesWithPurpose: 0, notesWithCompleteMetadata: 0,
+          notesWithFunctionalTags: 0, notesWithTwoLinks: 0, notesThatAreSynthesis: 0,
+          topFailures: [],
         },
-        expectationResults: [],
+        recommendations: [],
       },
     }
   } finally {
@@ -522,8 +529,8 @@ async function main(): Promise<void> {
     : generateReport(allResults, strategyMetrics)
 
   if (args.ci) {
-    if (args.quality && 'qualitySummary' in report) {
-      printCISummaryWithQuality(report)
+    if (args.quality && 'qualitySummary' in report && report.qualitySummary) {
+      printCISummaryWithQuality(report as TestReportWithQuality)
     } else {
       printCISummary(report)
     }

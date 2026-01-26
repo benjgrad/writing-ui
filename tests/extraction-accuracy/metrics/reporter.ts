@@ -556,7 +556,27 @@ export function printQualityReport(
     }
   }
 
-  // Recommendations
+  // Recommendations - compute score distributions
+  const whyScoreDistribution: Record<number, number> = {}
+  const metadataScoreDistribution: Record<number, number> = {}
+  const taxonomyScoreDistribution: Record<number, number> = {}
+  const connectivityScoreDistribution: Record<number, number> = {}
+  const originalityScoreDistribution: Record<number, number> = {}
+
+  for (const r of allNoteResults) {
+    const whyScore = r.nvqScore.breakdown.why.score
+    const metaScore = r.nvqScore.breakdown.metadata.score
+    const taxScore = r.nvqScore.breakdown.taxonomy.score
+    const connScore = r.nvqScore.breakdown.connectivity.score
+    const origScore = r.nvqScore.breakdown.originality.score
+
+    whyScoreDistribution[whyScore] = (whyScoreDistribution[whyScore] || 0) + 1
+    metadataScoreDistribution[metaScore] = (metadataScoreDistribution[metaScore] || 0) + 1
+    taxonomyScoreDistribution[taxScore] = (taxonomyScoreDistribution[taxScore] || 0) + 1
+    connectivityScoreDistribution[connScore] = (connectivityScoreDistribution[connScore] || 0) + 1
+    originalityScoreDistribution[origScore] = (originalityScoreDistribution[origScore] || 0) + 1
+  }
+
   const aggregateMetrics: NoteQualityMetrics = {
     meanNVQ: mean,
     medianNVQ: median,
@@ -568,6 +588,17 @@ export function printQualityReport(
     taxonomyFailureRate: allNoteResults.filter(r => r.nvqScore.breakdown.taxonomy.score < 1).length / allNoteResults.length,
     connectivityFailureRate: allNoteResults.filter(r => r.nvqScore.breakdown.connectivity.score < 1).length / allNoteResults.length,
     originalityFailureRate: allNoteResults.filter(r => r.nvqScore.breakdown.originality.score < 1).length / allNoteResults.length,
+    whyScoreDistribution,
+    metadataScoreDistribution,
+    taxonomyScoreDistribution,
+    connectivityScoreDistribution,
+    originalityScoreDistribution,
+    totalNotesEvaluated: allNoteResults.length,
+    notesWithPurpose: allNoteResults.filter(r => r.nvqScore.breakdown.why.rawStatement !== null).length,
+    notesWithCompleteMetadata: allNoteResults.filter(r => r.nvqScore.breakdown.metadata.fieldsPresent >= 3).length,
+    notesWithFunctionalTags: allNoteResults.filter(r => r.nvqScore.breakdown.taxonomy.functionalTags > 0).length,
+    notesWithTwoLinks: allNoteResults.filter(r => r.nvqScore.breakdown.connectivity.meetsMinimum).length,
+    notesThatAreSynthesis: allNoteResults.filter(r => r.nvqScore.breakdown.originality.hasOriginalInsight).length,
     topFailures: [],
   }
 
@@ -646,6 +677,27 @@ export function generateReportWithQuality(
     .sort((a, b) => b.count - a.count)
     .slice(0, 5)
 
+  // Compute score distributions
+  const whyScoreDist: Record<number, number> = {}
+  const metadataScoreDist: Record<number, number> = {}
+  const taxonomyScoreDist: Record<number, number> = {}
+  const connectivityScoreDist: Record<number, number> = {}
+  const originalityScoreDist: Record<number, number> = {}
+
+  for (const r of allNoteResults) {
+    const whyScore = r.nvqScore.breakdown.why.score
+    const metaScore = r.nvqScore.breakdown.metadata.score
+    const taxScore = r.nvqScore.breakdown.taxonomy.score
+    const connScore = r.nvqScore.breakdown.connectivity.score
+    const origScore = r.nvqScore.breakdown.originality.score
+
+    whyScoreDist[whyScore] = (whyScoreDist[whyScore] || 0) + 1
+    metadataScoreDist[metaScore] = (metadataScoreDist[metaScore] || 0) + 1
+    taxonomyScoreDist[taxScore] = (taxonomyScoreDist[taxScore] || 0) + 1
+    connectivityScoreDist[connScore] = (connectivityScoreDist[connScore] || 0) + 1
+    originalityScoreDist[origScore] = (originalityScoreDist[origScore] || 0) + 1
+  }
+
   // Build quality recommendations
   const qualityRecommendations = generateQualityRecommendations({
     meanNVQ: mean,
@@ -658,6 +710,17 @@ export function generateReportWithQuality(
     taxonomyFailureRate: componentFailureRates.taxonomy,
     connectivityFailureRate: componentFailureRates.connectivity,
     originalityFailureRate: componentFailureRates.originality,
+    whyScoreDistribution: whyScoreDist,
+    metadataScoreDistribution: metadataScoreDist,
+    taxonomyScoreDistribution: taxonomyScoreDist,
+    connectivityScoreDistribution: connectivityScoreDist,
+    originalityScoreDistribution: originalityScoreDist,
+    totalNotesEvaluated: allNoteResults.length,
+    notesWithPurpose: allNoteResults.filter(r => r.nvqScore.breakdown.why.rawStatement !== null).length,
+    notesWithCompleteMetadata: allNoteResults.filter(r => r.nvqScore.breakdown.metadata.fieldsPresent >= 3).length,
+    notesWithFunctionalTags: allNoteResults.filter(r => r.nvqScore.breakdown.taxonomy.functionalTags > 0).length,
+    notesWithTwoLinks: allNoteResults.filter(r => r.nvqScore.breakdown.connectivity.meetsMinimum).length,
+    notesThatAreSynthesis: allNoteResults.filter(r => r.nvqScore.breakdown.originality.hasOriginalInsight).length,
     topFailures: topIssues,
   })
 

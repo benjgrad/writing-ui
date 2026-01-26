@@ -256,6 +256,8 @@ export interface ContentRecord {
 /**
  * Re-export core NVQ types from quality module
  */
+import type { QualityEvaluationResults } from '../quality/types'
+
 export type {
   NoteStatus,
   NoteType,

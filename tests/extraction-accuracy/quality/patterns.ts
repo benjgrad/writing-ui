@@ -220,7 +220,7 @@ export function extractMatches(text: string, pattern: RegExp): string[] {
 /**
  * Count how many patterns match the text
  */
-export function countPatternMatches(text: string, patterns: RegExp[]): number {
+export function countPatternMatches(text: string, patterns: readonly RegExp[]): number {
   return patterns.filter((p) => p.test(text)).length
 }
 
