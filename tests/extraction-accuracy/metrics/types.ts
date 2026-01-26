@@ -248,3 +248,141 @@ export interface ContentRecord {
   title: string
   content: string
 }
+
+// =============================================================================
+// Note Quality (NVQ) Metrics Integration
+// =============================================================================
+
+/**
+ * Re-export core NVQ types from quality module
+ */
+export type {
+  NoteStatus,
+  NoteType,
+  Stakeholder,
+  NVQScore,
+  WhyComponentScore,
+  MetadataComponentScore,
+  TaxonomyComponentScore,
+  ConnectivityComponentScore,
+  OriginalityComponentScore,
+  NoteQualityMetrics,
+  QualityExpectation,
+  QualityTestScenario,
+  NVQEvaluationResult,
+  QualityEvaluationResults,
+} from '../quality/types'
+
+/**
+ * Extended scenario result with NVQ scores
+ */
+export interface ScenarioResultWithQuality extends ScenarioResult {
+  /** NVQ evaluation results for extracted notes */
+  qualityResults?: QualityEvaluationResults
+}
+
+/**
+ * Extended test report with NVQ metrics
+ */
+export interface TestReportWithQuality extends TestReport {
+  /** Aggregate quality metrics across all scenarios */
+  qualitySummary?: {
+    /** Mean NVQ score across all extracted notes */
+    meanNVQ: number
+    /** Median NVQ score */
+    medianNVQ: number
+    /** Percentage of notes meeting quality threshold */
+    passingRate: number
+    /** Component-level failure rates */
+    componentFailureRates: {
+      why: number
+      metadata: number
+      taxonomy: number
+      connectivity: number
+      originality: number
+    }
+    /** Top issues found */
+    topIssues: Array<{
+      component: string
+      issue: string
+      count: number
+    }>
+    /** Recommendations for improvement */
+    qualityRecommendations: string[]
+  }
+  /** Quality results per scenario */
+  qualityByScenario?: Record<string, QualityEvaluationResults>
+}
+
+/**
+ * Combined metrics for extraction + quality
+ */
+export interface CombinedMetrics {
+  /** Standard extraction accuracy metrics */
+  extraction: ExtractionMetrics
+  /** Note quality metrics */
+  quality?: {
+    meanNVQ: number
+    passingRate: number
+    componentScores: {
+      why: number
+      metadata: number
+      taxonomy: number
+      connectivity: number
+      originality: number
+    }
+  }
+}
+
+/**
+ * Quality threshold configuration
+ */
+export interface QualityThresholds {
+  /** Minimum NVQ score to pass (default: 7) */
+  minimumNVQ: number
+  /** Target mean NVQ across all notes */
+  targetMeanNVQ: number
+  /** Target passing rate (% of notes above minimum) */
+  targetPassingRate: number
+  /** Component-specific minimums */
+  componentMinimums: {
+    why: number
+    metadata: number
+    taxonomy: number
+    connectivity: number
+    originality: number
+  }
+}
+
+/**
+ * Default quality thresholds
+ */
+export const DEFAULT_QUALITY_THRESHOLDS: QualityThresholds = {
+  minimumNVQ: 7,
+  targetMeanNVQ: 7.5,
+  targetPassingRate: 0.8,
+  componentMinimums: {
+    why: 1, // At least 1 out of 3
+    metadata: 1, // At least 1 out of 2
+    taxonomy: 1, // At least 1 out of 2
+    connectivity: 1, // At least 1 out of 2
+    originality: 0, // Optional
+  },
+}
+
+/**
+ * Quality evaluation options
+ */
+export interface QualityEvaluationOptions {
+  /** Enable quality evaluation */
+  enabled: boolean
+  /** Thresholds to use */
+  thresholds: QualityThresholds
+  /** Include detailed breakdown in results */
+  includeDetailedBreakdown: boolean
+  /** Available projects for project linking evaluation */
+  availableProjects: string[]
+  /** Available MOCs for upward linking evaluation */
+  availableMOCs: string[]
+}
+

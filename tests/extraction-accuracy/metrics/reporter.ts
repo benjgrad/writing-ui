@@ -8,8 +8,12 @@ import * as fs from 'fs'
 import * as path from 'path'
 import type {
   TestReport,
+  TestReportWithQuality,
   ScenarioResult,
   ExtractionMetrics,
+  NVQScore,
+  NoteQualityMetrics,
+  QualityEvaluationResults,
 } from './types'
 import { aggregateMetrics } from './calculator'
 
@@ -322,4 +326,373 @@ export function printCISummary(report: TestReport): void {
   console.log(`F1_SCORE=${(report.summary.overallF1Score * 100).toFixed(1)}`)
   console.log(`CONSOLIDATION_ACCURACY=${(report.summary.overallConsolidationAccuracy * 100).toFixed(1)}`)
   console.log(`TAG_REUSE_RATE=${(report.summary.overallTagReuseRate * 100).toFixed(1)}`)
+}
+
+// =============================================================================
+// NVQ (Note Quality) Reporting Functions
+// =============================================================================
+
+/**
+ * Format NVQ score with color coding
+ */
+function formatNVQScore(score: number, max: number = 10): string {
+  const percent = score / max
+  const scoreStr = score.toFixed(1)
+  if (percent >= 0.7) {
+    return `${colors.green}${scoreStr}${colors.reset}`
+  } else if (percent >= 0.5) {
+    return `${colors.yellow}${scoreStr}${colors.reset}`
+  }
+  return `${colors.red}${scoreStr}${colors.reset}`
+}
+
+/**
+ * Format a component score with its max value
+ */
+function formatComponentScore(score: number, max: number): string {
+  const percent = score / max
+  const str = `${score.toFixed(1)}/${max}`
+  if (percent >= 0.7) {
+    return `${colors.green}${str}${colors.reset}`
+  } else if (percent >= 0.5) {
+    return `${colors.yellow}${str}${colors.reset}`
+  }
+  return `${colors.red}${str}${colors.reset}`
+}
+
+/**
+ * Create a simple bar chart
+ */
+function createBar(value: number, max: number = 1, width: number = 20): string {
+  const filled = Math.round((value / max) * width)
+  const empty = width - filled
+  const bar = '█'.repeat(filled) + '░'.repeat(empty)
+  const percent = value >= 0.7 ? colors.green : value >= 0.5 ? colors.yellow : colors.red
+  return `${percent}${bar}${colors.reset}`
+}
+
+/**
+ * Print NVQ metrics summary
+ */
+export function printQualityMetrics(metrics: NoteQualityMetrics, label: string = 'Note Quality (NVQ) Metrics'): void {
+  console.log(`\n${colors.bright}${colors.cyan}${label}${colors.reset}\n`)
+
+  // Overall scores
+  console.log(`${colors.bright}Overall Scores:${colors.reset}`)
+  console.log(`  Mean NVQ:     ${formatNVQScore(metrics.meanNVQ)} ${createBar(metrics.meanNVQ / 10)}`)
+  console.log(`  Median NVQ:   ${formatNVQScore(metrics.medianNVQ)} ${createBar(metrics.medianNVQ / 10)}`)
+  console.log(`  Min/Max:      ${metrics.minNVQ.toFixed(1)} / ${metrics.maxNVQ.toFixed(1)}`)
+  console.log(`  Passing Rate: ${formatPercent(metrics.passingRate)} ${createBar(metrics.passingRate)}`)
+
+  // Component failure rates
+  console.log(`\n${colors.bright}Component Failure Rates:${colors.reset}`)
+  console.log(`  Why:          ${formatPercent(1 - metrics.whyFailureRate)} passing ${createBar(1 - metrics.whyFailureRate)}`)
+  console.log(`  Metadata:     ${formatPercent(1 - metrics.metadataFailureRate)} passing ${createBar(1 - metrics.metadataFailureRate)}`)
+  console.log(`  Taxonomy:     ${formatPercent(1 - metrics.taxonomyFailureRate)} passing ${createBar(1 - metrics.taxonomyFailureRate)}`)
+  console.log(`  Connectivity: ${formatPercent(1 - metrics.connectivityFailureRate)} passing ${createBar(1 - metrics.connectivityFailureRate)}`)
+  console.log(`  Originality:  ${formatPercent(1 - metrics.originalityFailureRate)} passing ${createBar(1 - metrics.originalityFailureRate)}`)
+
+  // Top issues
+  if (metrics.topFailures.length > 0) {
+    console.log(`\n${colors.bright}Top Issues:${colors.reset}`)
+    for (const failure of metrics.topFailures.slice(0, 5)) {
+      console.log(`  ${colors.red}•${colors.reset} [${failure.component}] ${failure.issue} (${failure.count} notes)`)
+    }
+  }
+}
+
+/**
+ * Print detailed NVQ breakdown for a single note
+ */
+export function printNVQBreakdown(score: NVQScore, noteTitle: string): void {
+  const status = score.passing
+    ? `${colors.green}PASS${colors.reset}`
+    : `${colors.red}FAIL${colors.reset}`
+
+  console.log(`\n  ${colors.bright}${noteTitle}${colors.reset} [${status}]`)
+  console.log(`    Total: ${formatNVQScore(score.total)}/10`)
+  console.log(`    Components:`)
+  console.log(`      Why:          ${formatComponentScore(score.breakdown.why.score, 3)}`)
+  console.log(`      Metadata:     ${formatComponentScore(score.breakdown.metadata.score, 2)}`)
+  console.log(`      Taxonomy:     ${formatComponentScore(score.breakdown.taxonomy.score, 2)}`)
+  console.log(`      Connectivity: ${formatComponentScore(score.breakdown.connectivity.score, 2)}`)
+  console.log(`      Originality:  ${formatComponentScore(score.breakdown.originality.score, 1)}`)
+
+  if (score.failingComponents.length > 0) {
+    console.log(`    ${colors.yellow}Failing:${colors.reset} ${score.failingComponents.join(', ')}`)
+  }
+}
+
+/**
+ * Print quality evaluation results for a scenario
+ */
+export function printQualityResults(results: QualityEvaluationResults, verbose: boolean = false): void {
+  console.log(`\n${colors.bright}${colors.blue}Quality Results: ${results.scenarioName}${colors.reset}`)
+  printLine('-', 60)
+
+  // Summary stats
+  console.log(`Notes Evaluated: ${results.noteResults.length}`)
+  console.log(`Passing: ${results.noteResults.filter(r => r.nvqScore.passing).length}/${results.noteResults.length}`)
+
+  // Aggregate metrics
+  printQualityMetrics(results.aggregateMetrics, 'Aggregate Metrics')
+
+  // Individual note breakdowns (if verbose)
+  if (verbose && results.noteResults.length > 0) {
+    console.log(`\n${colors.bright}Individual Note Scores:${colors.reset}`)
+    for (const noteResult of results.noteResults) {
+      printNVQBreakdown(noteResult.nvqScore, noteResult.noteTitle)
+    }
+  }
+}
+
+/**
+ * Generate quality recommendations based on metrics
+ */
+export function generateQualityRecommendations(metrics: NoteQualityMetrics): string[] {
+  const recommendations: string[] = []
+
+  // Check each component failure rate
+  if (metrics.whyFailureRate > 0.3) {
+    recommendations.push(
+      `Why statements failing ${(metrics.whyFailureRate * 100).toFixed(0)}% - ` +
+      `Improve extraction to capture first-person purpose statements ("I am keeping this because...")`
+    )
+  }
+
+  if (metrics.metadataFailureRate > 0.3) {
+    recommendations.push(
+      `Metadata incomplete ${(metrics.metadataFailureRate * 100).toFixed(0)}% - ` +
+      `Ensure notes include Status (Seed/Sapling/Evergreen), Type, and Stakeholder fields`
+    )
+  }
+
+  if (metrics.taxonomyFailureRate > 0.3) {
+    recommendations.push(
+      `Taxonomy issues ${(metrics.taxonomyFailureRate * 100).toFixed(0)}% - ` +
+      `Use functional tags (#task/*, #skill/*, #insight/*) instead of generic topic tags`
+    )
+  }
+
+  if (metrics.connectivityFailureRate > 0.3) {
+    recommendations.push(
+      `Connectivity gaps ${(metrics.connectivityFailureRate * 100).toFixed(0)}% - ` +
+      `Each note needs upward link (MOC/Project) and sideways links (related concepts)`
+    )
+  }
+
+  if (metrics.originalityFailureRate > 0.5) {
+    recommendations.push(
+      `Low originality ${(metrics.originalityFailureRate * 100).toFixed(0)}% - ` +
+      `Notes should synthesize insights, not just capture raw facts`
+    )
+  }
+
+  // Overall passing rate
+  if (metrics.passingRate < 0.7) {
+    recommendations.push(
+      `Only ${(metrics.passingRate * 100).toFixed(0)}% of notes pass NVQ threshold (target: 70%) - ` +
+      `Focus on improving the weakest components first`
+    )
+  }
+
+  // Add recommendations from top failures
+  for (const failure of metrics.topFailures.slice(0, 3)) {
+    if (!recommendations.some(r => r.includes(failure.issue))) {
+      recommendations.push(`Address "${failure.issue}" in ${failure.component} component (${failure.count} notes affected)`)
+    }
+  }
+
+  return recommendations
+}
+
+/**
+ * Print full quality report
+ */
+export function printQualityReport(
+  qualityResults: Map<string, QualityEvaluationResults>,
+  verbose: boolean = false
+): void {
+  printLine('=', 80)
+  console.log(`${colors.bright}${colors.magenta}NOTE QUALITY (NVQ) REPORT${colors.reset}`)
+  printLine('=', 80)
+
+  // Aggregate across all scenarios
+  const allNoteResults = Array.from(qualityResults.values()).flatMap(r => r.noteResults)
+  const allScores = allNoteResults.map(r => r.nvqScore.total)
+
+  if (allScores.length === 0) {
+    console.log(`\n${colors.yellow}No notes evaluated.${colors.reset}`)
+    return
+  }
+
+  // Calculate overall metrics
+  const mean = allScores.reduce((a, b) => a + b, 0) / allScores.length
+  const sorted = [...allScores].sort((a, b) => a - b)
+  const median = sorted[Math.floor(sorted.length / 2)]
+  const passing = allScores.filter(s => s >= 7).length
+  const passingRate = passing / allScores.length
+
+  console.log(`\n${colors.bright}OVERALL SUMMARY${colors.reset}`)
+  console.log(`Total Notes Evaluated: ${allScores.length}`)
+  console.log(`Mean NVQ Score:        ${formatNVQScore(mean)} ${createBar(mean / 10)}`)
+  console.log(`Median NVQ Score:      ${formatNVQScore(median)} ${createBar(median / 10)}`)
+  console.log(`Passing Rate:          ${formatPercent(passingRate)} (${passing}/${allScores.length} notes ≥7)`)
+
+  // Per-scenario breakdown
+  console.log(`\n${colors.bright}BY SCENARIO${colors.reset}`)
+  printLine('-', 60)
+
+  for (const [scenarioName, results] of qualityResults) {
+    const scenarioScores = results.noteResults.map(r => r.nvqScore.total)
+    const scenarioMean = scenarioScores.reduce((a, b) => a + b, 0) / scenarioScores.length
+    const scenarioPassing = scenarioScores.filter(s => s >= 7).length
+
+    console.log(`\n${colors.cyan}${scenarioName}${colors.reset}`)
+    console.log(`  Notes: ${scenarioScores.length}  Mean: ${formatNVQScore(scenarioMean)}  Passing: ${scenarioPassing}/${scenarioScores.length}`)
+
+    if (verbose) {
+      printQualityResults(results, true)
+    }
+  }
+
+  // Recommendations
+  const aggregateMetrics: NoteQualityMetrics = {
+    meanNVQ: mean,
+    medianNVQ: median,
+    minNVQ: Math.min(...allScores),
+    maxNVQ: Math.max(...allScores),
+    passingRate,
+    whyFailureRate: allNoteResults.filter(r => r.nvqScore.breakdown.why.score < 1).length / allNoteResults.length,
+    metadataFailureRate: allNoteResults.filter(r => r.nvqScore.breakdown.metadata.score < 1).length / allNoteResults.length,
+    taxonomyFailureRate: allNoteResults.filter(r => r.nvqScore.breakdown.taxonomy.score < 1).length / allNoteResults.length,
+    connectivityFailureRate: allNoteResults.filter(r => r.nvqScore.breakdown.connectivity.score < 1).length / allNoteResults.length,
+    originalityFailureRate: allNoteResults.filter(r => r.nvqScore.breakdown.originality.score < 1).length / allNoteResults.length,
+    topFailures: [],
+  }
+
+  const recommendations = generateQualityRecommendations(aggregateMetrics)
+  if (recommendations.length > 0) {
+    console.log(`\n${colors.bright}RECOMMENDATIONS${colors.reset}`)
+    for (const rec of recommendations) {
+      console.log(`  ${colors.yellow}•${colors.reset} ${rec}`)
+    }
+  }
+
+  printLine('=', 80)
+}
+
+/**
+ * Generate report with quality metrics
+ */
+export function generateReportWithQuality(
+  results: ScenarioResult[],
+  strategyMetrics: Map<string, ExtractionMetrics>,
+  qualityResults?: Map<string, QualityEvaluationResults>
+): TestReportWithQuality {
+  // Generate base report
+  const baseReport = generateReport(results, strategyMetrics)
+
+  if (!qualityResults || qualityResults.size === 0) {
+    return baseReport as TestReportWithQuality
+  }
+
+  // Aggregate quality metrics
+  const allNoteResults = Array.from(qualityResults.values()).flatMap(r => r.noteResults)
+
+  if (allNoteResults.length === 0) {
+    return baseReport as TestReportWithQuality
+  }
+
+  const allScores = allNoteResults.map(r => r.nvqScore.total)
+  const mean = allScores.reduce((a, b) => a + b, 0) / allScores.length
+  const sorted = [...allScores].sort((a, b) => a - b)
+  const median = sorted[Math.floor(sorted.length / 2)]
+  const passingRate = allScores.filter(s => s >= 7).length / allScores.length
+
+  // Component means
+  const componentScores = {
+    why: allNoteResults.reduce((sum, r) => sum + r.nvqScore.breakdown.why.score, 0) / allNoteResults.length,
+    metadata: allNoteResults.reduce((sum, r) => sum + r.nvqScore.breakdown.metadata.score, 0) / allNoteResults.length,
+    taxonomy: allNoteResults.reduce((sum, r) => sum + r.nvqScore.breakdown.taxonomy.score, 0) / allNoteResults.length,
+    connectivity: allNoteResults.reduce((sum, r) => sum + r.nvqScore.breakdown.connectivity.score, 0) / allNoteResults.length,
+    originality: allNoteResults.reduce((sum, r) => sum + r.nvqScore.breakdown.originality.score, 0) / allNoteResults.length,
+  }
+
+  // Component failure rates
+  const componentFailureRates = {
+    why: allNoteResults.filter(r => r.nvqScore.breakdown.why.score < 1).length / allNoteResults.length,
+    metadata: allNoteResults.filter(r => r.nvqScore.breakdown.metadata.score < 1).length / allNoteResults.length,
+    taxonomy: allNoteResults.filter(r => r.nvqScore.breakdown.taxonomy.score < 1).length / allNoteResults.length,
+    connectivity: allNoteResults.filter(r => r.nvqScore.breakdown.connectivity.score < 1).length / allNoteResults.length,
+    originality: allNoteResults.filter(r => r.nvqScore.breakdown.originality.score < 1).length / allNoteResults.length,
+  }
+
+  // Top issues
+  const issueCounter = new Map<string, { component: string; issue: string; count: number }>()
+
+  for (const noteResult of allNoteResults) {
+    for (const component of noteResult.nvqScore.failingComponents) {
+      const key = component
+      if (issueCounter.has(key)) {
+        issueCounter.get(key)!.count++
+      } else {
+        issueCounter.set(key, { component, issue: `${component} score too low`, count: 1 })
+      }
+    }
+  }
+
+  const topIssues = Array.from(issueCounter.values())
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5)
+
+  // Build quality recommendations
+  const qualityRecommendations = generateQualityRecommendations({
+    meanNVQ: mean,
+    medianNVQ: median,
+    minNVQ: Math.min(...allScores),
+    maxNVQ: Math.max(...allScores),
+    passingRate,
+    whyFailureRate: componentFailureRates.why,
+    metadataFailureRate: componentFailureRates.metadata,
+    taxonomyFailureRate: componentFailureRates.taxonomy,
+    connectivityFailureRate: componentFailureRates.connectivity,
+    originalityFailureRate: componentFailureRates.originality,
+    topFailures: topIssues,
+  })
+
+  // Convert quality results to record
+  const qualityByScenario: Record<string, QualityEvaluationResults> = {}
+  for (const [name, results] of qualityResults) {
+    qualityByScenario[name] = results
+  }
+
+  return {
+    ...baseReport,
+    qualitySummary: {
+      meanNVQ: mean,
+      medianNVQ: median,
+      passingRate,
+      componentFailureRates,
+      topIssues,
+      qualityRecommendations,
+    },
+    qualityByScenario,
+  }
+}
+
+/**
+ * Print CI summary with quality metrics
+ */
+export function printCISummaryWithQuality(report: TestReportWithQuality): void {
+  // Print base CI summary
+  printCISummary(report)
+
+  // Add quality metrics if available
+  if (report.qualitySummary) {
+    console.log(`NVQ_MEAN=${report.qualitySummary.meanNVQ.toFixed(1)}`)
+    console.log(`NVQ_MEDIAN=${report.qualitySummary.medianNVQ.toFixed(1)}`)
+    console.log(`NVQ_PASSING_RATE=${(report.qualitySummary.passingRate * 100).toFixed(1)}`)
+    console.log(`NVQ_STATUS=${report.qualitySummary.passingRate >= 0.7 ? 'PASS' : 'FAIL'}`)
+  }
 }

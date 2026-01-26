@@ -16,7 +16,21 @@ import type {
   ExpectedConsolidation,
   ExistingNote,
   TestScenario,
+  NoteQualityMetrics,
+  QualityEvaluationOptions,
+  CombinedMetrics,
+  DEFAULT_QUALITY_THRESHOLDS,
 } from './types'
+
+import type {
+  NVQScore,
+  QualityExtractedNote,
+  QualityExpectation,
+  NVQEvaluationResult,
+  QualityEvaluationResults,
+} from '../quality/types'
+
+import { NVQEvaluator } from '../quality/evaluator'
 
 import {
   findMatchingExpectedNote,
@@ -427,6 +441,435 @@ export function aggregateMetrics(
       totalMs: totals.time.total / results.length,
       contextRetrievalMs: totals.time.context / results.length,
       extractionMs: totals.time.extraction / results.length,
+    },
+  }
+}
+
+// =============================================================================
+// Note Quality (NVQ) Calculation
+// =============================================================================
+
+/**
+ * Convert ExtractedNoteResult to QualityExtractedNote format
+ */
+function toQualityNote(note: ExtractedNoteResult): QualityExtractedNote {
+  return {
+    title: note.title,
+    content: note.content,
+    tags: note.tags,
+    consolidatedWith: note.consolidatedWith,
+    mergedContent: note.mergedContent,
+    connections: note.connections,
+    // Quality fields - extracted from content if present
+    purposeStatement: extractPurposeStatement(note.content),
+    project: extractProjectLink(note.content),
+    status: extractStatus(note.content),
+    noteType: extractNoteType(note.content),
+    stakeholder: extractStakeholder(note.content),
+  }
+}
+
+/**
+ * Extract purpose statement from content ("I am keeping this because...")
+ */
+function extractPurposeStatement(content: string): string | null {
+  const patterns = [
+    /I am keeping this because[^.]*\./i,
+    /I'm keeping this because[^.]*\./i,
+    /Purpose:\s*([^\n]+)/i,
+    /Why:\s*([^\n]+)/i,
+  ]
+
+  for (const pattern of patterns) {
+    const match = content.match(pattern)
+    if (match) {
+      return match[0].trim()
+    }
+  }
+
+  return null
+}
+
+/**
+ * Extract project link from content
+ */
+function extractProjectLink(content: string): string | null {
+  const patterns = [
+    /\[\[Project\/([^\]]+)\]\]/i,
+    /Project:\s*\[\[([^\]]+)\]\]/i,
+    /Project:\s*([^\n]+)/i,
+  ]
+
+  for (const pattern of patterns) {
+    const match = content.match(pattern)
+    if (match) {
+      return match[1].trim()
+    }
+  }
+
+  return null
+}
+
+/**
+ * Extract status from content
+ */
+function extractStatus(content: string): 'Seed' | 'Sapling' | 'Evergreen' | null {
+  const statusMatch = content.match(/Status:\s*(Seed|Sapling|Evergreen)/i)
+  if (statusMatch) {
+    return statusMatch[1] as 'Seed' | 'Sapling' | 'Evergreen'
+  }
+  return null
+}
+
+/**
+ * Extract note type from content
+ */
+function extractNoteType(content: string): 'Logic' | 'Technical' | 'Reflection' | null {
+  const typeMatch = content.match(/Type:\s*(Logic|Technical|Reflection)/i)
+  if (typeMatch) {
+    return typeMatch[1] as 'Logic' | 'Technical' | 'Reflection'
+  }
+  return null
+}
+
+/**
+ * Extract stakeholder from content
+ */
+function extractStakeholder(content: string): 'Self' | 'Future Users' | 'AI Agent' | null {
+  const stakeholderMatch = content.match(/Stakeholder:\s*(Self|Future Users|AI Agent)/i)
+  if (stakeholderMatch) {
+    return stakeholderMatch[1] as 'Self' | 'Future Users' | 'AI Agent'
+  }
+  return null
+}
+
+/**
+ * Calculate NVQ scores for extracted notes
+ */
+export function calculateNVQScores(
+  extractedNotes: ExtractedNoteResult[],
+  options: {
+    availableProjects?: string[]
+    availableMOCs?: string[]
+    minimumNVQ?: number
+  } = {}
+): NVQScore[] {
+  const { minimumNVQ = 7 } = options
+
+  const evaluator = new NVQEvaluator({
+    projects: options.availableProjects || [],
+    mocs: options.availableMOCs || [],
+    goals: [],
+    passingThreshold: minimumNVQ,
+  })
+
+  return extractedNotes.map((note) => {
+    const qualityNote = toQualityNote(note)
+    return evaluator.evaluateNote(qualityNote)
+  })
+}
+
+/**
+ * Calculate aggregate NVQ metrics
+ */
+export function calculateNVQMetrics(
+  scores: NVQScore[],
+  minimumNVQ: number = 7
+): NoteQualityMetrics {
+  if (scores.length === 0) {
+    return {
+      meanNVQ: 0,
+      medianNVQ: 0,
+      minNVQ: 0,
+      maxNVQ: 0,
+      passingRate: 0,
+      whyFailureRate: 0,
+      metadataFailureRate: 0,
+      taxonomyFailureRate: 0,
+      connectivityFailureRate: 0,
+      originalityFailureRate: 0,
+      whyScoreDistribution: {},
+      metadataScoreDistribution: {},
+      taxonomyScoreDistribution: {},
+      connectivityScoreDistribution: {},
+      originalityScoreDistribution: {},
+      totalNotesEvaluated: 0,
+      notesWithPurpose: 0,
+      notesWithCompleteMetadata: 0,
+      notesWithFunctionalTags: 0,
+      notesWithTwoLinks: 0,
+      notesThatAreSynthesis: 0,
+      topFailures: [],
+    }
+  }
+
+  const totals = scores.map((s) => s.total).sort((a, b) => a - b)
+  const meanNVQ = totals.reduce((a, b) => a + b, 0) / totals.length
+  const medianNVQ = totals[Math.floor(totals.length / 2)]
+  const minNVQ = totals[0]
+  const maxNVQ = totals[totals.length - 1]
+  const passingRate = scores.filter((s) => s.passing).length / scores.length
+
+  // Component failure rates
+  const whyFailures = scores.filter((s) => s.breakdown.why.score === 0).length
+  const metadataFailures = scores.filter((s) => s.breakdown.metadata.score === 0).length
+  const taxonomyFailures = scores.filter((s) => s.breakdown.taxonomy.score === 0).length
+  const connectivityFailures = scores.filter((s) => s.breakdown.connectivity.score === 0).length
+  const originalityFailures = scores.filter((s) => s.breakdown.originality.score === 0).length
+
+  // Score distributions
+  const whyScoreDistribution: Record<number, number> = {}
+  const metadataScoreDistribution: Record<number, number> = {}
+  const taxonomyScoreDistribution: Record<number, number> = {}
+  const connectivityScoreDistribution: Record<number, number> = {}
+  const originalityScoreDistribution: Record<number, number> = {}
+
+  for (const score of scores) {
+    whyScoreDistribution[score.breakdown.why.score] =
+      (whyScoreDistribution[score.breakdown.why.score] || 0) + 1
+    metadataScoreDistribution[score.breakdown.metadata.score] =
+      (metadataScoreDistribution[score.breakdown.metadata.score] || 0) + 1
+    taxonomyScoreDistribution[score.breakdown.taxonomy.score] =
+      (taxonomyScoreDistribution[score.breakdown.taxonomy.score] || 0) + 1
+    connectivityScoreDistribution[score.breakdown.connectivity.score] =
+      (connectivityScoreDistribution[score.breakdown.connectivity.score] || 0) + 1
+    originalityScoreDistribution[score.breakdown.originality.score] =
+      (originalityScoreDistribution[score.breakdown.originality.score] || 0) + 1
+  }
+
+  // Detailed diagnostics
+  const notesWithPurpose = scores.filter((s) => s.breakdown.why.rawStatement !== null).length
+  const notesWithCompleteMetadata = scores.filter((s) => s.breakdown.metadata.fieldsPresent >= 3).length
+  const notesWithFunctionalTags = scores.filter(
+    (s) => s.breakdown.taxonomy.functionalTags > s.breakdown.taxonomy.topicTags
+  ).length
+  const notesWithTwoLinks = scores.filter((s) => s.breakdown.connectivity.meetsMinimum).length
+  const notesThatAreSynthesis = scores.filter((s) => s.breakdown.originality.hasOriginalInsight).length
+
+  // Top failures
+  const failureCounts: Record<string, Record<string, number>> = {}
+  for (const score of scores) {
+    for (const component of score.failingComponents) {
+      if (!failureCounts[component]) {
+        failureCounts[component] = {}
+      }
+      const issue = getFailureIssue(score, component)
+      failureCounts[component][issue] = (failureCounts[component][issue] || 0) + 1
+    }
+  }
+
+  const topFailures: Array<{ component: string; issue: string; count: number }> = []
+  for (const [component, issues] of Object.entries(failureCounts)) {
+    for (const [issue, count] of Object.entries(issues)) {
+      topFailures.push({ component, issue, count })
+    }
+  }
+  topFailures.sort((a, b) => b.count - a.count)
+
+  return {
+    meanNVQ,
+    medianNVQ,
+    minNVQ,
+    maxNVQ,
+    passingRate,
+    whyFailureRate: whyFailures / scores.length,
+    metadataFailureRate: metadataFailures / scores.length,
+    taxonomyFailureRate: taxonomyFailures / scores.length,
+    connectivityFailureRate: connectivityFailures / scores.length,
+    originalityFailureRate: originalityFailures / scores.length,
+    whyScoreDistribution,
+    metadataScoreDistribution,
+    taxonomyScoreDistribution,
+    connectivityScoreDistribution,
+    originalityScoreDistribution,
+    totalNotesEvaluated: scores.length,
+    notesWithPurpose,
+    notesWithCompleteMetadata,
+    notesWithFunctionalTags,
+    notesWithTwoLinks,
+    notesThatAreSynthesis,
+    topFailures: topFailures.slice(0, 10),
+  }
+}
+
+/**
+ * Get failure issue description for a component
+ */
+function getFailureIssue(score: NVQScore, component: string): string {
+  switch (component) {
+    case 'why':
+      if (!score.breakdown.why.hasFirstPerson) return 'Missing first-person statement'
+      if (!score.breakdown.why.linksToPersonalGoal) return 'No link to personal goal'
+      if (!score.breakdown.why.isActionable) return 'Not actionable'
+      return 'Unknown why issue'
+    case 'metadata':
+      if (!score.breakdown.metadata.hasStatus) return 'Missing status field'
+      if (!score.breakdown.metadata.hasType) return 'Missing type field'
+      if (!score.breakdown.metadata.hasStakeholder) return 'Missing stakeholder field'
+      return 'Incomplete metadata'
+    case 'taxonomy':
+      if (score.breakdown.taxonomy.topicTags > 0) return 'Contains topic tags instead of functional'
+      if (score.breakdown.taxonomy.exceedsLimit) return 'Too many tags (>5)'
+      return 'No functional tags'
+    case 'connectivity':
+      if (!score.breakdown.connectivity.hasUpwardLink) return 'Missing upward link'
+      if (!score.breakdown.connectivity.hasSidewaysLink) return 'Missing sideways link'
+      return 'Insufficient connections'
+    case 'originality':
+      if (score.breakdown.originality.isWikipediaFact) return 'Pure fact without synthesis'
+      return 'Low synthesis ratio'
+    default:
+      return 'Unknown issue'
+  }
+}
+
+/**
+ * Evaluate quality for a set of extracted notes against expectations
+ */
+export function evaluateQuality(
+  extractedNotes: ExtractedNoteResult[],
+  expectations: QualityExpectation[],
+  options: {
+    scenarioName?: string
+    availableProjects?: string[]
+    availableMOCs?: string[]
+    minimumNVQ?: number
+  } = {}
+): QualityEvaluationResults {
+  const { scenarioName = 'unnamed', minimumNVQ = 7 } = options
+
+  const evaluator = new NVQEvaluator({
+    projects: options.availableProjects || [],
+    mocs: options.availableMOCs || [],
+    goals: [],
+    passingThreshold: minimumNVQ,
+  })
+
+  const noteResults: NVQEvaluationResult[] = []
+
+  for (const note of extractedNotes) {
+    const qualityNote = toQualityNote(note)
+    const nvqScore = evaluator.evaluateNote(qualityNote)
+
+    // Try to match with an expectation
+    const matchedExpectation = findMatchingExpectation(note, expectations)
+
+    const issues: string[] = []
+    if (!nvqScore.passing) {
+      issues.push(`NVQ score ${nvqScore.total}/10 below threshold`)
+    }
+    for (const component of nvqScore.failingComponents) {
+      issues.push(`${component}: ${getFailureIssue(nvqScore, component)}`)
+    }
+
+    noteResults.push({
+      noteTitle: note.title,
+      noteContent: note.content,
+      nvqScore,
+      matchedExpectation,
+      issues,
+    })
+  }
+
+  const allScores = noteResults.map((r) => r.nvqScore)
+  const aggregateMetrics = calculateNVQMetrics(allScores, minimumNVQ)
+
+  // Generate recommendations
+  const recommendations: string[] = []
+  if (aggregateMetrics.whyFailureRate > 0.3) {
+    recommendations.push('Add purpose statements ("I am keeping this because...") to more notes')
+  }
+  if (aggregateMetrics.metadataFailureRate > 0.3) {
+    recommendations.push('Include metadata fields (Status, Type, Stakeholder) in extraction')
+  }
+  if (aggregateMetrics.taxonomyFailureRate > 0.3) {
+    recommendations.push('Use functional tags (#task/*, #skill/*) instead of topic tags')
+  }
+  if (aggregateMetrics.connectivityFailureRate > 0.3) {
+    recommendations.push('Add upward links to projects/MOCs and sideways links to related notes')
+  }
+  if (aggregateMetrics.originalityFailureRate > 0.5) {
+    recommendations.push('Encourage synthesis and personal interpretation over raw facts')
+  }
+
+  return {
+    scenarioName,
+    noteResults,
+    aggregateMetrics,
+    recommendations,
+  }
+}
+
+/**
+ * Find matching expectation for an extracted note
+ */
+function findMatchingExpectation(
+  note: ExtractedNoteResult,
+  expectations: QualityExpectation[]
+): QualityExpectation | null {
+  const titleLower = note.title.toLowerCase()
+  const contentLower = note.content.toLowerCase()
+
+  for (const exp of expectations) {
+    // Check title patterns
+    const titleMatch = (exp.titlePatterns || []).some(
+      (pattern) => titleLower.includes(pattern.toLowerCase())
+    )
+
+    // Check content requirements (empty array means no content requirements)
+    const contentRequirements = exp.contentMustContain || []
+    const contentMatch = contentRequirements.length === 0 || contentRequirements.every(
+      (phrase) => contentLower.includes(phrase.toLowerCase())
+    )
+
+    if (titleMatch && contentMatch) {
+      return exp
+    }
+  }
+
+  return null
+}
+
+/**
+ * Calculate combined extraction + quality metrics
+ */
+export function calculateCombinedMetrics(
+  extractedNotes: ExtractedNoteResult[],
+  scenario: TestScenario,
+  timing: { totalMs: number; contextRetrievalMs: number; extractionMs: number },
+  qualityOptions?: {
+    enabled: boolean
+    availableProjects?: string[]
+    availableMOCs?: string[]
+    minimumNVQ?: number
+  }
+): CombinedMetrics {
+  const extraction = calculateAllMetrics(extractedNotes, scenario, timing)
+
+  if (!qualityOptions?.enabled) {
+    return { extraction }
+  }
+
+  const nvqScores = calculateNVQScores(extractedNotes, {
+    availableProjects: qualityOptions.availableProjects,
+    availableMOCs: qualityOptions.availableMOCs,
+    minimumNVQ: qualityOptions.minimumNVQ,
+  })
+
+  const nvqMetrics = calculateNVQMetrics(nvqScores, qualityOptions.minimumNVQ)
+
+  return {
+    extraction,
+    quality: {
+      meanNVQ: nvqMetrics.meanNVQ,
+      passingRate: nvqMetrics.passingRate,
+      componentScores: {
+        why: 1 - nvqMetrics.whyFailureRate,
+        metadata: 1 - nvqMetrics.metadataFailureRate,
+        taxonomy: 1 - nvqMetrics.taxonomyFailureRate,
+        connectivity: 1 - nvqMetrics.connectivityFailureRate,
+        originality: 1 - nvqMetrics.originalityFailureRate,
+      },
     },
   }
 }
