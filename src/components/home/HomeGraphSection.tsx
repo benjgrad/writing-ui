@@ -11,9 +11,11 @@ import { Input } from '@/components/ui/Input'
 
 export function HomeGraphSection() {
   const { data, loading, error, selectedNode, setSelectedNode } = useKnowledgeGraph()
-  const { groups } = useGraphGroups()
-  const { physics } = usePhysicsSettings()
+  const { groups, isLoaded: groupsLoaded } = useGraphGroups()
+  const { physics, isLoaded: physicsLoaded } = usePhysicsSettings()
   const [searchQuery, setSearchQuery] = useState('')
+
+  const settingsLoaded = groupsLoaded && physicsLoaded
 
   // Filter nodes based on search only (no tag filter in compact mode)
   const filteredData = useMemo(() => {
@@ -37,7 +39,7 @@ export function HomeGraphSection() {
     return { nodes, links }
   }, [data, searchQuery])
 
-  if (loading) {
+  if (loading || !settingsLoaded) {
     return (
       <div className="py-8 flex items-center justify-center">
         <Loading />

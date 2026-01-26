@@ -13,8 +13,10 @@ import type { RecencyRange } from '@/types/graph'
 
 export default function GraphPage() {
   const { data, loading, error, selectedNode, setSelectedNode, refresh } = useKnowledgeGraph()
-  const { groups, createGroup, deleteGroup, updateGroup, reorderGroups } = useGraphGroups()
-  const { physics, updatePhysics, resetPhysics } = usePhysicsSettings()
+  const { groups, createGroup, deleteGroup, updateGroup, reorderGroups, isLoaded: groupsLoaded } = useGraphGroups()
+  const { physics, updatePhysics, resetPhysics, isLoaded: physicsLoaded } = usePhysicsSettings()
+
+  const settingsLoaded = groupsLoaded && physicsLoaded
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [recencyRange, setRecencyRange] = useState<RecencyRange | null>(null)
@@ -200,7 +202,7 @@ export default function GraphPage() {
     return { nodes, links }
   }, [filteredData, selectedGroupIds, activeGroups, nodeMatchesGroup, data.nodes, isNodeUncategorized])
 
-  if (loading) {
+  if (loading || !settingsLoaded) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loading size="lg" />

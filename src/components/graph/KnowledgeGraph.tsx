@@ -253,9 +253,9 @@ export function KnowledgeGraph({
         width / 2,
         svgHeight / 2
       ).strength((d) => connectedNodeIds.has((d as GraphNode).id) ? 0 : 0.03))
-      .velocityDecay(0.6)    // Higher = more damping, less jitter (default 0.4)
+      .velocityDecay(0.4)    // Higher = more damping, less jitter (default 0.4)
       .alphaDecay(shouldRampPhysics ? 0.02 : 0.03)      // Slower decay during ramp-up
-      .alphaMin(0.001)
+      .alphaMin(0.005)
 
     // Gradually ramp physics over 3 seconds - only on initial page load
     let rampInterval: ReturnType<typeof setInterval> | null = null

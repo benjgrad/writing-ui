@@ -1,51 +1,33 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback } from 'react'
 import type { PhysicsSettings } from '@/types/graph'
 import { DEFAULT_PHYSICS } from '@/types/graph'
+import { useSettings } from './useSettings'
 
-const STORAGE_KEY = 'knowledge-graph-physics'
+const SETTINGS_KEY = 'graph_physics'
+const LOCAL_STORAGE_KEY = 'knowledge-graph-physics'
 
 export function usePhysicsSettings() {
-  const [physics, setPhysics] = useState<PhysicsSettings>(DEFAULT_PHYSICS)
-  const [isLoaded, setIsLoaded] = useState(false)
-
-  // Load from localStorage on mount
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY)
-      if (stored) {
-        const parsed = JSON.parse(stored)
-        setPhysics({ ...DEFAULT_PHYSICS, ...parsed })
-      }
-    } catch (err) {
-      console.error('Error loading physics settings:', err)
-    }
-    setIsLoaded(true)
-  }, [])
-
-  // Save to localStorage whenever physics change
-  useEffect(() => {
-    if (!isLoaded) return
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(physics))
-    } catch (err) {
-      console.error('Error saving physics settings:', err)
-    }
-  }, [physics, isLoaded])
+  const { value: physics, updateValue, resetValue, isLoaded, isSaving } = useSettings<PhysicsSettings>({
+    key: SETTINGS_KEY,
+    defaultValue: DEFAULT_PHYSICS,
+    localStorageKey: LOCAL_STORAGE_KEY
+  })
 
   const updatePhysics = useCallback((updates: Partial<PhysicsSettings>) => {
-    setPhysics(prev => ({ ...prev, ...updates }))
-  }, [])
+    updateValue(prev => ({ ...prev, ...updates }))
+  }, [updateValue])
 
   const resetPhysics = useCallback(() => {
-    setPhysics(DEFAULT_PHYSICS)
-  }, [])
+    resetValue()
+  }, [resetValue])
 
   return {
     physics,
     updatePhysics,
     resetPhysics,
     isLoaded,
+    isSaving
   }
 }
