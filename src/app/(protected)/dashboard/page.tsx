@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 import { HomeGoalsSection } from '@/components/home/HomeGoalsSection'
+import { HomeWordCloudSection } from '@/components/home/HomeWordCloudSection'
 import { HomeGraphSection } from '@/components/home/HomeGraphSection'
 import { OnboardingModal } from '@/components/onboarding/OnboardingModal'
 import { Loading } from '@/components/ui/Loading'
@@ -172,6 +173,11 @@ export default function DashboardPage() {
         {/* Goals Section */}
         <section className="mb-6 sm:mb-8">
           <HomeGoalsSection />
+        </section>
+
+        {/* Word Cloud Section */}
+        <section className="mb-6 sm:mb-8">
+          <HomeWordCloudSection />
         </section>
 
         {/* Knowledge Graph Section */}

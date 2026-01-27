@@ -26,7 +26,9 @@
     "@anthropic-ai/sdk": "^0.71.2",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.89.0",
+    "@types/d3-cloud": "^1.2.9",
     "d3": "^7.9.0",
+    "d3-cloud": "^1.2.8",
     "next": "16.1.1",
     "openai": "^6.15.0",
     "react": "19.2.3",
@@ -34,7 +36,6 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
-    "husky": "^9.1.7",
     "@playwright/test": "^1.57.0",
     "@tailwindcss/postcss": "^4",
     "@types/d3": "^7.4.3",
@@ -46,6 +47,7 @@
     "dotenv": "^17.2.3",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
+    "husky": "^9.1.7",
     "puppeteer": "^24.34.0",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
