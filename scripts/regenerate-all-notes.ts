@@ -91,7 +91,7 @@ async function main() {
   interface SessionRow {
     id: string
     goal_id: string | null
-    goals: { title: string } | null
+    goals: { title: string } | { title: string }[] | null
     coaching_messages: Array<{ role: string; content: string; created_at: string }>
   }
 
@@ -128,7 +128,9 @@ async function main() {
       .map((m) => `${m.role.toUpperCase()}: ${m.content}`)
       .join('\n\n')
 
-    const goalTitle = session.goals?.title || 'Unlinked Session'
+    const goalTitle = Array.isArray(session.goals)
+      ? session.goals[0]?.title || 'Unlinked Session'
+      : session.goals?.title || 'Unlinked Session'
 
     allContent.push({
       type: 'coaching',

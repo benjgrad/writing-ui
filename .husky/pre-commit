@@ -1,12 +1,12 @@
 #!/bin/sh
 
-echo "Running TypeScript type check..."
-npx tsc --noEmit
+echo "Running Next.js production build (includes type check)..."
+npm run build
 
 if [ $? -ne 0 ]; then
   echo ""
-  echo "❌ TypeScript type check failed. Please fix the errors before committing."
+  echo "❌ Build failed. Please fix the errors before committing."
   exit 1
 fi
 
-echo "✅ TypeScript type check passed"
+echo "✅ Build passed"

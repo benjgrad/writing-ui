@@ -223,7 +223,7 @@ async function main() {
     id: string
     created_at: string
     goal_id: string | null
-    goals: { title: string } | null
+    goals: { title: string } | { title: string }[] | null
     coaching_messages: Array<{ role: string; content: string; created_at: string }>
   }
 
@@ -231,7 +231,7 @@ async function main() {
     .filter((s) => s.coaching_messages && s.coaching_messages.length > 0)
     .map((session) => ({
       id: session.id,
-      goalTitle: session.goals?.title || null,
+      goalTitle: Array.isArray(session.goals) ? session.goals[0]?.title || null : session.goals?.title || null,
       createdAt: session.created_at,
       messages: session.coaching_messages
         .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())

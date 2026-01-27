@@ -192,7 +192,8 @@ async function main() {
   const tagsByNote: Record<string, string[]> = {}
   for (const nt of noteTags || []) {
     const noteId = nt.note_id
-    const tagName = (nt.tags as { name: string } | null)?.name
+    const tagRecord = nt.tags as { name: string } | { name: string }[] | null
+    const tagName = Array.isArray(tagRecord) ? tagRecord[0]?.name : tagRecord?.name
     if (tagName) {
       tagsByNote[noteId] = tagsByNote[noteId] || []
       tagsByNote[noteId].push(tagName)
