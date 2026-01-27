@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import type { GraphData, GraphNode, GraphLink, NoteSource } from '@/types/graph'
+import type { GraphData, GraphNode, GraphLink, NoteSource, NVQBreakdown, NoteStatus, NoteContentType, QualityStatus } from '@/types/graph'
 
 interface NoteTagRow {
   note_id: string
@@ -21,6 +21,15 @@ interface NoteRow {
   content: string
   note_type: string
   created_at: string
+  // NVQ fields
+  nvq_score: number | null
+  nvq_breakdown: NVQBreakdown | null
+  quality_status: QualityStatus | null
+  purpose_statement: string | null
+  note_status: NoteStatus | null
+  note_content_type: NoteContentType | null
+  stakeholder: string | null
+  project_link: string | null
 }
 
 interface ConnectionRow {
@@ -43,11 +52,11 @@ export function useKnowledgeGraph() {
     setError(null)
 
     try {
-      // Fetch all atomic notes
+      // Fetch all atomic notes including NVQ metadata
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: notes, error: notesError } = await (supabase as any)
         .from('atomic_notes')
-        .select('id, title, content, note_type, created_at')
+        .select('id, title, content, note_type, created_at, nvq_score, nvq_breakdown, quality_status, purpose_statement, note_status, note_content_type, stakeholder, project_link')
         .order('created_at', { ascending: false })
 
       if (notesError) throw notesError
@@ -168,7 +177,16 @@ export function useKnowledgeGraph() {
           goalId: goalInfo?.id,
           goalTitle: goalInfo?.title,
           goalStatus: goalInfo?.status as 'active' | 'parked' | 'completed' | 'archived' | undefined,
-          createdAt: note.created_at
+          createdAt: note.created_at,
+          // NVQ metadata
+          nvqScore: note.nvq_score ?? undefined,
+          nvqBreakdown: note.nvq_breakdown ?? undefined,
+          qualityStatus: note.quality_status ?? undefined,
+          purposeStatement: note.purpose_statement ?? undefined,
+          noteStatus: note.note_status ?? undefined,
+          noteContentType: note.note_content_type ?? undefined,
+          stakeholder: note.stakeholder ?? undefined,
+          projectLink: note.project_link ?? undefined
         }
       })
 

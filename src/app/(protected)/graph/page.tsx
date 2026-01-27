@@ -9,7 +9,7 @@ import { KnowledgeGraph } from '@/components/graph/KnowledgeGraph'
 import { GraphPanel } from '@/components/graph/GraphPanel'
 import { NotePanel } from '@/components/graph/NotePanel'
 import { Loading } from '@/components/ui/Loading'
-import type { RecencyRange } from '@/types/graph'
+import type { RecencyRange, NoteStatus, NoteContentType, QualityStatus } from '@/types/graph'
 
 export default function GraphPage() {
   const { data, loading, error, selectedNode, setSelectedNode, refresh } = useKnowledgeGraph()
@@ -22,6 +22,11 @@ export default function GraphPage() {
   const [recencyRange, setRecencyRange] = useState<RecencyRange | null>(null)
   const [selectedConnectionTypes, setSelectedConnectionTypes] = useState<string[]>([])
   const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([])
+  // NVQ metadata filters
+  const [selectedNoteStatuses, setSelectedNoteStatuses] = useState<NoteStatus[]>([])
+  const [selectedNoteTypes, setSelectedNoteTypes] = useState<NoteContentType[]>([])
+  const [selectedStakeholders, setSelectedStakeholders] = useState<string[]>([])
+  const [selectedQualityStatuses, setSelectedQualityStatuses] = useState<QualityStatus[]>([])
 
   const handleConnectionTypeToggle = useCallback((type: string) => {
     setSelectedConnectionTypes(prev => {
@@ -31,6 +36,23 @@ export default function GraphPage() {
         return [...prev, type]
       }
     })
+  }, [])
+
+  // NVQ metadata toggle handlers
+  const handleNoteStatusToggle = useCallback((status: NoteStatus) => {
+    setSelectedNoteStatuses(prev => prev.includes(status) ? prev.filter(s => s !== status) : [...prev, status])
+  }, [])
+
+  const handleNoteTypeToggle = useCallback((type: NoteContentType) => {
+    setSelectedNoteTypes(prev => prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type])
+  }, [])
+
+  const handleStakeholderToggle = useCallback((stakeholder: string) => {
+    setSelectedStakeholders(prev => prev.includes(stakeholder) ? prev.filter(s => s !== stakeholder) : [...prev, stakeholder])
+  }, [])
+
+  const handleQualityStatusToggle = useCallback((status: QualityStatus) => {
+    setSelectedQualityStatuses(prev => prev.includes(status) ? prev.filter(s => s !== status) : [...prev, status])
   }, [])
 
   const handleGroupToggle = useCallback((groupId: string) => {
@@ -68,6 +90,15 @@ export default function GraphPage() {
     return Array.from(tags).sort()
   }, [data.nodes])
 
+  // Get unique stakeholders from all nodes
+  const allStakeholders = useMemo(() => {
+    const stakeholders = new Set<string>()
+    data.nodes.forEach(node => {
+      if (node.stakeholder) stakeholders.add(node.stakeholder)
+    })
+    return Array.from(stakeholders).sort()
+  }, [data.nodes])
+
   // Filter nodes based on search, tags, and date range
   const filteredData = useMemo(() => {
     let nodes = data.nodes
@@ -98,6 +129,23 @@ export default function GraphPage() {
       nodes = nodes.slice(startIndex, endIndex)
     }
 
+    // Filter by NVQ metadata
+    if (selectedNoteStatuses.length > 0) {
+      nodes = nodes.filter(node => node.noteStatus && selectedNoteStatuses.includes(node.noteStatus))
+    }
+
+    if (selectedNoteTypes.length > 0) {
+      nodes = nodes.filter(node => node.noteContentType && selectedNoteTypes.includes(node.noteContentType))
+    }
+
+    if (selectedStakeholders.length > 0) {
+      nodes = nodes.filter(node => node.stakeholder && selectedStakeholders.includes(node.stakeholder))
+    }
+
+    if (selectedQualityStatuses.length > 0) {
+      nodes = nodes.filter(node => node.qualityStatus && selectedQualityStatuses.includes(node.qualityStatus))
+    }
+
     const nodeIds = new Set(nodes.map(n => n.id))
     let links = data.links.filter(link => {
       const sourceId = typeof link.source === 'string' ? link.source : link.source.id
@@ -111,7 +159,7 @@ export default function GraphPage() {
     }
 
     return { nodes, links }
-  }, [data, searchQuery, selectedTags, recencyRange, selectedConnectionTypes])
+  }, [data, searchQuery, selectedTags, recencyRange, selectedConnectionTypes, selectedNoteStatuses, selectedNoteTypes, selectedStakeholders, selectedQualityStatuses])
 
   const handleTagToggle = (tag: string) => {
     setSelectedTags(prev =>
@@ -290,6 +338,15 @@ export default function GraphPage() {
           onResetPhysics={resetPhysics}
           selectedConnectionTypes={selectedConnectionTypes}
           onConnectionTypeToggle={handleConnectionTypeToggle}
+          selectedNoteStatuses={selectedNoteStatuses}
+          onNoteStatusToggle={handleNoteStatusToggle}
+          selectedNoteTypes={selectedNoteTypes}
+          onNoteTypeToggle={handleNoteTypeToggle}
+          availableStakeholders={allStakeholders}
+          selectedStakeholders={selectedStakeholders}
+          onStakeholderToggle={handleStakeholderToggle}
+          selectedQualityStatuses={selectedQualityStatuses}
+          onQualityStatusToggle={handleQualityStatusToggle}
           onRefresh={refresh}
         />
 

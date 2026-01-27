@@ -7,6 +7,22 @@ export interface NoteSource {
   session_goal_title?: string
 }
 
+// NVQ metadata types
+export type NoteStatus = 'Seed' | 'Sapling' | 'Evergreen'
+export type NoteContentType = 'Logic' | 'Technical' | 'Reflection'
+// Stakeholder is now a flexible string to support any person/group
+// Common defaults: 'Self', 'Future Users', 'AI Agent', but can be any name
+export type Stakeholder = string
+export type QualityStatus = 'pending' | 'passing' | 'needs_review' | 'manual_override'
+
+export interface NVQBreakdown {
+  why: number
+  metadata: number
+  taxonomy: number
+  connectivity: number
+  originality: number
+}
+
 export interface GraphNode {
   id: string
   title: string
@@ -22,6 +38,15 @@ export interface GraphNode {
   y?: number
   fx?: number | null
   fy?: number | null
+  // NVQ metadata
+  nvqScore?: number
+  nvqBreakdown?: NVQBreakdown
+  qualityStatus?: QualityStatus
+  purposeStatement?: string
+  noteStatus?: NoteStatus
+  noteContentType?: NoteContentType
+  stakeholder?: Stakeholder
+  projectLink?: string
 }
 
 // Recency range as percentage (0-100) where 0 is oldest, 100 is newest

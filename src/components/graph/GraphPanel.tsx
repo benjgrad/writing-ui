@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useMemo, useRef, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { RangeSlider } from '@/components/ui/RangeSlider'
+import { Tooltip, InfoTooltip } from '@/components/ui/Tooltip'
 import { useExtractionStatus } from '@/hooks/useExtractionStatus'
-import type { GraphGroup, RecencyRange, PhysicsSettings } from '@/types/graph'
+import type { GraphGroup, RecencyRange, PhysicsSettings, NoteStatus, NoteContentType, QualityStatus } from '@/types/graph'
 import { GROUP_COLORS } from '@/types/graph'
 
 // Connection types with their display info
@@ -15,6 +16,43 @@ const CONNECTION_TYPES = [
   { type: 'contradicts', color: '#ef4444', label: 'Contradicts' },
   { type: 'extends', color: '#8b5cf6', label: 'Extends' },
   { type: 'example_of', color: '#f59e0b', label: 'Example of' }
+]
+
+// NVQ Metadata filter options
+const NOTE_STATUS_OPTIONS: { value: NoteStatus; label: string; color: string }[] = [
+  { value: 'Seed', label: 'Seed', color: '#eab308' },
+  { value: 'Sapling', label: 'Sapling', color: '#84cc16' },
+  { value: 'Evergreen', label: 'Evergreen', color: '#10b981' }
+]
+
+const NOTE_TYPE_OPTIONS: { value: NoteContentType; label: string; color: string }[] = [
+  { value: 'Logic', label: 'Logic', color: '#3b82f6' },
+  { value: 'Technical', label: 'Technical', color: '#8b5cf6' },
+  { value: 'Reflection', label: 'Reflection', color: '#ec4899' }
+]
+
+// Default stakeholder colors - additional stakeholders get a hash-based color
+const STAKEHOLDER_COLORS: Record<string, string> = {
+  'Self': '#06b6d4',
+  'Future Users': '#6366f1',
+  'AI Agent': '#7c3aed'
+}
+
+// Generate a consistent color for any stakeholder name
+function getStakeholderColor(name: string): string {
+  if (STAKEHOLDER_COLORS[name]) return STAKEHOLDER_COLORS[name]
+  // Hash the name to get a consistent color
+  let hash = 0
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash)
+  }
+  const hue = Math.abs(hash % 360)
+  return `hsl(${hue}, 65%, 55%)`
+}
+
+const QUALITY_STATUS_OPTIONS: { value: QualityStatus; label: string; color: string }[] = [
+  { value: 'passing', label: 'Passing', color: '#22c55e' },
+  { value: 'needs_review', label: 'Needs Review', color: '#f59e0b' }
 ]
 
 interface GraphPanelProps {
@@ -46,6 +84,16 @@ interface GraphPanelProps {
   // Connection type filter
   selectedConnectionTypes: string[]
   onConnectionTypeToggle: (type: string) => void
+  // NVQ Metadata filters
+  selectedNoteStatuses: NoteStatus[]
+  onNoteStatusToggle: (status: NoteStatus) => void
+  selectedNoteTypes: NoteContentType[]
+  onNoteTypeToggle: (type: NoteContentType) => void
+  availableStakeholders: string[]  // All unique stakeholders found in notes
+  selectedStakeholders: string[]
+  onStakeholderToggle: (stakeholder: string) => void
+  selectedQualityStatuses: QualityStatus[]
+  onQualityStatusToggle: (status: QualityStatus) => void
   // Refresh
   onRefresh: () => void
 }
@@ -158,6 +206,15 @@ export function GraphPanel({
   onResetPhysics,
   selectedConnectionTypes,
   onConnectionTypeToggle,
+  selectedNoteStatuses,
+  onNoteStatusToggle,
+  selectedNoteTypes,
+  onNoteTypeToggle,
+  availableStakeholders,
+  selectedStakeholders,
+  onStakeholderToggle,
+  selectedQualityStatuses,
+  onQualityStatusToggle,
   onRefresh
 }: GraphPanelProps) {
   const [isExpanded, setIsExpanded] = useState(true)
@@ -174,6 +231,7 @@ export function GraphPanel({
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     search: false,
     groups: true,
+    metadata: false,
     connections: false,
     tags: false,
     recency: false,
@@ -207,7 +265,7 @@ export function GraphPanel({
     [groups]
   )
 
-  const hasActiveFilters = selectedTags.length > 0 || recencyRange !== null || searchQuery || selectedConnectionTypes.length > 0
+  const hasActiveFilters = selectedTags.length > 0 || recencyRange !== null || searchQuery || selectedConnectionTypes.length > 0 || selectedNoteStatuses.length > 0 || selectedNoteTypes.length > 0 || selectedStakeholders.length > 0 || selectedQualityStatuses.length > 0
 
   const toggleSection = (section: string) => {
     setOpenSections(prev => ({ ...prev, [section]: !prev[section] }))
@@ -230,6 +288,10 @@ export function GraphPanel({
     onRecencyRangeChange(null)
     onSearchChange('')
     selectedConnectionTypes.forEach(t => onConnectionTypeToggle(t))
+    selectedNoteStatuses.forEach(s => onNoteStatusToggle(s))
+    selectedNoteTypes.forEach(t => onNoteTypeToggle(t))
+    selectedStakeholders.forEach(s => onStakeholderToggle(s))
+    selectedQualityStatuses.forEach(s => onQualityStatusToggle(s))
     onDeselectAllGroups()
   }
 
@@ -593,6 +655,134 @@ export function GraphPanel({
                   >
                     + Create group from selected tags
                   </button>
+                )}
+              </div>
+            </AccordionSection>
+
+            {/* NVQ Metadata Section */}
+            <AccordionSection
+              title="Metadata"
+              isOpen={openSections.metadata}
+              onToggle={() => toggleSection('metadata')}
+              badge={
+                (selectedNoteStatuses.length + selectedNoteTypes.length + selectedStakeholders.length + selectedQualityStatuses.length) > 0
+                  ? (selectedNoteStatuses.length + selectedNoteTypes.length + selectedStakeholders.length + selectedQualityStatuses.length)
+                  : undefined
+              }
+              icon={<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>}
+            >
+              <div className="space-y-3">
+                {/* Quality Status */}
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1.5 flex items-center">
+                    Quality
+                    <InfoTooltip content="NVQ (Note Vitality Quotient) passing status. 7+/10 = Passing." />
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {QUALITY_STATUS_OPTIONS.map(opt => {
+                      const isSelected = selectedQualityStatuses.length === 0 || selectedQualityStatuses.includes(opt.value)
+                      const tooltip = opt.value === 'passing' ? 'NVQ score 7+/10, meets quality standards' :
+                                      'NVQ score below 7, may need improvement'
+                      return (
+                        <Tooltip key={opt.value} content={tooltip}>
+                          <button
+                            onClick={() => onQualityStatusToggle(opt.value)}
+                            className={`flex items-center gap-1.5 px-2 py-0.5 text-xs rounded-full border transition-colors ${
+                              isSelected ? 'border-foreground/30 bg-accent/50' : 'border-border opacity-40 hover:opacity-70'
+                            }`}
+                          >
+                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: opt.color }} />
+                            {opt.label}
+                          </button>
+                        </Tooltip>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Note Status (Seed/Sapling/Evergreen) */}
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1.5 flex items-center">
+                    Status
+                    <InfoTooltip content="Note maturity: Seed (raw) → Sapling (developing) → Evergreen (fundamental)" />
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {NOTE_STATUS_OPTIONS.map(opt => {
+                      const isSelected = selectedNoteStatuses.length === 0 || selectedNoteStatuses.includes(opt.value)
+                      const tooltip = opt.value === 'Seed' ? 'Raw information, needs development' :
+                                      opt.value === 'Sapling' ? 'Synthesized, growing through connections' :
+                                      'Fundamental truth, remains valid over time'
+                      return (
+                        <Tooltip key={opt.value} content={tooltip}>
+                          <button
+                            onClick={() => onNoteStatusToggle(opt.value)}
+                            className={`flex items-center gap-1.5 px-2 py-0.5 text-xs rounded-full border transition-colors ${
+                              isSelected ? 'border-foreground/30 bg-accent/50' : 'border-border opacity-40 hover:opacity-70'
+                            }`}
+                          >
+                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: opt.color }} />
+                            {opt.label}
+                          </button>
+                        </Tooltip>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Content Type (Logic/Technical/Reflection) */}
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1.5 flex items-center">
+                    Type
+                    <InfoTooltip content="What kind of knowledge does this note contain?" />
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {NOTE_TYPE_OPTIONS.map(opt => {
+                      const isSelected = selectedNoteTypes.length === 0 || selectedNoteTypes.includes(opt.value)
+                      const tooltip = opt.value === 'Logic' ? 'Reasoning, decisions, "why" explanations' :
+                                      opt.value === 'Technical' ? 'How-to guides, procedures, implementation' :
+                                      'Personal observations, lessons learned'
+                      return (
+                        <Tooltip key={opt.value} content={tooltip}>
+                          <button
+                            onClick={() => onNoteTypeToggle(opt.value)}
+                            className={`flex items-center gap-1.5 px-2 py-0.5 text-xs rounded-full border transition-colors ${
+                              isSelected ? 'border-foreground/30 bg-accent/50' : 'border-border opacity-40 hover:opacity-70'
+                            }`}
+                          >
+                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: opt.color }} />
+                            {opt.label}
+                          </button>
+                        </Tooltip>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Stakeholder */}
+                {availableStakeholders.length > 0 && (
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1.5 flex items-center">
+                      Stakeholder
+                      <InfoTooltip content="Who benefits from this note? Can be yourself, users, teams, or specific people." />
+                    </p>
+                    <div className="flex flex-wrap gap-1">
+                      {availableStakeholders.map(stakeholder => {
+                        const isSelected = selectedStakeholders.length === 0 || selectedStakeholders.includes(stakeholder)
+                        return (
+                          <button
+                            key={stakeholder}
+                            onClick={() => onStakeholderToggle(stakeholder)}
+                            className={`flex items-center gap-1.5 px-2 py-0.5 text-xs rounded-full border transition-colors ${
+                              isSelected ? 'border-foreground/30 bg-accent/50' : 'border-border opacity-40 hover:opacity-70'
+                            }`}
+                          >
+                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: getStakeholderColor(stakeholder) }} />
+                            {stakeholder}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
                 )}
               </div>
             </AccordionSection>

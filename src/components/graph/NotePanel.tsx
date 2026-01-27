@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { openCoachingSession } from '@/components/coaching/CoachingProvider'
+import { Tooltip } from '@/components/ui/Tooltip'
 import type { GraphNode } from '@/types/graph'
 
 interface NotePanelProps {
@@ -146,6 +147,45 @@ export function NotePanel({ node, onClose, onDelete, onTagsChange, allTags = [] 
       setShowConfirm(false)
     }
   }
+  // NVQ score color based on passing threshold (7)
+  const getNVQColor = (score?: number) => {
+    if (score === undefined) return 'bg-gray-500/10 text-gray-500'
+    if (score >= 7) return 'bg-emerald-500/10 text-emerald-500'
+    if (score >= 5) return 'bg-amber-500/10 text-amber-500'
+    return 'bg-red-500/10 text-red-500'
+  }
+
+  // Note status colors (Seed -> Evergreen growth metaphor)
+  const getStatusColor = (status?: string) => {
+    const colors: Record<string, string> = {
+      Seed: 'bg-yellow-500/10 text-yellow-600',
+      Sapling: 'bg-lime-500/10 text-lime-600',
+      Evergreen: 'bg-emerald-500/10 text-emerald-600'
+    }
+    return colors[status || ''] || 'bg-gray-500/10 text-gray-500'
+  }
+
+  // Note content type colors
+  const getContentTypeColor = (type?: string) => {
+    const colors: Record<string, string> = {
+      Logic: 'bg-blue-500/10 text-blue-500',
+      Technical: 'bg-purple-500/10 text-purple-500',
+      Reflection: 'bg-pink-500/10 text-pink-500'
+    }
+    return colors[type || ''] || 'bg-gray-500/10 text-gray-500'
+  }
+
+  // Stakeholder colors
+  const getStakeholderColor = (stakeholder?: string) => {
+    const colors: Record<string, string> = {
+      Self: 'bg-cyan-500/10 text-cyan-600',
+      'Future Users': 'bg-indigo-500/10 text-indigo-600',
+      'AI Agent': 'bg-violet-500/10 text-violet-600'
+    }
+    return colors[stakeholder || ''] || 'bg-gray-500/10 text-gray-500'
+  }
+
+  // Legacy type label (fallback for notes without NVQ data)
   const getTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
       permanent: 'Permanent Note',
@@ -163,6 +203,9 @@ export function NotePanel({ node, onClose, onDelete, onTagsChange, allTags = [] 
     }
     return colors[type] || 'bg-gray-500/10 text-gray-500'
   }
+
+  // Check if note has NVQ metadata
+  const hasNVQData = node.nvqScore !== undefined
 
   return (
     <div className="absolute right-0 top-14 bottom-0 w-96 bg-background border-l border-border overflow-y-auto z-20">
@@ -190,9 +233,78 @@ export function NotePanel({ node, onClose, onDelete, onTagsChange, allTags = [] 
           </button>
         </div>
 
-        <span className={`inline-block px-2 py-0.5 text-xs rounded-full ${getTypeColor(node.type)}`}>
-          {getTypeLabel(node.type)}
-        </span>
+        {/* NVQ Metadata Badges */}
+        {hasNVQData ? (
+          <div className="flex flex-wrap gap-1.5">
+            {/* NVQ Score */}
+            <Tooltip content="Note Vitality Quotient: Quality score (0-10) measuring purpose, metadata, taxonomy, connectivity, and originality. 7+ is passing.">
+              <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full cursor-help ${getNVQColor(node.nvqScore)}`}>
+                <span className="font-medium">NVQ</span>
+                <span>{node.nvqScore?.toFixed(1)}/10</span>
+              </span>
+            </Tooltip>
+            {/* Note Status (Seed/Sapling/Evergreen) */}
+            {node.noteStatus && (
+              <Tooltip
+                content={
+                  node.noteStatus === 'Seed' ? 'Seed: Raw information or early-stage idea, needs development' :
+                  node.noteStatus === 'Sapling' ? 'Sapling: Synthesized insight, growing through connections' :
+                  'Evergreen: Fundamental truth or principle that remains valid over time'
+                }
+              >
+                <span className={`inline-block px-2 py-0.5 text-xs rounded-full cursor-help ${getStatusColor(node.noteStatus)}`}>
+                  {node.noteStatus}
+                </span>
+              </Tooltip>
+            )}
+            {/* Content Type (Logic/Technical/Reflection) */}
+            {node.noteContentType && (
+              <Tooltip
+                content={
+                  node.noteContentType === 'Logic' ? 'Logic: Reasoning, decision-making, or "why" explanations' :
+                  node.noteContentType === 'Technical' ? 'Technical: How-to guides, procedures, or implementation details' :
+                  'Reflection: Personal observations, lessons learned, or self-insights'
+                }
+              >
+                <span className={`inline-block px-2 py-0.5 text-xs rounded-full cursor-help ${getContentTypeColor(node.noteContentType)}`}>
+                  {node.noteContentType}
+                </span>
+              </Tooltip>
+            )}
+            {/* Stakeholder */}
+            {node.stakeholder && (
+              <Tooltip content={`Stakeholder: Who benefits from this note - ${node.stakeholder}`}>
+                <span className={`inline-block px-2 py-0.5 text-xs rounded-full cursor-help ${getStakeholderColor(node.stakeholder)}`}>
+                  {node.stakeholder}
+                </span>
+              </Tooltip>
+            )}
+          </div>
+        ) : (
+          <span className={`inline-block px-2 py-0.5 text-xs rounded-full ${getTypeColor(node.type)}`}>
+            {getTypeLabel(node.type)}
+          </span>
+        )}
+
+        {/* Purpose Statement */}
+        {node.purposeStatement && (
+          <div className="mt-3 p-2 bg-foreground/5 rounded-md border-l-2 border-blue-500/50">
+            <p className="text-xs text-muted-foreground mb-1">Purpose</p>
+            <p className="text-sm text-foreground/80 italic leading-relaxed">
+              {node.purposeStatement}
+            </p>
+          </div>
+        )}
+
+        {/* Project Link */}
+        {node.projectLink && (
+          <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+            </svg>
+            <span>{node.projectLink}</span>
+          </div>
+        )}
 
         <div className="mt-4">
           <p className="text-sm text-foreground/80 leading-relaxed">
