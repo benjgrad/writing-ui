@@ -5,8 +5,8 @@ import {
   ActiveTrio,
   ParkingLot,
   GatekeeperModal,
-  GoalCoach
 } from '@/components/goals'
+import { PursuitCoach } from '@/components/pursuits'
 import { Loading } from '@/components/ui/Loading'
 
 export function HomeGoalsSection() {
@@ -20,10 +20,12 @@ export function HomeGoalsSection() {
     gatekeeperGoal,
     viewingSession,
     loadingSession,
+    deepeningGoal,
     openGoalCoach,
     closeGoalCoach,
     closeViewingSession,
     closeGatekeeper,
+    closeDeepeningCoach,
     handleGoalCreated,
     handleUpdateMomentum,
     handleCompleteMicroWin,
@@ -33,11 +35,12 @@ export function HomeGoalsSection() {
     handleReorderMicroWins,
     handleUpdateGoal,
     handleMoveToParking,
-    handleActivate,
     handleArchive,
     handleGatekeeperNeeded,
     handleSwap,
     handleViewCoaching,
+    handleDeepenPursuit,
+    handlePursuitActivated,
     refresh
   } = useGoalManagement()
 
@@ -63,10 +66,11 @@ export function HomeGoalsSection() {
         </div>
       )}
 
-      {/* Active Goals - The Trio */}
+      {/* Active Pursuits - The Trio */}
       <section className="mb-8">
         <ActiveTrio
           goals={activeGoals}
+          parkedGoals={parkedGoals}
           onUpdateMomentum={handleUpdateMomentum}
           onCompleteMicroWin={handleCompleteMicroWin}
           onAddMicroWin={handleAddMicroWin}
@@ -77,6 +81,7 @@ export function HomeGoalsSection() {
           onMoveToParking={handleMoveToParking}
           onArchive={handleArchive}
           onAddGoal={openGoalCoach}
+          onDeepenPursuit={handleDeepenPursuit}
           onViewCoaching={handleViewCoaching}
         />
       </section>
@@ -86,7 +91,10 @@ export function HomeGoalsSection() {
         <section className="mb-8">
           <ParkingLot
             goals={parkedGoals}
-            onActivate={handleActivate}
+            onActivate={async (goalId) => {
+              const goal = parkedGoals.find(g => g.id === goalId)
+              if (goal) handleDeepenPursuit(goal)
+            }}
             onArchive={handleArchive}
             canActivate={activeGoals.length < 3}
             onGatekeeperNeeded={handleGatekeeperNeeded}
@@ -115,7 +123,7 @@ export function HomeGoalsSection() {
             </svg>
           </div>
           <h2 className="text-xl font-semibold text-foreground mb-2">
-            Start with one goal
+            Start with one pursuit
           </h2>
           <p className="text-muted mb-4 max-w-md mx-auto text-sm">
             Focus on what matters most. The Rule of Three keeps you centered.
@@ -138,20 +146,35 @@ export function HomeGoalsSection() {
               <path d="M12 5v14" />
               <path d="M5 12h14" />
             </svg>
-            Add your first goal
+            Add your first pursuit
           </button>
         </div>
       )}
 
-      {/* Goal Coach - New Goal */}
-      <GoalCoach
+      {/* Pursuit Coach - New Pursuit */}
+      <PursuitCoach
         isOpen={showGoalCoach}
         onClose={closeGoalCoach}
         onGoalCreated={handleGoalCreated}
       />
 
-      {/* Goal Coach - Continue Session */}
-      <GoalCoach
+      {/* Pursuit Coach - Deepen & Activate */}
+      <PursuitCoach
+        isOpen={deepeningGoal !== null}
+        onClose={closeDeepeningCoach}
+        onGoalCreated={handleGoalCreated}
+        goalToDeepen={deepeningGoal ? {
+          id: deepeningGoal.id,
+          title: deepeningGoal.title,
+          why_root: deepeningGoal.why_root,
+          micro_wins: deepeningGoal.micro_wins,
+        } : undefined}
+        onPursuitActivated={handlePursuitActivated}
+        onGoalUpdated={refresh}
+      />
+
+      {/* Pursuit Coach - Continue Session */}
+      <PursuitCoach
         isOpen={viewingSession !== null}
         onClose={closeViewingSession}
         onGoalCreated={handleGoalCreated}

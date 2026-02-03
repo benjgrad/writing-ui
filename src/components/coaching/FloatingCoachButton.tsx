@@ -105,7 +105,7 @@ export function FloatingCoachButton({ onGoalCreated, onGoalUpdated }: FloatingCo
           onClick={handleOpen}
           disabled={loading}
           className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center justify-center disabled:opacity-70"
-          title="Open Coach"
+          title="Open Pursuit Coach"
         >
           {loading ? (
             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

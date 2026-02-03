@@ -29,6 +29,7 @@ export function useGoalManagement() {
   const [gatekeeperGoal, setGatekeeperGoal] = useState<GoalWithMicroWins | null>(null)
   const [viewingSession, setViewingSession] = useState<CoachingSession | null>(null)
   const [loadingSession, setLoadingSession] = useState(false)
+  const [deepeningGoal, setDeepeningGoal] = useState<GoalWithMicroWins | null>(null)
 
   // Fetch coaching session for a goal
   const handleViewCoaching = useCallback(async (goalId: string) => {
@@ -144,6 +145,33 @@ export function useGoalManagement() {
     await refresh()
   }, [moveGoal, refresh])
 
+  // Start coaching a parked pursuit to activate it
+  const handleDeepenPursuit = useCallback((goal: GoalWithMicroWins) => {
+    setDeepeningGoal(goal)
+  }, [])
+
+  // Activate a pursuit after coaching completes
+  const handlePursuitActivated = useCallback(async (goalId: string) => {
+    if (activeGoals.length >= 3) {
+      // If trio is full, need gatekeeper
+      const goal = parkedGoals.find(g => g.id === goalId)
+      if (goal) {
+        setDeepeningGoal(null)
+        setGatekeeperGoal(goal)
+        setShowGatekeeper(true)
+      }
+      return
+    }
+    await moveGoal(goalId, 'active')
+    setDeepeningGoal(null)
+    await refresh()
+  }, [activeGoals.length, parkedGoals, moveGoal, refresh])
+
+  // Close deepening coach
+  const closeDeepeningCoach = useCallback(() => {
+    setDeepeningGoal(null)
+  }, [])
+
   // Close goal coach
   const closeGoalCoach = useCallback(() => {
     setShowGoalCoach(false)
@@ -176,12 +204,14 @@ export function useGoalManagement() {
     gatekeeperGoal,
     viewingSession,
     loadingSession,
+    deepeningGoal,
 
     // Modal controls
     openGoalCoach,
     closeGoalCoach,
     closeViewingSession,
     closeGatekeeper,
+    closeDeepeningCoach,
 
     // Goal handlers
     handleGoalCreated,
@@ -198,6 +228,8 @@ export function useGoalManagement() {
     handleGatekeeperNeeded,
     handleSwap,
     handleViewCoaching,
+    handleDeepenPursuit,
+    handlePursuitActivated,
 
     // Utilities
     refresh

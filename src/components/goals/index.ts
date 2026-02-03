@@ -1,9 +1,13 @@
-export { ActiveTrio } from './ActiveTrio'
-export { GoalCard } from './GoalCard'
-export { GatekeeperModal } from './GatekeeperModal'
-export { GoalCoach } from './GoalCoach'
-export { MomentumSlider } from './MomentumSlider'
-export { NewGoalModal } from './NewGoalModal'
-export { ParkingLot } from './ParkingLot'
-export { ProgressRing } from './ProgressRing'
-export { WhyDrillingChat } from './WhyDrillingChat'
+// Re-export from pursuits for backward compatibility
+// New code should import from '@/components/pursuits' directly
+export {
+  ActiveTrio,
+  PursuitCard as GoalCard,
+  GatekeeperModal,
+  PursuitCoach as GoalCoach,
+  MomentumSlider,
+  NewPursuitModal as NewGoalModal,
+  ParkingLot,
+  ProgressRing,
+  WhyDrillingChat,
+} from '../pursuits'

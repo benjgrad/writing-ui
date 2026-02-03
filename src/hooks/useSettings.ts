@@ -40,14 +40,27 @@ export function useSettings<T>({ key, defaultValue, localStorageKey }: UseSettin
         const response = await fetch(`/api/settings/${encodeURIComponent(key)}`)
         if (response.ok) {
           const data = await response.json()
-          if (isMounted && data.value !== null) {
-            setValue(data.value)
-            // Update localStorage cache
-            if (localStorageKey) {
-              try {
-                localStorage.setItem(localStorageKey, JSON.stringify(data.value))
-              } catch (err) {
-                console.error(`Error caching ${key} to localStorage:`, err)
+          if (isMounted) {
+            if (data.value !== null) {
+              setValue(data.value)
+              // Update localStorage cache
+              if (localStorageKey) {
+                try {
+                  localStorage.setItem(localStorageKey, JSON.stringify(data.value))
+                } catch (err) {
+                  console.error(`Error caching ${key} to localStorage:`, err)
+                }
+              }
+            } else {
+              // API returned null — user has no saved setting.
+              // Reset to default and clear any stale localStorage from another user/session.
+              setValue(defaultValue)
+              if (localStorageKey) {
+                try {
+                  localStorage.removeItem(localStorageKey)
+                } catch (err) {
+                  console.error(`Error clearing ${key} from localStorage:`, err)
+                }
               }
             }
           }

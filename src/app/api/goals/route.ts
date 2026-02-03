@@ -54,8 +54,8 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { title, why_root, status = 'active' } = body
-    console.log('[/api/goals POST] Request body:', { title, why_root, status })
+    const { title, why_root, status = 'active', domain_scores } = body
+    console.log('[/api/goals POST] Request body:', { title, why_root, status, domain_scores })
 
     if (!title || typeof title !== 'string') {
       return NextResponse.json({ error: 'Title is required' }, { status: 400 })
@@ -77,7 +77,14 @@ export async function POST(request: Request) {
         title: title.trim(),
         why_root: why_root?.trim() || null,
         status,
-        position: count || 0
+        position: count || 0,
+        ...(domain_scores && { domain_scores }),
+        completeness: {
+          title: true,
+          why: !!why_root?.trim(),
+          steps: false,
+          notes: false,
+        },
       })
       .select()
       .single()

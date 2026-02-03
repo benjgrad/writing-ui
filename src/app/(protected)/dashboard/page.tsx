@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { HomeGoalsSection } from '@/components/home/HomeGoalsSection'
 import { HomeWordCloudSection } from '@/components/home/HomeWordCloudSection'
 import { HomeGraphSection } from '@/components/home/HomeGraphSection'
-import { OnboardingModal } from '@/components/onboarding/OnboardingModal'
+import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow'
 import { Loading } from '@/components/ui/Loading'
 import { Button } from '@/components/ui/Button'
 
@@ -21,10 +21,8 @@ export default function DashboardPage() {
   }
 
   return (
+    <OnboardingFlow>
     <div className="min-h-screen bg-background">
-      {/* Onboarding for new users */}
-      <OnboardingModal />
-
       {/* Header */}
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
@@ -186,5 +184,6 @@ export default function DashboardPage() {
         </section>
       </main>
     </div>
+    </OnboardingFlow>
   )
 }

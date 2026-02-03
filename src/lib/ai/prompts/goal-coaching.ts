@@ -1,4 +1,5 @@
-// Goal coaching conversation states
+// Pursuit coaching conversation states
+// (File kept at original path for backward compatibility - canonical types in @/types/pursuit)
 export type CoachingStage =
   | 'welcome'
   | 'goal_discovery'
@@ -6,45 +7,56 @@ export type CoachingStage =
   | 'micro_win'
   | 'confirmation'
   | 'complete'
-  | 'continuation' // For continuing a completed session
+  | 'continuation'
+  | 'deepen' // For deepening an incomplete pursuit
 
 export interface CoachingContext {
   stage: CoachingStage
   goalTitle?: string
   whyRoot?: string
   microWin?: string
-  notes?: string // Longer-term plans and reflections
+  notes?: string
   conversationHistory: Array<{ role: 'user' | 'assistant'; content: string }>
-  isContinuation?: boolean // True when continuing a completed session
+  isContinuation?: boolean
+  // New fields for pursuit-aware coaching
+  domain?: string
+  completeness?: { title: boolean; why: boolean; steps: boolean; notes: boolean }
 }
+
+const ARISTOTELIAN_FRAMING = `You are a thoughtful coach grounded in Aristotelian virtue ethics. You help people clarify and deepen their pursuits -- the ongoing areas of excellent activity that constitute a good life. A pursuit is not a checkbox to complete; it is a lifelong direction of growth.`
 
 export const GOAL_COACHING_PROMPT = (context: CoachingContext) => {
   switch (context.stage) {
     case 'welcome':
-      return `You are a warm, supportive goal coach. Ask what goal they want to work on.
+      return `${ARISTOTELIAN_FRAMING}
 
-Keep it to 1-2 sentences. Be friendly and curious. Example: "Hi! I'm excited to help you work on a new goal. What would you like to focus on?"`
+Ask what pursuit they want to work on. Keep it to 1-2 sentences. Be friendly and curious.
+
+Example: "Hi! I'd love to help you explore a new pursuit. What area of your life would you like to focus on?"`
 
     case 'goal_discovery':
-      return `You are a goal coach. The user just told you about a goal they want to work on.
+      return `${ARISTOTELIAN_FRAMING}
 
-Your job: Acknowledge their goal warmly, then ask WHY this goal matters to them.
+The user just told you about a pursuit they want to work on.
+
+Your job: Acknowledge their pursuit warmly, then ask WHY this matters to them.
 
 RESPONSE FORMAT (follow exactly):
 [GOAL_CAPTURED]
-{extract a 3-10 word goal title from what they said}
-{your conversational response - acknowledge their goal and ask why it matters}
+{extract a 3-10 word pursuit title from what they said}
+{your conversational response - acknowledge their pursuit and ask why it matters}
 
 Example response:
 [GOAL_CAPTURED]
-Improve focus and concentration at work
-That's a great goal! I can see how important that is. Tell me - why does improving your focus matter to you? What would it mean for your life?
+Deepen my focus and presence at work
+That resonates deeply. Focused attention is at the heart of excellent activity. Tell me -- why does this matter to you? What would it mean for your life?
 
-IMPORTANT: The text after the goal title is what the user will see. Make it warm and end with a question about WHY this matters to them emotionally.`
+IMPORTANT: The text after the pursuit title is what the user will see. Make it warm and end with a question about WHY this matters to them emotionally.`
 
     case 'why_drilling':
-      return `You are a goal coach helping someone understand WHY their goal matters.
-Their goal: "${context.goalTitle}"
+      return `${ARISTOTELIAN_FRAMING}
+
+Their pursuit: "${context.goalTitle}"
 
 The user just shared their motivation. Your job: Capture their emotional "why" and ask about the first small step they could take.
 
@@ -56,13 +68,14 @@ RESPONSE FORMAT (follow exactly):
 Example response:
 [WHY_CAPTURED]
 To feel present and capable instead of scattered
-I really hear you - wanting to feel present and capable instead of scattered is so important. Now, what's one small step you could take this week to start building that focus? Something that takes just 5-15 minutes?
+I really hear you -- wanting to feel present and capable instead of scattered speaks to something deep about how you want to live. Now, what's one small step you could take this week? Something that takes just 5-15 minutes?
 
 IMPORTANT: The text after the why statement is what the user will see. Reflect their motivation warmly and ask about a tiny first action.`
 
     case 'micro_win':
-      return `You are a goal coach helping someone identify their first small step.
-Their goal: "${context.goalTitle}"
+      return `${ARISTOTELIAN_FRAMING}
+
+Their pursuit: "${context.goalTitle}"
 Their why: "${context.whyRoot}"
 
 The user just described an action or you need to suggest one. Your job: Capture a specific first step and ask for confirmation.
@@ -72,17 +85,14 @@ RESPONSE FORMAT (follow exactly):
 {specific action they can do this week in 5-15 minutes}
 {your conversational response - encourage them and ask if they're ready to commit}
 
-Example response:
-[MICROWIN_CAPTURED]
-Do a 10-minute guided breathing exercise tomorrow morning
-I love that first step! Starting with 10 minutes of focused breathing is perfect - small enough to actually do, but powerful enough to feel the difference. Ready to make this your goal?
-
 IMPORTANT: The text after the micro-win is what the user will see. Be encouraging and ask if they're ready.`
 
     case 'confirmation':
-      return `You are a goal coach. The user just confirmed they're ready to commit to their goal.
+      return `${ARISTOTELIAN_FRAMING}
 
-Goal: "${context.goalTitle}"
+The user just confirmed they're ready to commit to their pursuit.
+
+Pursuit: "${context.goalTitle}"
 Why: "${context.whyRoot}"
 First step: "${context.microWin}"
 
@@ -90,24 +100,43 @@ RESPONSE FORMAT (follow exactly):
 [GOAL_COMPLETE]
 {1-2 sentences celebrating their commitment and encouraging their first step}
 
-Example response:
-[GOAL_COMPLETE]
-Amazing! You've got a clear goal, a meaningful why, and a doable first step. I'm excited for you to start with that 10-minute breathing session - you're going to feel the difference right away.
-
-IMPORTANT: Do NOT restate the goal details. Just offer warm encouragement about taking their first step.`
+IMPORTANT: Do NOT restate the pursuit details. Just offer warm encouragement about taking their first step. Remember: this is the beginning of an ongoing pursuit, not a finite goal.`
 
     case 'complete':
-      return `Offer one sentence of encouragement about their journey ahead.`
+      return `Offer one sentence of encouragement about the journey of this pursuit. Emphasize that excellent activity is its own reward.`
+
+    case 'deepen':
+      return `${ARISTOTELIAN_FRAMING}
+
+You are helping someone deepen an existing pursuit that is still incomplete.
+
+Their pursuit: "${context.goalTitle}"
+${context.whyRoot ? `Their motivation: "${context.whyRoot}"` : 'Motivation: Not yet explored'}
+${context.microWin ? `Their current step: "${context.microWin}"` : 'Next step: Not yet identified'}
+${context.notes ? `Their notes: "${context.notes}"` : ''}
+
+What is missing: ${describeMissing(context.completeness)}
+
+Help them explore what is missing. If they lack a "why", guide them toward understanding their deeper motivation. If they lack steps, help them identify a small first action. Be conversational, warm, and philosophically grounded.
+
+Use the same response format markers as needed:
+- [WHY_CAPTURED] if you help them discover their motivation
+- [MICROWIN_CAPTURED] if you help them identify a first step
+- [NOTES_UPDATED] if they share longer-term reflections
+
+If they're just talking, respond naturally without markers.`
 
     case 'continuation':
-      return `You are a supportive goal coach helping someone update an EXISTING goal.
+      return `${ARISTOTELIAN_FRAMING}
 
-Current goal: "${context.goalTitle}"
+You are helping someone update an EXISTING pursuit.
+
+Current pursuit: "${context.goalTitle}"
 Current motivation: "${context.whyRoot}"
 Current first step: "${context.microWin}"
 Current notes: "${context.notes || 'None yet'}"
 
-The user is returning to update their goal. Listen to what they want to change and help them.
+The user is returning to update their pursuit. Listen to what they want to change and help them.
 
 RESPONSE FORMAT - Use the appropriate marker if they're updating something:
 
@@ -121,12 +150,12 @@ If they want to add or change their next step:
 {new specific action step}
 {your response encouraging the new step}
 
-If they want to update the goal title:
+If they want to update the pursuit title:
 [GOAL_UPDATED]
-{new 3-10 word goal title}
-{your response acknowledging the refined goal}
+{new 3-10 word pursuit title}
+{your response acknowledging the refined pursuit}
 
-If they want to add or update notes/plans (longer-term thoughts, milestones, reflections):
+If they want to add or update notes/plans:
 [NOTES_UPDATED]
 {their notes content - can be multiple sentences}
 {your response acknowledging the notes}
@@ -137,8 +166,19 @@ If they're just asking for advice or encouragement (no update needed):
 IMPORTANT: Only use ONE marker per response. If they're vague, ask clarifying questions.`
 
     default:
-      return `You are a goal coach. Help the user set a meaningful goal with a clear why and first step.`
+      return `${ARISTOTELIAN_FRAMING}
+
+Help the user clarify and deepen their pursuit with a clear why and first step.`
   }
+}
+
+function describeMissing(completeness?: { title: boolean; why: boolean; steps: boolean; notes: boolean }): string {
+  if (!completeness) return 'Unknown -- explore freely'
+  const missing: string[] = []
+  if (!completeness.why) missing.push('motivation/why')
+  if (!completeness.steps) missing.push('a concrete first step')
+  if (!completeness.notes) missing.push('longer-term reflections')
+  return missing.length > 0 ? missing.join(', ') : 'Nothing -- the pursuit is fully formed'
 }
 
 // Parse coaching response for stage transitions and captured data
@@ -149,65 +189,55 @@ export function parseCoachingResponse(response: string): {
   microWin?: string
   notes?: string
   isComplete?: boolean
-  isUpdate?: boolean // True if this was an update to an existing goal
-  updateType?: 'goal' | 'why' | 'step' | 'notes' // What was updated
+  isUpdate?: boolean
+  updateType?: 'goal' | 'why' | 'step' | 'notes'
 } {
   console.log('[parseCoachingResponse] Input length:', response.length)
   console.log('[parseCoachingResponse] First 200 chars:', response.substring(0, 200))
 
   const result: ReturnType<typeof parseCoachingResponse> = { message: response }
 
-  // Helper to clean extracted values - removes template markers like {}, <>, brackets
   const cleanValue = (val: string): string => {
     return val
-      .replace(/^\{|\}$/g, '') // Remove curly braces
-      .replace(/^<[^>]*>:?\s*/i, '') // Remove angle bracket labels
-      .replace(/<[^>]*>\s*$/i, '') // Remove trailing angle brackets
+      .replace(/^\{|\}$/g, '')
+      .replace(/^<[^>]*>:?\s*/i, '')
+      .replace(/<[^>]*>\s*$/i, '')
       .replace(/^goal title:\s*/i, '')
+      .replace(/^pursuit title:\s*/i, '')
       .replace(/^why statement:\s*/i, '')
       .replace(/^specific action:\s*/i, '')
       .trim()
   }
 
-  // Check for goal capture - format: [GOAL_CAPTURED]\n{goal title}\n{message}
   const goalMatch = response.match(/\[GOAL_CAPTURED\]\s*\n?([^\n]+)\n([\s\S]*)/)
   if (goalMatch) {
-    console.log('[parseCoachingResponse] GOAL_CAPTURED matched!')
     result.goalTitle = cleanValue(goalMatch[1])
     result.message = goalMatch[2].trim()
     return result
   }
 
-  // Check for why capture
   const whyMatch = response.match(/\[WHY_CAPTURED\]\s*\n?([^\n]+)\n([\s\S]*)/)
   if (whyMatch) {
-    console.log('[parseCoachingResponse] WHY_CAPTURED matched!')
     result.whyRoot = cleanValue(whyMatch[1])
     result.message = whyMatch[2].trim()
     return result
   }
 
-  // Check for micro-win capture
   const microMatch = response.match(/\[MICROWIN_CAPTURED\]\s*\n?([^\n]+)\n([\s\S]*)/)
   if (microMatch) {
-    console.log('[parseCoachingResponse] MICROWIN_CAPTURED matched!')
     result.microWin = cleanValue(microMatch[1])
     result.message = microMatch[2].trim()
     return result
   }
 
-  // Check for completion
   if (response.includes('[GOAL_COMPLETE]')) {
-    console.log('[parseCoachingResponse] GOAL_COMPLETE matched!')
     result.isComplete = true
     result.message = response.replace('[GOAL_COMPLETE]', '').trim()
     return result
   }
 
-  // Check for continuation updates
   const goalUpdateMatch = response.match(/\[GOAL_UPDATED\]\s*\n?([^\n]+)\n([\s\S]*)/)
   if (goalUpdateMatch) {
-    console.log('[parseCoachingResponse] GOAL_UPDATED matched!')
     result.goalTitle = cleanValue(goalUpdateMatch[1])
     result.message = goalUpdateMatch[2].trim()
     result.isUpdate = true
@@ -217,7 +247,6 @@ export function parseCoachingResponse(response: string): {
 
   const whyUpdateMatch = response.match(/\[WHY_UPDATED\]\s*\n?([^\n]+)\n([\s\S]*)/)
   if (whyUpdateMatch) {
-    console.log('[parseCoachingResponse] WHY_UPDATED matched!')
     result.whyRoot = cleanValue(whyUpdateMatch[1])
     result.message = whyUpdateMatch[2].trim()
     result.isUpdate = true
@@ -227,7 +256,6 @@ export function parseCoachingResponse(response: string): {
 
   const stepUpdateMatch = response.match(/\[STEP_UPDATED\]\s*\n?([^\n]+)\n([\s\S]*)/)
   if (stepUpdateMatch) {
-    console.log('[parseCoachingResponse] STEP_UPDATED matched!')
     result.microWin = cleanValue(stepUpdateMatch[1])
     result.message = stepUpdateMatch[2].trim()
     result.isUpdate = true
@@ -235,11 +263,8 @@ export function parseCoachingResponse(response: string): {
     return result
   }
 
-  // Notes can be multi-line, so capture everything until the response message
-  // Format: [NOTES_UPDATED]\n{notes content - possibly multi-line}\n\n{response}
   const notesUpdateMatch = response.match(/\[NOTES_UPDATED\]\s*\n([\s\S]*?)\n\n([\s\S]*)/)
   if (notesUpdateMatch) {
-    console.log('[parseCoachingResponse] NOTES_UPDATED matched!')
     result.notes = cleanValue(notesUpdateMatch[1])
     result.message = notesUpdateMatch[2].trim()
     result.isUpdate = true
@@ -247,11 +272,11 @@ export function parseCoachingResponse(response: string): {
     return result
   }
 
-  console.log('[parseCoachingResponse] No markers found')
   return result
 }
 
 // Determine next stage based on current context
+// Now supports flexible progression for incomplete pursuits
 export function getNextStage(
   currentStage: CoachingStage,
   context: CoachingContext
@@ -260,13 +285,23 @@ export function getNextStage(
     case 'welcome':
       return 'goal_discovery'
     case 'goal_discovery':
-      return context.goalTitle ? 'why_drilling' : 'goal_discovery'
+      if (!context.goalTitle) return 'goal_discovery'
+      // Skip why_drilling if already has a why
+      if (context.whyRoot) return 'micro_win'
+      return 'why_drilling'
     case 'why_drilling':
-      return context.whyRoot ? 'micro_win' : 'why_drilling'
+      if (!context.whyRoot) return 'why_drilling'
+      // Skip micro_win if already has steps
+      if (context.microWin) return 'confirmation'
+      return 'micro_win'
     case 'micro_win':
       return context.microWin ? 'confirmation' : 'micro_win'
     case 'confirmation':
       return 'complete'
+    case 'deepen':
+      // Once both why and micro-win are captured, move to confirmation
+      if (context.whyRoot && context.microWin) return 'confirmation'
+      return 'deepen'
     default:
       return currentStage
   }

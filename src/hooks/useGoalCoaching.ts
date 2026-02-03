@@ -26,12 +26,20 @@ export interface GoalData {
   notes?: string
 }
 
+export interface GoalToDeepen {
+  id: string
+  title: string
+  why_root?: string | null
+  micro_wins?: Array<{ description: string }>
+}
+
 interface UseGoalCoachingOptions {
   existingSession?: CoachingSession
+  goalToDeepen?: GoalToDeepen
 }
 
 export function useGoalCoaching(options: UseGoalCoachingOptions = {}) {
-  const { existingSession } = options
+  const { existingSession, goalToDeepen } = options
 
   // Initialize from existing session if provided
   const initialMessages: ChatMessage[] = existingSession?.messages?.map((m: CoachingMessage) => ({
@@ -123,12 +131,15 @@ export function useGoalCoaching(options: UseGoalCoachingOptions = {}) {
   }, [])
 
   // Create a new session
-  const createSession = useCallback(async (): Promise<string | null> => {
+  const createSession = useCallback(async (opts?: { stage?: CoachingStage; goal_id?: string }): Promise<string | null> => {
     try {
       const response = await fetch('/api/coaching-sessions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ stage: 'welcome' })
+        body: JSON.stringify({
+          stage: opts?.stage || 'welcome',
+          ...(opts?.goal_id ? { goal_id: opts.goal_id } : {})
+        })
       })
       const data = await response.json()
       if (data.session?.id) {
@@ -159,9 +170,9 @@ export function useGoalCoaching(options: UseGoalCoachingOptions = {}) {
     }
   }, [])
 
-  // Update goal in database (for continuation updates)
+  // Update goal in database (for continuation and deepen updates)
   const updateGoalInDb = useCallback(async (updates: { title?: string; why_root?: string; micro_win?: string; notes?: string }) => {
-    const goalId = existingSession?.goal_id
+    const goalId = goalToDeepen?.id || existingSession?.goal_id
     if (!goalId) {
       console.error('[useGoalCoaching] No goal_id to update')
       return false
@@ -210,7 +221,7 @@ export function useGoalCoaching(options: UseGoalCoachingOptions = {}) {
       console.error('[useGoalCoaching] Failed to update goal:', err)
       return false
     }
-  }, [existingSession?.goal_id])
+  }, [existingSession?.goal_id, goalToDeepen?.id])
 
   const sendMessage = useCallback(async (userMessage?: string) => {
     setIsLoading(true)
@@ -336,8 +347,9 @@ export function useGoalCoaching(options: UseGoalCoachingOptions = {}) {
         // Also update the ref immediately so next call has fresh data
         goalDataRef.current = newGoalData
 
-        // If this is a continuation update, save to database
-        if (data.isUpdate && isContinuation) {
+        // Save to database during continuation or deepen mode
+        const isDeepening = !!goalToDeepen
+        if (dataUpdated && (isContinuation || isDeepening)) {
           const dbUpdates: { title?: string; why_root?: string; micro_win?: string; notes?: string } = {}
           if (data.goalTitle) dbUpdates.title = data.goalTitle
           if (data.whyRoot) dbUpdates.why_root = data.whyRoot
@@ -411,7 +423,7 @@ export function useGoalCoaching(options: UseGoalCoachingOptions = {}) {
     } finally {
       setIsLoading(false)
     }
-  }, [saveMessage, updateSessionStage, existingSession, updateGoalInDb])
+  }, [saveMessage, updateSessionStage, existingSession, updateGoalInDb, goalToDeepen])
 
   const startConversation = useCallback(async () => {
     console.log('[useGoalCoaching] startConversation called, isStarted:', isStartedRef.current)
@@ -420,28 +432,42 @@ export function useGoalCoaching(options: UseGoalCoachingOptions = {}) {
     isStartedRef.current = true
 
     setMessages([])
-    setStage('welcome')
-    setGoalData({})
     setIsComplete(false)
     setError(null)
 
-    // Reset refs
-    messagesRef.current = []
-    stageRef.current = 'welcome'
-    goalDataRef.current = {}
+    if (goalToDeepen) {
+      // Start in deepen mode with pre-filled goal data
+      const initialData: Partial<GoalData> = {
+        title: goalToDeepen.title,
+        whyRoot: goalToDeepen.why_root || undefined,
+        microWin: goalToDeepen.micro_wins?.[0]?.description,
+      }
+      setStage('deepen')
+      setGoalData(initialData)
+      messagesRef.current = []
+      stageRef.current = 'deepen'
+      goalDataRef.current = initialData
 
-    // Create a new session in the database
-    await createSession()
+      // Create session linked to the goal
+      await createSession({ stage: 'deepen', goal_id: goalToDeepen.id })
+    } else {
+      setStage('welcome')
+      setGoalData({})
+      messagesRef.current = []
+      stageRef.current = 'welcome'
+      goalDataRef.current = {}
 
-    console.log('[useGoalCoaching] Sending initial welcome request...')
-    // Send initial message to get the welcome
+      // Create a new session in the database
+      await createSession()
+    }
+
+    console.log('[useGoalCoaching] Sending initial request...')
     try {
       await sendMessage()
-      console.log('[useGoalCoaching] Welcome complete, current stageRef:', stageRef.current)
     } catch {
       // Error is already set in sendMessage
     }
-  }, [sendMessage, createSession])
+  }, [sendMessage, createSession, goalToDeepen])
 
   const reset = useCallback(() => {
     setMessages([])
@@ -469,6 +495,7 @@ export function useGoalCoaching(options: UseGoalCoachingOptions = {}) {
     sendMessage,
     startConversation,
     reset,
-    linkSessionToGoal
+    linkSessionToGoal,
+    isDeepeningGoal: !!goalToDeepen
   }
 }

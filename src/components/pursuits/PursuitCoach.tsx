@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useGoalCoaching, type ChatMessage, type GoalData } from '@/hooks/useGoalCoaching'
+import { useGoalCoaching, type ChatMessage, type GoalData, type GoalToDeepen } from '@/hooks/useGoalCoaching'
 import type { CoachingStage } from '@/lib/ai/prompts/goal-coaching'
 import type { CoachingSession } from '@/types/goal'
 
-interface GoalCoachProps {
+interface PursuitCoachProps {
   isOpen: boolean
   onClose: () => void
   onMinimize?: () => void // Called when user clicks outside or minimize button
@@ -13,7 +13,9 @@ interface GoalCoachProps {
   onGoalCreated: (goalData: GoalData, sessionId: string | null) => void
   existingSession?: CoachingSession
   viewOnly?: boolean
-  onGoalUpdated?: () => void // Called when an existing goal is updated via coaching
+  onGoalUpdated?: () => void // Called when an existing pursuit is updated via coaching
+  goalToDeepen?: GoalToDeepen // Parked pursuit to deepen and activate through coaching
+  onPursuitActivated?: (goalId: string) => void // Called when a deepened pursuit should be activated
 }
 
 const stageLabels: Record<CoachingStage, string> = {
@@ -27,7 +29,7 @@ const stageLabels: Record<CoachingStage, string> = {
   deepen: 'Deepening your pursuit'
 }
 
-export function GoalCoach({ isOpen, onClose, onMinimize, isMinimized = false, onGoalCreated, existingSession, viewOnly = false, onGoalUpdated }: GoalCoachProps) {
+export function PursuitCoach({ isOpen, onClose, onMinimize, isMinimized = false, onGoalCreated, existingSession, viewOnly = false, onGoalUpdated, goalToDeepen, onPursuitActivated }: PursuitCoachProps) {
   const {
     messages,
     stage,
@@ -38,8 +40,9 @@ export function GoalCoach({ isOpen, onClose, onMinimize, isMinimized = false, on
     sessionId,
     sendMessage,
     startConversation,
-    reset
-  } = useGoalCoaching({ existingSession })
+    reset,
+    isDeepeningGoal
+  } = useGoalCoaching({ existingSession, goalToDeepen })
 
   const [input, setInput] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -62,6 +65,14 @@ export function GoalCoach({ isOpen, onClose, onMinimize, isMinimized = false, on
       startConversation()
     }
   }, [isOpen, startConversation, existingSession])
+
+  // Also start conversation when goalToDeepen is provided
+  useEffect(() => {
+    if (isOpen && goalToDeepen && !hasStartedRef.current) {
+      hasStartedRef.current = true
+      startConversation()
+    }
+  }, [isOpen, goalToDeepen, startConversation])
 
   // Mark as started if we have an existing session
   useEffect(() => {
@@ -95,11 +106,17 @@ export function GoalCoach({ isOpen, onClose, onMinimize, isMinimized = false, on
     if (isComplete && goalData.title && !viewOnly) {
       // Wait a moment for user to see the final message
       const timer = setTimeout(() => {
-        onGoalCreated(goalData as GoalData, sessionId)
+        if (isDeepeningGoal && goalToDeepen && onPursuitActivated) {
+          // Deepening a parked pursuit — activate it
+          onPursuitActivated(goalToDeepen.id)
+        } else {
+          // Brand new pursuit through coaching
+          onGoalCreated(goalData as GoalData, sessionId)
+        }
       }, 2500)
       return () => clearTimeout(timer)
     }
-  }, [isComplete, goalData, onGoalCreated, sessionId, viewOnly])
+  }, [isComplete, goalData, onGoalCreated, sessionId, viewOnly, isDeepeningGoal, goalToDeepen, onPursuitActivated])
 
   // Notify parent when goal is updated via continuation
   useEffect(() => {
@@ -184,7 +201,7 @@ export function GoalCoach({ isOpen, onClose, onMinimize, isMinimized = false, on
               )}
               <div>
                 <h2 className={`${isMinimized ? 'text-sm' : 'text-lg'} font-bold text-white`}>
-                  {existingSession ? 'Continue Coaching' : 'Goal Coach'}
+                  {goalToDeepen ? 'Activate Pursuit' : existingSession ? 'Continue Coaching' : 'Pursuit Coach'}
                 </h2>
                 {!isMinimized && (
                   <p className="text-sm text-white/80">
@@ -351,7 +368,7 @@ export function GoalCoach({ isOpen, onClose, onMinimize, isMinimized = false, on
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                   <polyline points="22 4 12 14.01 9 11.01" />
                 </svg>
-                Creating your goal...
+                {isDeepeningGoal ? 'Activating your pursuit...' : 'Creating your pursuit...'}
               </div>
             </div>
           )}
