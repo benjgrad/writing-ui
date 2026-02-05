@@ -229,6 +229,10 @@ export default function PursuitsPage() {
             onArchive={handleArchive}
             canActivate={activeGoals.length < 3}
             onGatekeeperNeeded={handleGatekeeperNeeded}
+            onAddToParkingLot={async (title) => {
+              await createGoal(title, undefined, 'parked')
+              await refresh()
+            }}
           />
         </section>
 

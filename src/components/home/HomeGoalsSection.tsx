@@ -41,6 +41,7 @@ export function HomeGoalsSection() {
     handleViewCoaching,
     handleDeepenPursuit,
     handlePursuitActivated,
+    handleAddToParkingLot,
     refresh
   } = useGoalManagement()
 
@@ -86,21 +87,20 @@ export function HomeGoalsSection() {
         />
       </section>
 
-      {/* Parking Lot - Collapsible */}
-      {parkedGoals.length > 0 && (
-        <section className="mb-8">
-          <ParkingLot
-            goals={parkedGoals}
-            onActivate={async (goalId) => {
-              const goal = parkedGoals.find(g => g.id === goalId)
-              if (goal) handleDeepenPursuit(goal)
-            }}
-            onArchive={handleArchive}
-            canActivate={activeGoals.length < 3}
-            onGatekeeperNeeded={handleGatekeeperNeeded}
-          />
-        </section>
-      )}
+      {/* Parking Lot */}
+      <section className="mb-8">
+        <ParkingLot
+          goals={parkedGoals}
+          onActivate={async (goalId) => {
+            const goal = parkedGoals.find(g => g.id === goalId)
+            if (goal) handleDeepenPursuit(goal)
+          }}
+          onArchive={handleArchive}
+          canActivate={activeGoals.length < 3}
+          onGatekeeperNeeded={handleGatekeeperNeeded}
+          onAddToParkingLot={handleAddToParkingLot}
+        />
+      </section>
 
       {/* Empty state */}
       {activeGoals.length === 0 && parkedGoals.length === 0 && (

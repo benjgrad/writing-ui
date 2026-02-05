@@ -187,6 +187,12 @@ export function useGoalManagement() {
     setViewingSession(null)
   }, [])
 
+  // Add unrefined pursuit directly to parking lot
+  const handleAddToParkingLot = useCallback(async (title: string) => {
+    await createGoal(title, undefined, 'parked')
+    await refresh()
+  }, [createGoal, refresh])
+
   // Close gatekeeper
   const closeGatekeeper = useCallback(() => {
     setShowGatekeeper(false)
@@ -230,6 +236,7 @@ export function useGoalManagement() {
     handleViewCoaching,
     handleDeepenPursuit,
     handlePursuitActivated,
+    handleAddToParkingLot,
 
     // Utilities
     refresh
